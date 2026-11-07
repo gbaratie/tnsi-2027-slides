@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Supports du cours TNSI 2027 — M2 MIAGE, Université Paris Dauphine–PSL.">
+  <title>TNSI 2027 — Supports de cours</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #07111f;
+      --panel: rgba(15, 30, 51, 0.82);
+      --line: rgba(182, 211, 255, 0.16);
+      --ink: #f5f8ff;
+      --muted: #a9b8cd;
+      --cyan: #53d8fb;
+      --coral: #ff8a76;
+      --lime: #bded76;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 18% 5%, rgba(83, 216, 251, 0.18), transparent 30rem),
+        radial-gradient(circle at 90% 28%, rgba(255, 138, 118, 0.16), transparent 28rem),
+        var(--bg);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    a { color: inherit; }
+
+    .shell {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 72px 0 56px;
+    }
+
+    .eyebrow {
+      margin: 0 0 18px;
+      color: var(--cyan);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 900px;
+      margin: 0;
+      font-size: clamp(3rem, 8vw, 6.8rem);
+      line-height: 0.92;
+      letter-spacing: -0.065em;
+    }
+
+    .intro {
+      max-width: 720px;
+      margin: 28px 0 0;
+      color: var(--muted);
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      line-height: 1.65;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 34px 0 64px;
+    }
+
+    .tag {
+      padding: 7px 11px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.035);
+      font-size: 0.78rem;
+      font-weight: 750;
+      letter-spacing: 0.03em;
+    }
+
+    section { margin-top: 56px; }
+
+    .section-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    h2 {
+      margin: 0;
+      font-size: clamp(1.7rem, 4vw, 2.6rem);
+      letter-spacing: -0.04em;
+    }
+
+    .section-head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 22px;
+    }
+
+    .card {
+      position: relative;
+      min-height: 205px;
+      padding: 24px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: var(--panel);
+      text-decoration: none;
+      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+    }
+
+    .card::after {
+      position: absolute;
+      right: 18px;
+      bottom: 12px;
+      color: rgba(245, 248, 255, 0.2);
+      content: "↗";
+      font-size: 2rem;
+    }
+
+    .card:hover,
+    .card:focus-visible {
+      border-color: rgba(83, 216, 251, 0.65);
+      background: rgba(20, 42, 70, 0.95);
+      outline: none;
+      transform: translateY(-3px);
+    }
+
+    .number {
+      color: var(--cyan);
+      font-size: 0.78rem;
+      font-weight: 850;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .card.tp .number { color: var(--lime); }
+    .card.arch .number { color: var(--coral); }
+
+    h3 {
+      max-width: 90%;
+      margin: 32px 0 10px;
+      font-size: 1.32rem;
+      line-height: 1.15;
+      letter-spacing: -0.025em;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      margin-top: 72px;
+      padding-top: 22px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    footer p { margin: 0; }
+
+    @media (max-width: 840px) {
+      .shell { padding-top: 48px; }
+      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .section-head { align-items: flex-start; flex-direction: column; gap: 8px; }
+    }
+
+    @media (max-width: 560px) {
+      .shell { width: min(100% - 24px, 1180px); }
+      .grid { grid-template-columns: 1fr; }
+      .legend { margin-bottom: 48px; }
+      footer { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <p class="eyebrow">Université Paris Dauphine–PSL · M2 MIAGE</p>
+    <h1>Transition Numérique des SI</h1>
+    <p class="intro">Les supports projetables et les parcours guidés du cours TNSI 2027. Chaque deck s’ouvre directement dans le navigateur et reste navigable au clavier.</p>
+
+    <div class="legend" aria-label="Types de supports">
+      <span class="tag">Cours</span>
+      <span class="tag">Architecture</span>
+      <span class="tag">REX</span>
+      <span class="tag">TP pas à pas</span>
+    </div>
+
+    <section aria-labelledby="cours-title">
+      <div class="section-head">
+        <h2 id="cours-title">Cours et architecture</h2>
+        <p>Du panorama initial à la soutenance</p>
+      </div>
+      <div class="grid">
+        <a class="card" href="s01/01-cours-panorama/slides.html"><span class="number">S1 · Cours</span><h3>Panorama des transformations</h3><p>Cadre du cours, fil rouge et lancement des projets.</p></a>
+        <a class="card" href="s02/01-cours-intelligence-artificielle/slides.html"><span class="number">S2–S3 · Cours</span><h3>Intelligence artificielle</h3><p>IA générative, RAG, agents et MCP.</p></a>
+        <a class="card" href="s04/01-cours-iot-interconnexion/slides.html"><span class="number">S4 · Cours</span><h3>IoT et interconnexion</h3><p>Systèmes connectés, échanges et intégration.</p></a>
+        <a class="card arch" href="s04/02-architecture-theorique/slides.html"><span class="number">S2–S4 · Architecture</span><h3>Clean Code, SOLID et hexagonal</h3><p>Responsabilités, ports et construction du domaine.</p></a>
+        <a class="card" href="s05/01-cours-data-knowledge-graphs/slides.html"><span class="number">S5 · Cours</span><h3>Data et Knowledge Graphs</h3><p>Data management, graphes et visualisation.</p></a>
+        <a class="card" href="s06/01-cours-blockchain-web3/slides.html"><span class="number">S6 · Cours</span><h3>Blockchain et Web3</h3><p>Registres distribués, usages et limites.</p></a>
+        <a class="card" href="s06/02-cours-cloud-deploiement/slides.html"><span class="number">S6 · Cours</span><h3>Cloud et déploiement</h3><p>Du code local à un service exploitable.</p></a>
+        <a class="card" href="s08/01-soutenance-defense/slides.html"><span class="number">S8 · Soutenance</span><h3>Démontrer et défendre</h3><p>Préparer la démonstration et expliquer ses décisions.</p></a>
+      </div>
+    </section>
+
+    <section aria-labelledby="tp-title">
+      <div class="section-head">
+        <h2 id="tp-title">TP guidés</h2>
+        <p>Une progression étape par étape</p>
+      </div>
+      <div class="grid">
+        <a class="card tp" href="tp/s2-ai-rag/slides.html"><span class="number">S2 · TP</span><h3>IA et premier RAG</h3><p>Brancher un LLM par un port, puis sourcer les réponses.</p></a>
+        <a class="card tp" href="tp/s3-agents-mcp/slides.html"><span class="number">S3 · TP</span><h3>Agents et MCP</h3><p>Donner des outils bornés à un agent et observer ses choix.</p></a>
+        <a class="card tp" href="tp/s4-domain-api/slides.html"><span class="number">S4 · TP</span><h3>Domaine métier et API</h3><p>Construire un modèle métier puis l’exposer proprement.</p></a>
+        <a class="card tp" href="tp/s5-data-graphrag/slides.html"><span class="number">S5 · TP</span><h3>Data Graph et GraphRAG</h3><p>Relier données, graphe de connaissance et génération.</p></a>
+        <a class="card tp" href="tp/s6-s7-finalisation/slides.html"><span class="number">S6–S7 · TP</span><h3>Amélioration et finalisation</h3><p>Fiabiliser le parcours avant la démonstration finale.</p></a>
+      </div>
+    </section>
+
+    <footer>
+      <p>TNSI 2027 · M2 MIAGE Apprentissage</p>
+      <p id="source">Publication automatisée depuis le dépôt du cours</p>
+    </footer>
+  </main>
+  <script>
+    fetch("source.json")
+      .then((response) => response.ok ? response.json() : null)
+      .then((source) => {
+        if (source?.commit) {
+          document.getElementById("source").textContent = `Version ${source.commit.slice(0, 12)}`;
+        }
+      })
+      .catch(() => {});
+  </script>
+</body>
+</html>

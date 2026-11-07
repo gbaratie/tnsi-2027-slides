@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TNSI Dauphine — 05. Thématique 05 · Blockchain & Web3</title>
+<!-- Google Fonts: Bricolage Grotesque, DM Sans, DM Mono -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+
+<style>
+/* ==========================================================================
+   1. DUAL DESIGN SYSTEM · DAUPHINE PSL
+   ========================================================================== */
+:root {
+  /* Surfaces claires */
+  --bg-light:       #EBF2FA;
+  --bg-light-panel: #FFFFFF;
+  --ink-light-1:    #00205B;
+  --ink-light-2:    rgba(0, 32, 91, 0.72);
+  --ink-light-3:    rgba(0, 32, 91, 0.42);
+  --border-light:   rgba(0, 32, 91, 0.12);
+
+  /* Surfaces sombres */
+  --bg-dark:        #00205B;
+  --bg-dark-panel:  rgba(255, 255, 255, 0.05);
+  --ink-dark-1:     #edf4ff;
+  --ink-dark-2:     rgba(237, 244, 255, 0.72);
+  --ink-dark-3:     rgba(237, 244, 255, 0.40);
+  --border-dark:    rgba(237, 244, 255, 0.14);
+
+  /* Accents transverses */
+  --accent:         #0050E6;   /* Bleu électrique Dauphine / IBM */
+  --accent-glow:    #4589ff;   /* Accent clair sur sombre */
+  --accent-soft:    rgba(0, 80, 230, 0.08);
+  --accent-cyan:    #11d3f3;
+  --accent-green:   #187938;
+  --accent-green-d: #42be65;
+  --accent-red:     #D9383A;
+  --accent-red-d:   #ff8389;
+  --accent-purple:  #8a3ffc;
+
+  /* Canvas 1920x1080 */
+  --pad-x:          96px;
+  --pad-y:          56px;
+  --ease-out-expo:  cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: #00153D;
+  font-family: 'DM Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.deck-viewport {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: #00153D;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.deck-stage {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  transform-origin: 0 0;
+  box-shadow: 0 20px 80px rgba(0, 0, 0, 0.4);
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  display: block;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s var(--ease-out-expo);
+}
+
+.slide.active, .slide.visible {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+  z-index: 1;
+}
+
+/* --- THEME SOMBRE (.s-dark) --- */
+.s-dark {
+  background: var(--bg-dark);
+  color: var(--ink-dark-1);
+}
+.s-dark::before {
+  content: '';
+  position: absolute;
+  top: -200px; right: -200px;
+  width: 1100px; height: 1100px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 70% 30%, rgba(0, 80, 230, 0.22) 0%, transparent 65%);
+  z-index: 0; pointer-events: none;
+}
+.s-dark .chrome-band, .s-dark .foot-band {
+  border-color: var(--border-dark);
+}
+.s-dark .t-lead, .s-dark .t-body {
+  color: var(--ink-dark-2);
+}
+.s-dark .t-small, .s-dark .t-muted {
+  color: var(--ink-dark-3);
+}
+.s-dark .kicker {
+  color: var(--accent-glow);
+}
+.s-dark .kicker::before {
+  background: var(--accent-glow);
+}
+.s-dark .pill {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--ink-dark-1);
+  border: 1px solid var(--border-dark);
+}
+.s-dark .pill.accent {
+  background: rgba(69, 137, 255, 0.2);
+  color: var(--ink-dark-1);
+  border-color: var(--accent-glow);
+}
+
+/* ==========================================================================
+   2. TYPOGRAPHIE
+   ========================================================================== */
+.t-display {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 800;
+  font-size: 96px;
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+  color: #FFFFFF;
+}
+
+.t-lead {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 400;
+  font-size: 26px;
+  line-height: 1.55;
+}
+
+.t-small {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.t-mono { font-family: 'DM Mono', monospace; }
+
+.t-label {
+  font-family: 'DM Mono', monospace;
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* ==========================================================================
+   3. STRUCTURES & COMPOSANTS
+   ========================================================================== */
+.si {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  padding: var(--pad-y) var(--pad-x);
+}
+
+.chrome-band {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.foot-band {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-dark);
+}
+
+.kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'DM Mono', monospace;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.kicker::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-glow);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ==========================================================================
+   4. NAVIGATION & HUD
+   ========================================================================== */
+.deck-hud {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
+  background: rgba(0, 21, 61, 0.82);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(237, 244, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  z-index: 1000;
+}
+
+.hud-progress-track {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(237, 244, 255, 0.08);
+}
+
+.hud-progress-fill {
+  height: 100%;
+  background: var(--accent-glow);
+  width: 100%;
+  transition: width 0.3s var(--ease-out-expo);
+}
+
+.hud-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hud-btn {
+  background: rgba(237, 244, 255, 0.06);
+  border: 1px solid rgba(237, 244, 255, 0.16);
+  color: var(--ink-dark-1);
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.hud-btn:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.key-hint {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: rgba(237, 244, 255, 0.4);
+}
+
+.key-hint kbd {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 2px 6px;
+  border-radius: 3px;
+  color: rgba(237, 244, 255, 0.8);
+}
+</style>
+</head>
+<body>
+
+<div class="deck-viewport">
+  <main class="deck-stage" id="deckStage">
+    <!-- SLIDE 1 : PAGE DE GARDE -->
+    <section class="slide s-dark active" data-slide="1">
+      <div class="si">
+        <div class="chrome-band">
+          <span class="t-label t-muted">Université Paris Dauphine–PSL</span>
+          <span class="pill accent">Web3 · Smart Contracts · Traçabilité</span>
+        </div>
+
+        <div style="margin-top: auto; margin-bottom: auto; max-width: 1550px;">
+          <div class="kicker">Axe 4 · Partager & Sécuriser la Donnée</div>
+          <h1 class="t-display" style="margin-bottom: 24px;">
+            Blockchain, Web3<br><span style='color: var(--accent-glow);'>& Confiance Décentralisée</span>
+          </h1>
+          <p class="t-lead" style="max-width: 1250px; font-size: 27px; line-height: 1.5;">
+            Sécuriser et partager la donnée sans tiers de confiance centralisé : <strong>registres distribués</strong>, consensus, <strong>smart contracts</strong>, tokenisation des actifs et synergie avec l'IA.
+          </p>
+        </div>
+
+        <div class="foot-band">
+          <div style="display:flex; gap: 32px; align-items: center;">
+            <span class="t-small t-mono t-muted">M2 MIAGE TNSI</span>
+            <span class="t-small t-mono t-muted">DÉCENTRALISATION · REGISTRES DISTRIBUÉS · TOKENISATION</span>
+          </div>
+          <span class="t-label" style="color: var(--accent-glow);">Thématique 05 · Blockchain & Web3</span>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<nav class="deck-hud">
+  <div class="hud-progress-track">
+    <div class="hud-progress-fill" id="progressBar"></div>
+  </div>
+  <div class="hud-group">
+    <span class="t-mono t-small" id="slideCounter" style="color: rgba(237, 244, 255, 0.7);">1 / 1</span>
+    <span class="key-hint"><kbd>→</kbd> <kbd>←</kbd> naviguer · <kbd>F</kbd> plein écran</span>
+  </div>
+  <div class="hud-group">
+    <button class="hud-btn" id="fsBtn">⛶ Plein écran</button>
+  </div>
+</nav>
+
+<script>
+(function() {
+  'use strict';
+  const stage = document.getElementById('deckStage');
+  const fsBtn = document.getElementById('fsBtn');
+
+  function updateStageScale() {
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const scale = Math.min(vw / 1920, vh / 1080);
+    const left = (vw - 1920 * scale) / 2;
+    const top = (vh - 1080 * scale) / 2;
+    stage.style.transform = `translate(${left}px, ${top}px) scale(${scale})`;
+  }
+
+  window.addEventListener('resize', updateStageScale);
+  updateStageScale();
+
+  if (fsBtn) {
+    fsBtn.addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    });
+  }
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'f' || e.key === 'F') {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+  });
+})();
+</script>
+</body>
+</html>
