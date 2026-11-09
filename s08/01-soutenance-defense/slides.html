@@ -311,35 +311,214 @@ html, body {
   color: rgba(237, 244, 255, 0.8);
 }
 </style>
+<!-- deck-review:start -->
+<script type="application/json" id="review-config">{"deckId": "08-soutenance-defense", "sourcePath": "course/08-soutenance-defense/slides.html", "sourceHash": "sha256:66fc538bb86279fef9347cdf6a44424a15f830b7f570d99738dcaed101dc6f65"}</script>
+<script>
+/* Shared static deck review editor. Embedded by build.py; no network calls. */
+(() => {
+  'use strict';
+  let api;
+  function textOf(element) {
+    const clone = element.cloneNode(true);
+    clone.querySelectorAll('br').forEach(br => br.replaceWith('\n'));
+    clone.querySelectorAll('div').forEach(div => div.prepend('\n'));
+    return clone.textContent;
+  }
+  function restoreText(element, saved) {
+    if (!saved.afterHtml) { element.innerText = saved.afterText; return; }
+    const template = document.createElement('template'); template.innerHTML = saved.afterHtml;
+    // Keep inline formatting, but accept only attributes already present in the source.
+    const allowed = new Set();
+    element.querySelectorAll('*').forEach(node => [...node.attributes].forEach(attr => {
+      if (['class','style','title','dir','lang'].includes(attr.name)) allowed.add(`${attr.name}=${attr.value}`);
+    }));
+    [...template.content.querySelectorAll('*')].reverse().forEach(node => {
+      if (!['SPAN','STRONG','EM','B','I','CODE','BR','SUB','SUP','SMALL','DIV'].includes(node.tagName)) {
+        node.replaceWith(document.createTextNode(node.textContent)); return;
+      }
+      [...node.attributes].forEach(attr => { if (!allowed.has(`${attr.name}=${attr.value}`)) node.removeAttribute(attr.name); });
+    });
+    element.replaceChildren(template.content);
+  }
+  const field = target => target.closest?.('[contenteditable="true"],input,textarea,select');
+  // Capture before legacy presentation handlers: typing must never advance slides.
+  window.addEventListener('keydown', event => {
+    if (!api) return;
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
+      event.preventDefault(); event.stopImmediatePropagation(); api.export(); return;
+    }
+    if (!field(event.target) && !event.ctrlKey && !event.metaKey && event.key.toLowerCase() === 'e') {
+      event.preventDefault(); event.stopImmediatePropagation(); api.toggle(); return;
+    }
+    if (field(event.target)) event.stopImmediatePropagation();
+    if (event.key === 'Escape' && api.active) { api.toggle(false); event.stopImmediatePropagation(); }
+  }, true);
+  for (const type of ['wheel', 'touchstart', 'touchend']) window.addEventListener(type, event => {
+    if (field(event.target) || event.target.closest?.('#review-panel')) event.stopImmediatePropagation();
+  }, {capture:true, passive:true});
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const config = JSON.parse(document.getElementById('review-config').textContent);
+    const slides = [...document.querySelectorAll('.slide')];
+    if (!slides.length) return;
+    const key = `deck-review-v1:${config.deckId}:${config.sourceHash}`;
+    const startedAt = new Date().toISOString();
+    let active = false, storageError = false, draft = {comments:{}, changes:{}, instruction:'', startedAt};
+    try { const saved = JSON.parse(localStorage.getItem(key)); if (saved) draft = saved; }
+    catch { storageError = true; }
+    const blocks = [];
+    const selector = 'h1,h2,h3,h4,p,li,pre,td,th,span,strong,code,small,div';
+    slides.forEach(slide => {
+      const candidates = [...slide.querySelectorAll(selector)].filter(el =>
+        el.textContent.trim() && el.dataset.reviewNode &&
+        !el.closest('svg,button,a,script,style') &&
+        ![...el.children].some(child => !['SPAN','STRONG','EM','B','I','CODE','BR','SUB','SUP','SMALL'].includes(child.tagName)));
+      candidates.filter(el => !candidates.some(parent => parent !== el && parent.contains(el))).forEach(el => {
+        const block = {el, id:el.dataset.reviewNode, slideId:slide.dataset.reviewSlide,
+          beforeHtml:el.innerHTML, beforeText:textOf(el)};
+        blocks.push(block);
+        const saved = draft.changes[block.id];
+        // Restore text and source formatting without executing markup from storage.
+        if (saved) restoreText(el, saved);
+        el.addEventListener('input', () => {
+          if (textOf(el) === block.beforeText) delete draft.changes[block.id];
+          else draft.changes[block.id] = {blockId:block.id, slideId:block.slideId,
+            beforeHtml:block.beforeHtml, beforeText:block.beforeText, afterText:textOf(el), afterHtml:el.innerHTML};
+          persist(); renderSummary();
+        });
+      });
+    });
+    const style = document.createElement('style');
+    style.textContent = `
+      .edit-toggle,.edit-hotzone{display:none!important}
+      #review-toggle,#review-panel{font:14px/1.5 system-ui,sans-serif;color:#17263b;z-index:100100;position:fixed;box-sizing:border-box}
+      #review-toggle{top:12px;right:12px;background:#fff;border:1px solid #ccd5e1;border-radius:8px;padding:9px 14px;cursor:pointer;box-shadow:0 3px 16px #0002}
+      #review-panel{top:62px;right:12px;width:min(360px,calc(100vw - 24px));max-height:calc(100dvh - 80px);overflow:auto;background:#fff;padding:20px;border:1px solid #ccd5e1;border-radius:12px;box-shadow:0 8px 36px #0003;text-align:left}
+      #review-panel[hidden]{display:none} #review-panel *{box-sizing:border-box;letter-spacing:normal;text-transform:none}
+      #review-panel h2{font:600 19px system-ui;margin:0 0 12px;color:#17263b}
+      #review-panel label{display:block;margin-top:14px;font-weight:600}
+      #review-panel textarea,#review-panel select{font:14px/1.5 system-ui;width:100%;margin:6px 0;padding:8px;border:1px solid #bcc9d9;border-radius:6px;color:#17263b;background:white}
+      #review-panel textarea{min-height:90px;resize:vertical} #review-panel button{font:14px system-ui;padding:9px;border:1px solid #bcc9d9;border-radius:6px;cursor:pointer;background:#edf3fa;color:#17263b;margin:5px 0}
+      #review-panel .primary{width:100%;background:#174ec0;color:white;border-color:#174ec0}
+      #review-panel p,#review-panel summary{font:13px/1.5 system-ui;color:#526278;margin:10px 0}
+      #review-list{padding-left:20px;font:13px/1.5 system-ui} #review-list button{text-align:left}
+      body.reviewing [contenteditable=true]{outline:2px dashed #3478e5;outline-offset:3px;cursor:text}
+      @media print{#review-panel,#review-toggle{display:none!important}}
+    `;
+    document.head.append(style);
+    const toggle = document.createElement('button'); toggle.id = 'review-toggle'; toggle.textContent = 'Réviser · E';
+    toggle.setAttribute('aria-expanded','false'); toggle.setAttribute('aria-controls','review-panel'); document.body.append(toggle);
+    const panel = document.createElement('aside'); panel.id = 'review-panel'; panel.hidden = true;
+    panel.setAttribute('aria-label','Révision du deck');
+    panel.innerHTML = `<h2>Révision du deck</h2><p>Corrigez les textes dans les slides et laissez vos consignes ici.</p>
+      <label for="review-slide">Slide à commenter</label><select id="review-slide"></select>
+      <label for="review-comment">Commentaire pour cette slide</label><textarea id="review-comment" placeholder="Ex. : alléger cette slide, ajouter un exemple…"></textarea>
+      <label for="review-instruction">Consigne générale</label><textarea id="review-instruction" placeholder="Ex. : conserver le style et simplifier les explications."></textarea>
+      <p id="review-status" role="status"></p><details><summary id="review-summary"></summary><ul id="review-list"></ul></details>
+      <button class="primary" id="review-export">Exporter la révision JSON</button>
+      <p>Joignez ce fichier à votre conversation avec l’agent pour retravailler le deck. Le dépôt sera modifié par l’agent.</p>
+      <button id="review-close">Quitter l’édition</button>`;
+    document.body.append(panel);
+    const $ = id => document.getElementById(id);
+    const select = $('review-slide'), comment = $('review-comment'), instruction = $('review-instruction');
+    slides.forEach((slide, index) => {
+      const option = document.createElement('option'); option.value = slide.dataset.reviewSlide;
+      option.textContent = `${index+1}. ${(slide.querySelector('h1,h2,h3')?.textContent || 'Slide').trim().slice(0,90)}`; select.append(option);
+    });
+    function current() { return slides.find(slide => slide.classList.contains('active')) || slides[0]; }
+    function loadComment() { comment.value = draft.comments[select.value] || ''; }
+    select.value = current().dataset.reviewSlide; loadComment(); instruction.value = draft.instruction;
+    function persist() {
+      draft.updatedAt = new Date().toISOString();
+      try { localStorage.setItem(key, JSON.stringify(draft)); storageError = false; } catch { storageError = true; }
+      $('review-status').textContent = storageError ? 'Sauvegarde locale indisponible. Exportez votre révision avant de fermer.' : 'Brouillon sauvegardé dans ce navigateur. Le dépôt reste inchangé.';
+    }
+    function renderSummary() {
+      const changes = Object.values(draft.changes), comments = Object.keys(draft.comments);
+      $('review-summary').textContent = `${changes.length} correction(s) · ${comments.length} slide(s) commentée(s)`;
+      $('review-list').replaceChildren();
+      slides.forEach((slide,index) => {
+        const id = slide.dataset.reviewSlide, count = changes.filter(c => c.slideId === id).length;
+        if (!count && !draft.comments[id]) return;
+        const item = document.createElement('li');
+        item.textContent = `Slide ${index+1} : ${count} correction(s)${draft.comments[id] ? ' — '+draft.comments[id] : ''}`;
+        const edits = changes.filter(change => change.slideId === id);
+        edits.forEach(change => {
+          const detail = document.createElement('p');
+          detail.textContent = `« ${change.beforeText} » → « ${change.afterText} »`;
+          item.append(detail);
+        });
+        $('review-list').append(item);
+      });
+    }
+    function setActive(value = !active) {
+      active = value; document.body.classList.toggle('reviewing', active); panel.hidden = !active;
+      blocks.forEach(({el}) => active ? el.setAttribute('contenteditable','true') : el.removeAttribute('contenteditable'));
+      toggle.textContent = active ? 'Quitter la révision' : 'Réviser · E'; toggle.setAttribute('aria-expanded',String(active));
+      if (!active) { persist(); toggle.focus(); }
+    }
+    function exportReview() {
+      persist();
+      const payload = {schemaVersion:1, kind:'deck-review', exportedAt:new Date().toISOString(),
+        deck:{...config, title:document.title, url:location.href.split('#')[0]},
+        startedAt:draft.startedAt, instruction:draft.instruction,
+        agentInstructions:'Comparer la source à sourceHash et aux textes avant modification. Conserver les corrections directes, interpréter les commentaires, signaler les conflits sans écraser les changements plus récents. Proposer les modifications dans les fichiers sources et résumer les demandes traitées et restantes.',
+        slides:slides.map((slide,index) => ({slideId:slide.dataset.reviewSlide, slideNumber:index+1,
+          title:(slide.querySelector('h1,h2,h3')?.textContent || '').trim(),
+          comment:draft.comments[slide.dataset.reviewSlide] || '',
+          changes:Object.values(draft.changes).filter(c => c.slideId === slide.dataset.reviewSlide).map(({afterHtml, ...change}) => change)}))};
+      const url = URL.createObjectURL(new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}));
+      const link = document.createElement('a'); link.href=url; link.download=`${config.deckId}-revision.json`; link.click();
+      setTimeout(() => URL.revokeObjectURL(url),1000);
+    }
+    toggle.onclick = () => setActive(); $('review-close').onclick = () => setActive(false); $('review-export').onclick = exportReview;
+    select.onchange = loadComment;
+    comment.oninput = () => { if(comment.value.trim()) draft.comments[select.value] = comment.value; else delete draft.comments[select.value]; persist(); renderSummary(); };
+    instruction.oninput = () => { draft.instruction = instruction.value; persist(); };
+    // Follow presentation navigation without rebuilding the panel on every animation.
+    new MutationObserver(() => {
+      const id = current().dataset.reviewSlide;
+      if (select.value !== id) { select.value=id; loadComment(); }
+    }).observe(document.getElementById('deckStage') || slides[0].parentElement,{subtree:true,attributes:true,attributeFilter:['class']});
+    document.addEventListener('paste', event => {
+      if (active && event.target.isContentEditable) { event.preventDefault(); document.execCommand('insertText',false,event.clipboardData.getData('text/plain')); }
+    });
+    api = {toggle:setActive, export:exportReview, get active(){return active;}};
+    renderSummary();
+    $('review-status').textContent = storageError ? 'Brouillon local illisible ou indisponible : exportez avant de fermer.' : 'Brouillon local · aucune modification du dépôt.';
+  });
+})();
+</script>
+<!-- deck-review:end -->
 </head>
 <body>
 
 <div class="deck-viewport">
   <main class="deck-stage" id="deckStage">
     <!-- SLIDE 1 : PAGE DE GARDE -->
-    <section class="slide s-dark active" data-slide="1">
-      <div class="si">
-        <div class="chrome-band">
-          <span class="t-label t-muted">Université Paris Dauphine–PSL</span>
-          <span class="pill accent">Soutenance · REX · Évaluation</span>
+    <section class="slide s-dark active" data-slide="1" data-review-slide="s-b719b2e45934" data-review-node="b-3163ae3ec902">
+      <div class="si" data-review-node="b-d6031569fd0c">
+        <div class="chrome-band" data-review-node="b-845b14172bed">
+          <span class="t-label t-muted" data-review-node="b-826f1570f757">Université Paris Dauphine–PSL</span>
+          <span class="pill accent" data-review-node="b-3443ed68d03d">Soutenance · REX · Évaluation</span>
         </div>
 
-        <div style="margin-top: auto; margin-bottom: auto; max-width: 1550px;">
-          <div class="kicker">Évaluation & Restitution</div>
-          <h1 class="t-display" style="margin-bottom: 24px;">
-            Démonstrations &<br><span style='color: var(--accent-glow);'>Soutenances Finales</span>
+        <div style="margin-top: auto; margin-bottom: auto; max-width: 1550px;" data-review-node="b-4252aa80825d">
+          <div class="kicker" data-review-node="b-69c3822123b9">Évaluation & Restitution</div>
+          <h1 class="t-display" style="margin-bottom: 24px;" data-review-node="b-4a49ff0883bb">
+            Démonstrations &<br data-review-node="b-4cfeeb6fe430"><span style='color: var(--accent-glow);' data-review-node="b-cc55f130b24a">Soutenances Finales</span>
           </h1>
-          <p class="t-lead" style="max-width: 1250px; font-size: 27px; line-height: 1.5;">
-            Restitution du projet fil rouge : <strong>démonstration en direct</strong> de l'assistant métier, défense individuelle des choix d'architecture logicielle et analyse critique du dispositif.
+          <p class="t-lead" style="max-width: 1250px; font-size: 27px; line-height: 1.5;" data-review-node="b-0dd417241333">
+            Restitution du projet fil rouge : <strong data-review-node="b-89f88aeee836">démonstration en direct</strong> de l'assistant métier, défense individuelle des choix d'architecture logicielle et analyse critique du dispositif.
           </p>
         </div>
 
-        <div class="foot-band">
-          <div style="display:flex; gap: 32px; align-items: center;">
-            <span class="t-small t-mono t-muted">M2 MIAGE TNSI</span>
-            <span class="t-small t-mono t-muted">DÉMONSTRATION · DÉFENSE DES CHOIX · GRILLE D'ÉVALUATION</span>
+        <div class="foot-band" data-review-node="b-4ac3f1c25066">
+          <div style="display:flex; gap: 32px; align-items: center;" data-review-node="b-80675bb80e57">
+            <span class="t-small t-mono t-muted" data-review-node="b-5320e87bf362">M2 MIAGE TNSI</span>
+            <span class="t-small t-mono t-muted" data-review-node="b-1e0bf8195446">DÉMONSTRATION · DÉFENSE DES CHOIX · GRILLE D'ÉVALUATION</span>
           </div>
-          <span class="t-label" style="color: var(--accent-glow);">Thématique 08 · Soutenances & Défense</span>
+          <span class="t-label" style="color: var(--accent-glow);" data-review-node="b-16c3cc0b8e1d">Thématique 08 · Soutenances & Défense</span>
         </div>
       </div>
     </section>
