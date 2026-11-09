@@ -2341,6 +2341,185 @@ html.final-state .hud-controls,html.final-state .key-hint,html.final-state .edit
 .mission-path{margin:24px 0 0;height:140px;flex-shrink:0}.mission-path img{width:100%;height:100%;object-fit:contain}
 .slide[data-slide="26"] .mission-grid{margin-top:12px;flex:1;min-height:0}.slide[data-slide="26"] .mission-main{padding:30px;min-height:0}.slide[data-slide="26"] .mission-main h3{font-size:36px;margin-bottom:24px}.slide[data-slide="26"] .mission-main .t-body{font-size:27px}.slide[data-slide="26"] .deliverable{padding:18px 24px}
 </style>
+<!-- deck-review:start -->
+<script type="application/json" id="review-config">{"deckId": "01-cours-data-knowledge-graphs", "sourcePath": "teacher/slides/s05/01-cours-data-knowledge-graphs/slides.html", "sourceHash": "sha256:910ab9452bed763453f9566b69e21b5de0607e1b7c5b8833e3b7c49c9b94e435"}</script>
+<script>
+/* Shared static deck review editor. Embedded by build.py; no network calls. */
+(() => {
+  'use strict';
+  let api;
+  function textOf(element) {
+    const clone = element.cloneNode(true);
+    clone.querySelectorAll('br').forEach(br => br.replaceWith('\n'));
+    clone.querySelectorAll('div').forEach(div => div.prepend('\n'));
+    return clone.textContent;
+  }
+  function restoreText(element, saved) {
+    if (!saved.afterHtml) { element.innerText = saved.afterText; return; }
+    const template = document.createElement('template'); template.innerHTML = saved.afterHtml;
+    // Keep inline formatting, but accept only attributes already present in the source.
+    const allowed = new Set();
+    element.querySelectorAll('*').forEach(node => [...node.attributes].forEach(attr => {
+      if (['class','style','title','dir','lang'].includes(attr.name)) allowed.add(`${attr.name}=${attr.value}`);
+    }));
+    [...template.content.querySelectorAll('*')].reverse().forEach(node => {
+      if (!['SPAN','STRONG','EM','B','I','CODE','BR','SUB','SUP','SMALL','DIV'].includes(node.tagName)) {
+        node.replaceWith(document.createTextNode(node.textContent)); return;
+      }
+      [...node.attributes].forEach(attr => { if (!allowed.has(`${attr.name}=${attr.value}`)) node.removeAttribute(attr.name); });
+    });
+    element.replaceChildren(template.content);
+  }
+  const field = target => target.closest?.('[contenteditable="true"],input,textarea,select');
+  // Capture before legacy presentation handlers: typing must never advance slides.
+  window.addEventListener('keydown', event => {
+    if (!api) return;
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
+      event.preventDefault(); event.stopImmediatePropagation(); api.export(); return;
+    }
+    if (!field(event.target) && !event.ctrlKey && !event.metaKey && event.key.toLowerCase() === 'e') {
+      event.preventDefault(); event.stopImmediatePropagation(); api.toggle(); return;
+    }
+    if (field(event.target)) event.stopImmediatePropagation();
+    if (event.key === 'Escape' && api.active) { api.toggle(false); event.stopImmediatePropagation(); }
+  }, true);
+  for (const type of ['wheel', 'touchstart', 'touchend']) window.addEventListener(type, event => {
+    if (field(event.target) || event.target.closest?.('#review-panel')) event.stopImmediatePropagation();
+  }, {capture:true, passive:true});
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const config = JSON.parse(document.getElementById('review-config').textContent);
+    const slides = [...document.querySelectorAll('.slide')];
+    if (!slides.length) return;
+    const key = `deck-review-v1:${config.deckId}:${config.sourceHash}`;
+    const startedAt = new Date().toISOString();
+    let active = false, storageError = false, draft = {comments:{}, changes:{}, instruction:'', startedAt};
+    try { const saved = JSON.parse(localStorage.getItem(key)); if (saved) draft = saved; }
+    catch { storageError = true; }
+    const blocks = [];
+    const selector = 'h1,h2,h3,h4,p,li,pre,td,th,span,strong,code,small,div';
+    slides.forEach(slide => {
+      const candidates = [...slide.querySelectorAll(selector)].filter(el =>
+        el.textContent.trim() && el.dataset.reviewNode &&
+        !el.closest('svg,button,a,script,style') &&
+        ![...el.children].some(child => !['SPAN','STRONG','EM','B','I','CODE','BR','SUB','SUP','SMALL'].includes(child.tagName)));
+      candidates.filter(el => !candidates.some(parent => parent !== el && parent.contains(el))).forEach(el => {
+        const block = {el, id:el.dataset.reviewNode, slideId:slide.dataset.reviewSlide,
+          beforeHtml:el.innerHTML, beforeText:textOf(el)};
+        blocks.push(block);
+        const saved = draft.changes[block.id];
+        // Restore text and source formatting without executing markup from storage.
+        if (saved) restoreText(el, saved);
+        el.addEventListener('input', () => {
+          if (textOf(el) === block.beforeText) delete draft.changes[block.id];
+          else draft.changes[block.id] = {blockId:block.id, slideId:block.slideId,
+            beforeHtml:block.beforeHtml, beforeText:block.beforeText, afterText:textOf(el), afterHtml:el.innerHTML};
+          persist(); renderSummary();
+        });
+      });
+    });
+    const style = document.createElement('style');
+    style.textContent = `
+      .edit-toggle,.edit-hotzone{display:none!important}
+      #review-toggle,#review-panel{font:14px/1.5 system-ui,sans-serif;color:#17263b;z-index:100100;position:fixed;box-sizing:border-box}
+      #review-toggle{top:12px;right:12px;background:#fff;border:1px solid #ccd5e1;border-radius:8px;padding:9px 14px;cursor:pointer;box-shadow:0 3px 16px #0002}
+      #review-panel{top:62px;right:12px;width:min(360px,calc(100vw - 24px));max-height:calc(100dvh - 80px);overflow:auto;background:#fff;padding:20px;border:1px solid #ccd5e1;border-radius:12px;box-shadow:0 8px 36px #0003;text-align:left}
+      #review-panel[hidden]{display:none} #review-panel *{box-sizing:border-box;letter-spacing:normal;text-transform:none}
+      #review-panel h2{font:600 19px system-ui;margin:0 0 12px;color:#17263b}
+      #review-panel label{display:block;margin-top:14px;font-weight:600}
+      #review-panel textarea,#review-panel select{font:14px/1.5 system-ui;width:100%;margin:6px 0;padding:8px;border:1px solid #bcc9d9;border-radius:6px;color:#17263b;background:white}
+      #review-panel textarea{min-height:90px;resize:vertical} #review-panel button{font:14px system-ui;padding:9px;border:1px solid #bcc9d9;border-radius:6px;cursor:pointer;background:#edf3fa;color:#17263b;margin:5px 0}
+      #review-panel .primary{width:100%;background:#174ec0;color:white;border-color:#174ec0}
+      #review-panel p,#review-panel summary{font:13px/1.5 system-ui;color:#526278;margin:10px 0}
+      #review-list{padding-left:20px;font:13px/1.5 system-ui} #review-list button{text-align:left}
+      body.reviewing [contenteditable=true]{outline:2px dashed #3478e5;outline-offset:3px;cursor:text}
+      @media print{#review-panel,#review-toggle{display:none!important}}
+    `;
+    document.head.append(style);
+    const toggle = document.createElement('button'); toggle.id = 'review-toggle'; toggle.textContent = 'Réviser · E';
+    toggle.setAttribute('aria-expanded','false'); toggle.setAttribute('aria-controls','review-panel'); document.body.append(toggle);
+    const panel = document.createElement('aside'); panel.id = 'review-panel'; panel.hidden = true;
+    panel.setAttribute('aria-label','Révision du deck');
+    panel.innerHTML = `<h2>Révision du deck</h2><p>Corrigez les textes dans les slides et laissez vos consignes ici.</p>
+      <label for="review-slide">Slide à commenter</label><select id="review-slide"></select>
+      <label for="review-comment">Commentaire pour cette slide</label><textarea id="review-comment" placeholder="Ex. : alléger cette slide, ajouter un exemple…"></textarea>
+      <label for="review-instruction">Consigne générale</label><textarea id="review-instruction" placeholder="Ex. : conserver le style et simplifier les explications."></textarea>
+      <p id="review-status" role="status"></p><details><summary id="review-summary"></summary><ul id="review-list"></ul></details>
+      <button class="primary" id="review-export">Exporter la révision JSON</button>
+      <p>Joignez ce fichier à votre conversation avec l’agent pour retravailler le deck. Le dépôt sera modifié par l’agent.</p>
+      <button id="review-close">Quitter l’édition</button>`;
+    document.body.append(panel);
+    const $ = id => document.getElementById(id);
+    const select = $('review-slide'), comment = $('review-comment'), instruction = $('review-instruction');
+    slides.forEach((slide, index) => {
+      const option = document.createElement('option'); option.value = slide.dataset.reviewSlide;
+      option.textContent = `${index+1}. ${(slide.querySelector('h1,h2,h3')?.textContent || 'Slide').trim().slice(0,90)}`; select.append(option);
+    });
+    function current() { return slides.find(slide => slide.classList.contains('active')) || slides[0]; }
+    function loadComment() { comment.value = draft.comments[select.value] || ''; }
+    select.value = current().dataset.reviewSlide; loadComment(); instruction.value = draft.instruction;
+    function persist() {
+      draft.updatedAt = new Date().toISOString();
+      try { localStorage.setItem(key, JSON.stringify(draft)); storageError = false; } catch { storageError = true; }
+      $('review-status').textContent = storageError ? 'Sauvegarde locale indisponible. Exportez votre révision avant de fermer.' : 'Brouillon sauvegardé dans ce navigateur. Le dépôt reste inchangé.';
+    }
+    function renderSummary() {
+      const changes = Object.values(draft.changes), comments = Object.keys(draft.comments);
+      $('review-summary').textContent = `${changes.length} correction(s) · ${comments.length} slide(s) commentée(s)`;
+      $('review-list').replaceChildren();
+      slides.forEach((slide,index) => {
+        const id = slide.dataset.reviewSlide, count = changes.filter(c => c.slideId === id).length;
+        if (!count && !draft.comments[id]) return;
+        const item = document.createElement('li');
+        item.textContent = `Slide ${index+1} : ${count} correction(s)${draft.comments[id] ? ' — '+draft.comments[id] : ''}`;
+        const edits = changes.filter(change => change.slideId === id);
+        edits.forEach(change => {
+          const detail = document.createElement('p');
+          detail.textContent = `« ${change.beforeText} » → « ${change.afterText} »`;
+          item.append(detail);
+        });
+        $('review-list').append(item);
+      });
+    }
+    function setActive(value = !active) {
+      active = value; document.body.classList.toggle('reviewing', active); panel.hidden = !active;
+      blocks.forEach(({el}) => active ? el.setAttribute('contenteditable','true') : el.removeAttribute('contenteditable'));
+      toggle.textContent = active ? 'Quitter la révision' : 'Réviser · E'; toggle.setAttribute('aria-expanded',String(active));
+      if (!active) { persist(); toggle.focus(); }
+    }
+    function exportReview() {
+      persist();
+      const payload = {schemaVersion:1, kind:'deck-review', exportedAt:new Date().toISOString(),
+        deck:{...config, title:document.title, url:location.href.split('#')[0]},
+        startedAt:draft.startedAt, instruction:draft.instruction,
+        agentInstructions:'Comparer la source à sourceHash et aux textes avant modification. Conserver les corrections directes, interpréter les commentaires, signaler les conflits sans écraser les changements plus récents. Proposer les modifications dans les fichiers sources et résumer les demandes traitées et restantes.',
+        slides:slides.map((slide,index) => ({slideId:slide.dataset.reviewSlide, slideNumber:index+1,
+          title:(slide.querySelector('h1,h2,h3')?.textContent || '').trim(),
+          comment:draft.comments[slide.dataset.reviewSlide] || '',
+          changes:Object.values(draft.changes).filter(c => c.slideId === slide.dataset.reviewSlide).map(({afterHtml, ...change}) => change)}))};
+      const url = URL.createObjectURL(new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}));
+      const link = document.createElement('a'); link.href=url; link.download=`${config.deckId}-revision.json`; link.click();
+      setTimeout(() => URL.revokeObjectURL(url),1000);
+    }
+    toggle.onclick = () => setActive(); $('review-close').onclick = () => setActive(false); $('review-export').onclick = exportReview;
+    select.onchange = loadComment;
+    comment.oninput = () => { if(comment.value.trim()) draft.comments[select.value] = comment.value; else delete draft.comments[select.value]; persist(); renderSummary(); };
+    instruction.oninput = () => { draft.instruction = instruction.value; persist(); };
+    // Follow presentation navigation without rebuilding the panel on every animation.
+    new MutationObserver(() => {
+      const id = current().dataset.reviewSlide;
+      if (select.value !== id) { select.value=id; loadComment(); }
+    }).observe(document.getElementById('deckStage') || slides[0].parentElement,{subtree:true,attributes:true,attributeFilter:['class']});
+    document.addEventListener('paste', event => {
+      if (active && event.target.isContentEditable) { event.preventDefault(); document.execCommand('insertText',false,event.clipboardData.getData('text/plain')); }
+    });
+    api = {toggle:setActive, export:exportReview, get active(){return active;}};
+    renderSummary();
+    $('review-status').textContent = storageError ? 'Brouillon local illisible ou indisponible : exportez avant de fermer.' : 'Brouillon local · aucune modification du dépôt.';
+  });
+})();
+</script>
+<!-- deck-review:end -->
 </head>
 <body data-deck-key="tnsi-data">
 
@@ -2349,35 +2528,35 @@ html.final-state .hud-controls,html.final-state .key-hint,html.final-state .edit
     <!-- ====================================================================
          SLIDE 01 — COUVERTURE
          ==================================================================== -->
-    <section class="slide s-dark grid active" data-slide="1">
-      <div class="si">
-        <div class="chrome-band">
-          <span class="t-label t-muted">Université Paris Dauphine–PSL · M2 MIAGE</span>
-          <span class="pill accent">S5 · Organiser la donnée</span>
+    <section class="slide s-dark grid active" data-slide="1" data-review-slide="s-92394342aa8e" data-review-node="b-f5612f3c8455">
+      <div class="si" data-review-node="b-d8a4b2aff21e">
+        <div class="chrome-band" data-review-node="b-db479ccc7265">
+          <span class="t-label t-muted" data-review-node="b-b29ebee7b7c9">Université Paris Dauphine–PSL · M2 MIAGE</span>
+          <span class="pill accent" data-review-node="b-bed4b3ce8efb">S5 · Organiser la donnée</span>
         </div>
 
-        <div class="hero-copy">
-          <div class="kicker reveal">Data Management &amp; Knowledge Graphs</div>
-          <h1 class="t-display reveal" style="max-width: 1560px;">
-            Organiser<br>
-            <span class="accent-text">la donnée</span>
+        <div class="hero-copy" data-review-node="b-8a10a7d13e3c">
+          <div class="kicker reveal" data-review-node="b-e90ce91ae1dc">Data Management &amp; Knowledge Graphs</div>
+          <h1 class="t-display reveal" style="max-width: 1560px;" data-review-node="b-f6fd335441da">
+            Organiser<br data-review-node="b-1fb08b8934da">
+            <span class="accent-text" data-review-node="b-0fb96e6201c7">la donnée</span>
           </h1>
-          <p class="t-lead reveal" style="max-width: 1240px; margin-top: 30px;">
+          <p class="t-lead reveal" style="max-width: 1240px; margin-top: 30px;" data-review-node="b-25d576e2c4eb">
             Des documents dispersés à un graphe de connaissances
-            <strong>sourcé, visualisé et reconstructible</strong>.
+            <strong data-review-node="b-06ef3babaf1c">sourcé, visualisé et reconstructible</strong>.
           </p>
-          <div class="reveal" style="display:flex; gap:12px; margin-top:38px;">
-            <span class="pill">Sources</span>
-            <span class="pill">Curation</span>
-            <span class="pill">Domaine</span>
-            <span class="pill">Knowledge</span>
-            <span class="pill accent">Neo4j Aura</span>
+          <div class="reveal" style="display:flex; gap:12px; margin-top:38px;" data-review-node="b-5b748ccdf641">
+            <span class="pill" data-review-node="b-58751c20d0e5">Sources</span>
+            <span class="pill" data-review-node="b-4be605c8e2ef">Curation</span>
+            <span class="pill" data-review-node="b-0191085e958a">Domaine</span>
+            <span class="pill" data-review-node="b-1fe69550fe72">Knowledge</span>
+            <span class="pill accent" data-review-node="b-8c8105e64477">Neo4j Aura</span>
           </div>
         </div>
 
-        <div class="foot-band">
-          <span class="t-small t-mono t-muted">TRANSITION NUMÉRIQUE DES SYSTÈMES D'INFORMATION</span>
-          <span class="t-label accent-text">Thématique 03</span>
+        <div class="foot-band" data-review-node="b-7b83521b81d4">
+          <span class="t-small t-mono t-muted" data-review-node="b-6daa6e1a5b67">TRANSITION NUMÉRIQUE DES SYSTÈMES D'INFORMATION</span>
+          <span class="t-label accent-text" data-review-node="b-556f8fb9af76">Thématique 03</span>
         </div>
       </div>
     </section>
@@ -2385,29 +2564,29 @@ html.final-state .hud-controls,html.final-state .key-hint,html.final-state .edit
     <!-- ====================================================================
          SLIDE 02 — QUESTION D'OUVERTURE
          ==================================================================== -->
-    <section class="slide s-dark" data-slide="2">
-      <div class="si">
-        <div class="chrome-band">
-          <span class="t-label t-muted">01 · Le problème</span>
-          <span class="pill">Question d'ouverture</span>
+    <section class="slide s-dark" data-slide="2" data-review-slide="s-0d005f5f4212" data-review-node="b-b5e100ba483b">
+      <div class="si" data-review-node="b-25d41ecde725">
+        <div class="chrome-band" data-review-node="b-fdd9dbfd74eb">
+          <span class="t-label t-muted" data-review-node="b-547ad3283e73">01 · Le problème</span>
+          <span class="pill" data-review-node="b-05a077486f53">Question d'ouverture</span>
         </div>
 
-        <div class="statement-wrap">
-          <div class="kicker reveal" style="justify-content:center;">Point de départ</div>
-          <h2 class="statement-question reveal">
-            Avoir les documents<br>
-            <span class="accent-text">suffit-il</span> ?
+        <div class="statement-wrap" data-review-node="b-d7cf2ac2ff9d">
+          <div class="kicker reveal" style="justify-content:center;" data-review-node="b-2970031d6e50">Point de départ</div>
+          <h2 class="statement-question reveal" data-review-node="b-b8b384b72c31">
+            Avoir les documents<br data-review-node="b-7f7014c873f6">
+            <span class="accent-text" data-review-node="b-daa9ab445800">suffit-il</span> ?
           </h2>
-          <div class="statement-words">
-            <span class="statement-word fragment">retrouver</span>
-            <span class="statement-word fragment">relier</span>
-            <span class="statement-word fragment">prouver</span>
+          <div class="statement-words" data-review-node="b-45a7b708e5f7">
+            <span class="statement-word fragment" data-review-node="b-a9343f80fc77">retrouver</span>
+            <span class="statement-word fragment" data-review-node="b-2be6039b8f56">relier</span>
+            <span class="statement-word fragment" data-review-node="b-9de32272573e">prouver</span>
           </div>
         </div>
 
-        <div class="foot-band">
-          <span class="t-small t-mono t-muted">POSSESSION ≠ COMPRÉHENSION</span>
-          <span class="t-label accent-text">Appuyez sur →</span>
+        <div class="foot-band" data-review-node="b-330bfddbfd49">
+          <span class="t-small t-mono t-muted" data-review-node="b-15b2b3cfe6c5">POSSESSION ≠ COMPRÉHENSION</span>
+          <span class="t-label accent-text" data-review-node="b-8fa9de6a7427">Appuyez sur →</span>
         </div>
       </div>
     </section>
@@ -2415,52 +2594,52 @@ html.final-state .hud-controls,html.final-state .key-hint,html.final-state .edit
     <!-- ====================================================================
          SLIDE 03 — OBJECTIFS DE LA SÉANCE
          ==================================================================== -->
-    <section class="slide s-light" data-slide="3">
-      <div class="si">
-        <div class="chrome-band">
-          <span class="t-label">02 · Notre objectif aujourd'hui</span>
-          <span class="pill accent">Séance · 180 min · TP Aura · 70 min</span>
+    <section class="slide s-light" data-slide="3" data-review-slide="s-82e577c89093" data-review-node="b-d656c42b897d">
+      <div class="si" data-review-node="b-a7197fd07f7d">
+        <div class="chrome-band" data-review-node="b-d6c9c1855cab">
+          <span class="t-label" data-review-node="b-a2c4dc9466b6">02 · Notre objectif aujourd'hui</span>
+          <span class="pill accent" data-review-node="b-687ddde26ea0">Séance · 180 min · TP Aura · 70 min</span>
         </div>
 
-        <div class="section-body" style="justify-content:flex-start; padding-top:22px;">
-          <div class="kicker reveal">La promesse</div>
-          <h2 class="t-h2 reveal" style="max-width:1450px;">
-            Lire une architecture data,<br>
-            puis <span class="accent-text-strong">construire son graphe</span>.
+        <div class="section-body" style="justify-content:flex-start; padding-top:22px;" data-review-node="b-bc4555684bb1">
+          <div class="kicker reveal" data-review-node="b-c6d601e9ba2e">La promesse</div>
+          <h2 class="t-h2 reveal" style="max-width:1450px;" data-review-node="b-65420f341547">
+            Lire une architecture data,<br data-review-node="b-94c238c235f2">
+            puis <span class="accent-text-strong" data-review-node="b-7ffe8391c049">construire son graphe</span>.
           </h2>
 
-          <div class="journey reveal">
-            <article class="journey-step">
-              <div class="step-number">01</div>
-              <div class="step-title">Sources</div>
-              <div class="step-copy">Identifier l'origine, la version et l'autorité.</div>
+          <div class="journey reveal" data-review-node="b-0db113f92975">
+            <article class="journey-step" data-review-node="b-8eaa2f4eb31a">
+              <div class="step-number" data-review-node="b-b0d3f1cb480a">01</div>
+              <div class="step-title" data-review-node="b-df9974a6ab91">Sources</div>
+              <div class="step-copy" data-review-node="b-c9aa65d3c42e">Identifier l'origine, la version et l'autorité.</div>
             </article>
-            <article class="journey-step">
-              <div class="step-number">02</div>
-              <div class="step-title">Curation</div>
-              <div class="step-copy">Nettoyer, normaliser et conserver la provenance.</div>
+            <article class="journey-step" data-review-node="b-0f0311d5ef72">
+              <div class="step-number" data-review-node="b-5110777f68ea">02</div>
+              <div class="step-title" data-review-node="b-d3cacca6ed9e">Curation</div>
+              <div class="step-copy" data-review-node="b-67bda5e22e09">Nettoyer, normaliser et conserver la provenance.</div>
             </article>
-            <article class="journey-step">
-              <div class="step-number">03</div>
-              <div class="step-title">Domaine</div>
-              <div class="step-copy">Nommer les concepts, identités et règles métier.</div>
+            <article class="journey-step" data-review-node="b-b8b427f8808d">
+              <div class="step-number" data-review-node="b-5e2925413c36">03</div>
+              <div class="step-title" data-review-node="b-622d6beb1bb4">Domaine</div>
+              <div class="step-copy" data-review-node="b-4619e8a1e9e8">Nommer les concepts, identités et règles métier.</div>
             </article>
-            <article class="journey-step">
-              <div class="step-number">04</div>
-              <div class="step-title">Graphe</div>
-              <div class="step-copy">Transformer les faits en relations explicites.</div>
+            <article class="journey-step" data-review-node="b-750c752a9803">
+              <div class="step-number" data-review-node="b-4356ef48a3cf">04</div>
+              <div class="step-title" data-review-node="b-8be027b940c8">Graphe</div>
+              <div class="step-copy" data-review-node="b-e52143dc2073">Transformer les faits en relations explicites.</div>
             </article>
-            <article class="journey-step">
-              <div class="step-number">05</div>
-              <div class="step-title">Validation</div>
-              <div class="step-copy">Rejouer le script et vérifier les chemins.</div>
+            <article class="journey-step" data-review-node="b-8ddaced5f898">
+              <div class="step-number" data-review-node="b-1eb5be737b4a">05</div>
+              <div class="step-title" data-review-node="b-c90a90733bd4">Validation</div>
+              <div class="step-copy" data-review-node="b-b0fdf342e15c">Rejouer le script et vérifier les chemins.</div>
             </article>
           </div>
         </div>
 
-        <div class="foot-band">
-          <span class="t-small t-mono t-muted">LE GRAPHE SERA CONSTRUIT · PAS ENCORE CONNECTÉ À L'APPLICATION</span>
-          <span class="t-label accent-text-strong">S5</span>
+        <div class="foot-band" data-review-node="b-df8f078d9254">
+          <span class="t-small t-mono t-muted" data-review-node="b-67e7de437e99">LE GRAPHE SERA CONSTRUIT · PAS ENCORE CONNECTÉ À L'APPLICATION</span>
+          <span class="t-label accent-text-strong" data-review-node="b-575fc9f0f287">S5</span>
         </div>
       </div>
     </section>
@@ -2468,48 +2647,48 @@ html.final-state .hud-controls,html.final-state .key-hint,html.final-state .edit
     <!-- ====================================================================
          SLIDE 04 — CONTEXTE ORGANISATIONNEL UNIQUE
          ==================================================================== -->
-    <section class="slide s-light technical-slide" data-slide="4">
-      <div class="si">
-        <div class="chrome-band">
-          <span class="t-label">03 · Une organisation réelle</span>
-          <span class="pill">Une seule réalité · plusieurs versions</span>
+    <section class="slide s-light technical-slide" data-slide="4" data-review-slide="s-b89db82e9941" data-review-node="b-7e8d032b850e">
+      <div class="si" data-review-node="b-70e53dda412e">
+        <div class="chrome-band" data-review-node="b-5bc8ad23d479">
+          <span class="t-label" data-review-node="b-ca21007c5d26">03 · Une organisation réelle</span>
+          <span class="pill" data-review-node="b-a797cd17ba89">Une seule réalité · plusieurs versions</span>
         </div>
 
-        <div class="context-stage">
-          <div class="source-cloud reveal-scale" aria-label="Plusieurs systèmes décrivent la même application Orion">
-            <div class="source-line l1"></div>
-            <div class="source-line l2"></div>
-            <div class="source-line l3"></div>
-            <div class="source-line l4"></div>
-            <div class="source-line l5"></div>
-            <div class="source-chip s1">ERP · ORN-42</div>
-            <div class="source-chip s2">CRM · Orion</div>
-            <div class="source-chip s3">PDF · App Orion</div>
-            <div class="source-chip s4">API · orion-prod</div>
-            <div class="source-chip s5">Wiki · Projet O.</div>
-            <div class="core-object">
-              <span class="t-label" style="color:var(--accent);">Objet métier</span>
-              <strong>Application Orion</strong>
+        <div class="context-stage" data-review-node="b-e9ce6a66a422">
+          <div class="source-cloud reveal-scale" aria-label="Plusieurs systèmes décrivent la même application Orion" data-review-node="b-5279cf40959f">
+            <div class="source-line l1" data-review-node="b-1e2c33af3f2d"></div>
+            <div class="source-line l2" data-review-node="b-1b5bf1bb3706"></div>
+            <div class="source-line l3" data-review-node="b-3c3502331e6e"></div>
+            <div class="source-line l4" data-review-node="b-e340485245aa"></div>
+            <div class="source-line l5" data-review-node="b-e1d098c67f7a"></div>
+            <div class="source-chip s1" data-review-node="b-c4e2063f2e36">ERP · ORN-42</div>
+            <div class="source-chip s2" data-review-node="b-9b640067356c">CRM · Orion</div>
+            <div class="source-chip s3" data-review-node="b-a3f6bb294385">PDF · App Orion</div>
+            <div class="source-chip s4" data-review-node="b-2610cc360097">API · orion-prod</div>
+            <div class="source-chip s5" data-review-node="b-d2cb4a925cdb">Wiki · Projet O.</div>
+            <div class="core-object" data-review-node="b-3846a31ab407">
+              <span class="t-label" style="color:var(--accent);" data-review-node="b-878a3a6c3a09">Objet métier</span>
+              <strong data-review-node="b-b2d81b7be605">Application Orion</strong>
             </div>
           </div>
 
-          <div class="context-copy">
-            <div class="kicker reveal">Contexte d'organisation</div>
-            <h2 class="t-h2 reveal">Beaucoup de données.<br>Pas encore une vérité partagée.</h2>
-            <div class="context-insight reveal">
+          <div class="context-copy" data-review-node="b-0e47bae8656d">
+            <div class="kicker reveal" data-review-node="b-f72dd02a3ec3">Contexte d'organisation</div>
+            <h2 class="t-h2 reveal" data-review-node="b-2c06f0dec1f4">Beaucoup de données.<br data-review-node="b-b4ffa4f8f21f">Pas encore une vérité partagée.</h2>
+            <div class="context-insight reveal" data-review-node="b-845f8d4fe5fd">
               Les systèmes décrivent parfois le même objet avec des identifiants,
               des formats et des propriétaires différents.
             </div>
-            <div class="context-insight reveal">
+            <div class="context-insight reveal" data-review-node="b-038fde468a99">
               Notre travail commence par rendre ces différences
-              <strong>explicites et traçables</strong>.
+              <strong data-review-node="b-3fa916051071">explicites et traçables</strong>.
             </div>
           </div>
         </div>
 
-        <div class="foot-band">
-          <span class="t-small t-mono t-muted">ERP · CRM · DOCUMENTS · API · WIKI</span>
-          <span class="t-label accent-text-strong">Le problème d'organisation</span>
+        <div class="foot-band" data-review-node="b-01a0aec7b735">
+          <span class="t-small t-mono t-muted" data-review-node="b-d58e2d07f0b2">ERP · CRM · DOCUMENTS · API · WIKI</span>
+          <span class="t-label accent-text-strong" data-review-node="b-86b3880db5fa">Le problème d'organisation</span>
         </div>
       </div>
     </section>
@@ -2517,60 +2696,60 @@ html.final-state .hud-controls,html.final-state .key-hint,html.final-state .edit
     <!-- ====================================================================
          SLIDE 05 — CARTE COMPLÈTE, PREMIÈRE LECTURE
          ==================================================================== -->
-    <section class="slide s-light map-slide technical-slide" data-slide="5">
-      <div class="si">
-        <div class="chrome-band">
-          <span class="t-label">04 · La carte du territoire</span>
-          <span class="pill accent">De la source à la valeur</span>
+    <section class="slide s-light map-slide technical-slide" data-slide="5" data-review-slide="s-05611a9be00b" data-review-node="b-7656b7af7439">
+      <div class="si" data-review-node="b-3e1c91841579">
+        <div class="chrome-band" data-review-node="b-a2c6b5ee7577">
+          <span class="t-label" data-review-node="b-a775308d074d">04 · La carte du territoire</span>
+          <span class="pill accent" data-review-node="b-4ed9859f714d">De la source à la valeur</span>
         </div>
-        <h2 class="map-heading">C'est normal de ne pas tout comprendre maintenant.</h2>
-        <p class="map-subhead">À la fin de la séance, vous saurez raconter le trajet de gauche à droite — jusqu'au graphe construit.</p>
-        <div class="data-map-mount" data-map-state="overview" role="img" aria-label="Architecture data globale : gouvernance, sources, intégration, curation, accès et usages"></div>
+        <h2 class="map-heading" data-review-node="b-0fb3ad0192b0">C'est normal de ne pas tout comprendre maintenant.</h2>
+        <p class="map-subhead" data-review-node="b-b6fd9a4991d5">À la fin de la séance, vous saurez raconter le trajet de gauche à droite — jusqu'au graphe construit.</p>
+        <div class="data-map-mount" data-map-state="overview" role="img" aria-label="Architecture data globale : gouvernance, sources, intégration, curation, accès et usages" data-review-node="b-48a2adea71a9"></div>
       </div>
     </section>
 
     <!-- ====================================================================
          SLIDE 06 — TROIS SENS DE LECTURE
          ==================================================================== -->
-    <section class="slide s-light technical-slide" data-slide="6">
-      <div class="si">
-        <div class="chrome-band">
-          <span class="t-label">05 · Lire la carte</span>
-          <span class="pill">Trois axes</span>
+    <section class="slide s-light technical-slide" data-slide="6" data-review-slide="s-3cd7674f3a64" data-review-node="b-a61df02dec64">
+      <div class="si" data-review-node="b-a5e519ffeb10">
+        <div class="chrome-band" data-review-node="b-337924a9d694">
+          <span class="t-label" data-review-node="b-06729e6298ff">05 · Lire la carte</span>
+          <span class="pill" data-review-node="b-a04fba5913e4">Trois axes</span>
         </div>
 
-        <div class="section-body" style="justify-content:flex-start; padding-top:28px;">
-          <div class="kicker reveal">Mode d'emploi</div>
-          <h2 class="t-h2 reveal">Une architecture se lit dans plusieurs directions.</h2>
+        <div class="section-body" style="justify-content:flex-start; padding-top:28px;" data-review-node="b-dbc7ed97c744">
+          <div class="kicker reveal" data-review-node="b-f8eea6cfd699">Mode d'emploi</div>
+          <h2 class="t-h2 reveal" data-review-node="b-e127c24a3029">Une architecture se lit dans plusieurs directions.</h2>
 
-          <div class="axis-grid reveal">
-            <article class="axis-card">
-              <div class="axis-arrow">→</div>
-              <h3 class="t-h3">Horizontal</h3>
-              <p class="t-body" style="margin-top:18px; color:var(--ink-dark-2);">
+          <div class="axis-grid reveal" data-review-node="b-7ed215f5ea6f">
+            <article class="axis-card" data-review-node="b-e88b0be844a6">
+              <div class="axis-arrow" data-review-node="b-5a543b2e03d3">→</div>
+              <h3 class="t-h3" data-review-node="b-df0df1eee6cf">Horizontal</h3>
+              <p class="t-body" style="margin-top:18px; color:var(--ink-dark-2);" data-review-node="b-8c75671687c2">
                 De la source brute jusqu'à un usage utile.
               </p>
             </article>
-            <article class="axis-card">
-              <div class="axis-arrow">↑</div>
-              <h3 class="t-h3">En haut</h3>
-              <p class="t-body" style="margin-top:18px; color:var(--ink-dark-2);">
+            <article class="axis-card" data-review-node="b-81d532135dd5">
+              <div class="axis-arrow" data-review-node="b-b3b51989c69f">↑</div>
+              <h3 class="t-h3" data-review-node="b-eba87cb5a4e9">En haut</h3>
+              <p class="t-body" style="margin-top:18px; color:var(--ink-dark-2);" data-review-node="b-5e484f808d8d">
                 Gouvernance, metadata, qualité et lineage.
               </p>
             </article>
-            <article class="axis-card">
-              <div class="axis-arrow">↓</div>
-              <h3 class="t-h3">En bas</h3>
-              <p class="t-body" style="margin-top:18px; color:var(--ink-dark-2);">
+            <article class="axis-card" data-review-node="b-86cbafe8a651">
+              <div class="axis-arrow" data-review-node="b-73431217771b">↓</div>
+              <h3 class="t-h3" data-review-node="b-4e161e613867">En bas</h3>
+              <p class="t-body" style="margin-top:18px; color:var(--ink-dark-2);" data-review-node="b-5fb6947496ad">
                 Sécurité, exploitation et responsabilités transverses.
               </p>
             </article>
           </div>
         </div>
 
-        <div class="foot-band">
-          <span class="t-small t-mono t-muted">FLUX DE VALEUR · GOUVERNANCE · FONDATIONS</span>
-          <span class="t-label accent-text-strong">Trois lectures complémentaires</span>
+        <div class="foot-band" data-review-node="b-faa6f819f27b">
+          <span class="t-small t-mono t-muted" data-review-node="b-84aae56a3f92">FLUX DE VALEUR · GOUVERNANCE · FONDATIONS</span>
+          <span class="t-label accent-text-strong" data-review-node="b-924c33e9b57c">Trois lectures complémentaires</span>
         </div>
       </div>
     </section>
@@ -2578,15 +2757,15 @@ html.final-state .hud-controls,html.final-state .key-hint,html.final-state .edit
     <!-- ====================================================================
          SLIDE 07 — FOCUS SOURCES
          ==================================================================== -->
-    <section class="slide s-light map-slide technical-slide" data-slide="7">
-      <div class="si">
-        <div class="chrome-band">
-          <span class="t-label">06 · Point de départ</span>
-          <span class="pill accent">1 — Sources</span>
+    <section class="slide s-light map-slide technical-slide" data-slide="7" data-review-slide="s-3b91a26ab95d" data-review-node="b-8af87f38ba38">
+      <div class="si" data-review-node="b-35801f572887">
+        <div class="chrome-band" data-review-node="b-95b89ef28002">
+          <span class="t-label" data-review-node="b-e857693c8a50">06 · Point de départ</span>
+          <span class="pill accent" data-review-node="b-22c4bdde9f27">1 — Sources</span>
         </div>
-        <h2 class="map-heading">Toute donnée commence quelque part.</h2>
-        <p class="map-subhead">Avant de transformer : identifier l'autorité, la version et les conditions d'usage.</p>
-        <div class="data-map-mount" data-map-state="sources" role="img" aria-label="Architecture data avec la zone Sources et la gouvernance mises en évidence">
+        <h2 class="map-heading" data-review-node="b-7beac552676f">Toute donnée commence quelque part.</h2>
+        <p class="map-subhead" data-review-node="b-3cdc8b893c9d">Avant de transformer : identifier l'autorité, la version et les conditions d'usage.</p>
+        <div class="data-map-mount" data-map-state="sources" role="img" aria-label="Architecture data avec la zone Sources et la gouvernance mises en évidence" data-review-node="b-4ee503f41c3f">
 
         </div>
       </div>
@@ -2595,42 +2774,42 @@ html.final-state .hud-controls,html.final-state .key-hint,html.final-state .edit
     <!-- ====================================================================
          SLIDE 08 — TYPES DE DONNÉES
          ==================================================================== -->
-    <section class="slide s-light technical-slide" data-slide="8">
-      <div class="si">
-        <div class="chrome-band">
-          <span class="t-label">07 · Les sources</span>
-          <span class="pill">Trois formes courantes</span>
+    <section class="slide s-light technical-slide" data-slide="8" data-review-slide="s-773de053dcd2" data-review-node="b-7ac04b920d25">
+      <div class="si" data-review-node="b-8870e2f93c56">
+        <div class="chrome-band" data-review-node="b-2f034c8f6da0">
+          <span class="t-label" data-review-node="b-a9e26fb1640d">07 · Les sources</span>
+          <span class="pill" data-review-node="b-c939883f5010">Trois formes courantes</span>
         </div>
 
-        <div class="section-body" style="justify-content:flex-start; padding-top:20px;">
-          <div class="kicker reveal">Pas le même matériau</div>
-          <h2 class="t-h2 reveal">Toutes les données ne se ressemblent pas.</h2>
+        <div class="section-body" style="justify-content:flex-start; padding-top:20px;" data-review-node="b-091a7327e914">
+          <div class="kicker reveal" data-review-node="b-fb8e15c059c9">Pas le même matériau</div>
+          <h2 class="t-h2 reveal" data-review-node="b-56b6f8df6b0c">Toutes les données ne se ressemblent pas.</h2>
 
-          <div class="three-grid reveal">
-            <article class="concept-card">
-              <div class="concept-icon">01</div>
-              <h3 class="concept-title">Structuré</h3>
-              <p class="concept-copy">Schéma explicite, colonnes attendues, contraintes possibles.</p>
-              <div class="sample-data">id | application | owner<br>42 | Orion | Payments</div>
+          <div class="three-grid reveal" data-review-node="b-64d2ca1463a3">
+            <article class="concept-card" data-review-node="b-bb92afb7a3ba">
+              <div class="concept-icon" data-review-node="b-1a1a2fa28b29">01</div>
+              <h3 class="concept-title" data-review-node="b-1971b715246c">Structuré</h3>
+              <p class="concept-copy" data-review-node="b-d3c5a904b227">Schéma explicite, colonnes attendues, contraintes possibles.</p>
+              <div class="sample-data" data-review-node="b-7bddcc3b1d3b">id | application | owner<br data-review-node="b-5ef4c6546b5e">42 | Orion | Payments</div>
             </article>
-            <article class="concept-card">
-              <div class="concept-icon">{ }</div>
-              <h3 class="concept-title">Semi-structuré</h3>
-              <p class="concept-copy">Structure présente, mais flexible ou imbriquée.</p>
-              <div class="sample-data">{<br>&nbsp;&nbsp;"app": "Orion",<br>&nbsp;&nbsp;"tags": ["critical"]<br>}</div>
+            <article class="concept-card" data-review-node="b-790c29beed21">
+              <div class="concept-icon" data-review-node="b-12739c4a02b7">{ }</div>
+              <h3 class="concept-title" data-review-node="b-6ba925315f87">Semi-structuré</h3>
+              <p class="concept-copy" data-review-node="b-39734ba83d59">Structure présente, mais flexible ou imbriquée.</p>
+              <div class="sample-data" data-review-node="b-4c071183f368">{<br data-review-node="b-67697a086e18">&nbsp;&nbsp;"app": "Orion",<br data-review-node="b-b2264d54d556">&nbsp;&nbsp;"tags": ["critical"]<br data-review-node="b-009ff4f6a753">}</div>
             </article>
-            <article class="concept-card">
-              <div class="concept-icon">¶</div>
-              <h3 class="concept-title">Non structuré</h3>
-              <p class="concept-copy">Le sens est porté par le texte, l'image, l'audio ou la mise en page.</p>
-              <div class="sample-data">« L'équipe Payments est responsable de l'application Orion. »</div>
+            <article class="concept-card" data-review-node="b-866d5a7a2cc0">
+              <div class="concept-icon" data-review-node="b-84c88a898ba9">¶</div>
+              <h3 class="concept-title" data-review-node="b-2e6f3a3e0c7b">Non structuré</h3>
+              <p class="concept-copy" data-review-node="b-bbceef17e920">Le sens est porté par le texte, l'image, l'audio ou la mise en page.</p>
+              <div class="sample-data" data-review-node="b-0e0ba4238fd2">« L'équipe Payments est responsable de l'application Orion. »</div>
             </article>
           </div>
         </div>
 
-        <div class="foot-band">
-          <span class="t-small t-mono t-muted">LA FORME CONDITIONNE LE TRAITEMENT · PAS LA VALEUR MÉTIER</span>
-          <span class="t-label accent-text-strong">Sources</span>
+        <div class="foot-band" data-review-node="b-fdd5d46f9f89">
+          <span class="t-small t-mono t-muted" data-review-node="b-bd7f68ce56c8">LA FORME CONDITIONNE LE TRAITEMENT · PAS LA VALEUR MÉTIER</span>
+          <span class="t-label accent-text-strong" data-review-node="b-bdebcbf41121">Sources</span>
         </div>
       </div>
     </section>
@@ -2638,42 +2817,42 @@ html.final-state .hud-controls,html.final-state .key-hint,html.final-state .edit
     <!-- ====================================================================
          SLIDE 09 — REPRÉSENTATIONS
          ==================================================================== -->
-    <section class="slide s-invert technical-slide" data-slide="9">
-      <div class="si">
-        <div class="chrome-band">
-          <span class="t-label">08 · Représenter</span>
-          <span class="pill accent">La question d'abord</span>
+    <section class="slide s-invert technical-slide" data-slide="9" data-review-slide="s-d59f6c7f4623" data-review-node="b-e87856bf4300">
+      <div class="si" data-review-node="b-7913b0b549b1">
+        <div class="chrome-band" data-review-node="b-3183cdf05282">
+          <span class="t-label" data-review-node="b-ffe338d70305">08 · Représenter</span>
+          <span class="pill accent" data-review-node="b-3382f426a314">La question d'abord</span>
         </div>
 
-        <div class="section-body" style="justify-content:flex-start; padding-top:18px;">
-          <div class="kicker reveal">Même réalité, plusieurs vues</div>
-          <h2 class="t-h2 reveal">On choisit une représentation selon la question.</h2>
+        <div class="section-body" style="justify-content:flex-start; padding-top:18px;" data-review-node="b-d7fb034582f9">
+          <div class="kicker reveal" data-review-node="b-d47fb4fc0c93">Même réalité, plusieurs vues</div>
+          <h2 class="t-h2 reveal" data-review-node="b-f01f794e9c59">On choisit une représentation selon la question.</h2>
 
-          <div class="representation-grid reveal">
-            <article class="concept-card">
-              <div class="concept-icon">▦</div>
-              <h3 class="concept-title">Table</h3>
-              <p class="concept-copy">Pour filtrer, agréger et appliquer des contraintes structurées.</p>
-              <div class="sample-data">SELECT owner,<br>COUNT(*)<br>FROM applications<br>GROUP BY owner;</div>
+          <div class="representation-grid reveal" data-review-node="b-a747844528e6">
+            <article class="concept-card" data-review-node="b-774b1be06a51">
+              <div class="concept-icon" data-review-node="b-bfaa976f5d37">▦</div>
+              <h3 class="concept-title" data-review-node="b-0a2504352107">Table</h3>
+              <p class="concept-copy" data-review-node="b-c717e2c9df0c">Pour filtrer, agréger et appliquer des contraintes structurées.</p>
+              <div class="sample-data" data-review-node="b-63f162beba78">SELECT owner,<br data-review-node="b-917759037ef0">COUNT(*)<br data-review-node="b-278ed9df29a1">FROM applications<br data-review-node="b-3dc46f159ff2">GROUP BY owner;</div>
             </article>
-            <article class="concept-card">
-              <div class="concept-icon">¶</div>
-              <h3 class="concept-title">Document</h3>
-              <p class="concept-copy">Pour lire un contenu riche dans son contexte.</p>
-              <div class="sample-data">Titre<br>Résumé<br>Décisions<br>Exceptions<br>Justifications</div>
+            <article class="concept-card" data-review-node="b-9b6d4e3ca1c7">
+              <div class="concept-icon" data-review-node="b-f09ca9720788">¶</div>
+              <h3 class="concept-title" data-review-node="b-96fad4a22fe3">Document</h3>
+              <p class="concept-copy" data-review-node="b-2f818ee810bd">Pour lire un contenu riche dans son contexte.</p>
+              <div class="sample-data" data-review-node="b-36748e4524fd">Titre<br data-review-node="b-0ae8dcba434b">Résumé<br data-review-node="b-9792c5d8ad57">Décisions<br data-review-node="b-27802c787589">Exceptions<br data-review-node="b-27bb495188c6">Justifications</div>
             </article>
-            <article class="concept-card">
-              <div class="concept-icon">◎</div>
-              <h3 class="concept-title">Graphe</h3>
-              <p class="concept-copy">Pour rendre les relations explicites et parcourir des chemins.</p>
-              <div class="sample-data">(Incident)<br>&nbsp;&nbsp;—AFFECTS→<br>(Application)<br>&nbsp;&nbsp;—OWNED_BY→ (Team)</div>
+            <article class="concept-card" data-review-node="b-647bb1f08396">
+              <div class="concept-icon" data-review-node="b-21d7e2983a6f">◎</div>
+              <h3 class="concept-title" data-review-node="b-fc7f25a42965">Graphe</h3>
+              <p class="concept-copy" data-review-node="b-e4d5722c44c4">Pour rendre les relations explicites et parcourir des chemins.</p>
+              <div class="sample-data" data-review-node="b-5b15e26b837e">(Incident)<br data-review-node="b-159317e7db80">&nbsp;&nbsp;—AFFECTS→<br data-review-node="b-ee0b3e7cae2b">(Application)<br data-review-node="b-349213a5ea46">&nbsp;&nbsp;—OWNED_BY→ (Team)</div>
             </article>
           </div>
         </div>
 
-        <div class="foot-band">
-          <span class="t-small t-mono t-muted">AGRÉGER · LIRE · RELIER</span>
-          <span class="t-label accent-text-strong">Une représentation répond à une question</span>
+        <div class="foot-band" data-review-node="b-e8518070d82f">
+          <span class="t-small t-mono t-muted" data-review-node="b-9ec145547c2e">AGRÉGER · LIRE · RELIER</span>
+          <span class="t-label accent-text-strong" data-review-node="b-4c8bcf3ce087">Une représentation répond à une question</span>
         </div>
       </div>
     </section>
@@ -2681,43 +2860,43 @@ html.final-state .hud-controls,html.final-state .key-hint,html.final-state .edit
     <!-- ====================================================================
          SLIDE 10 — CURATION
          ==================================================================== -->
-    <section class="slide s-light technical-slide" data-slide="10">
-      <div class="si">
-        <div class="chrome-band">
-          <span class="t-label">09 · Curation</span>
-          <span class="pill">Brut ≠ exploitable</span>
+    <section class="slide s-light technical-slide" data-slide="10" data-review-slide="s-fcc4348ffe30" data-review-node="b-315c6c22a16f">
+      <div class="si" data-review-node="b-48e5462dc0c8">
+        <div class="chrome-band" data-review-node="b-2805a1f18be9">
+          <span class="t-label" data-review-node="b-0bd89b5667f3">09 · Curation</span>
+          <span class="pill" data-review-node="b-a3a5f2e5a7bf">Brut ≠ exploitable</span>
         </div>
 
-        <div class="section-body" style="justify-content:flex-start; padding-top:18px;">
-          <div class="kicker reveal">Transformer sans perdre l'origine</div>
-          <h2 class="t-h2 reveal">Curater, c'est construire la confiance.</h2>
+        <div class="section-body" style="justify-content:flex-start; padding-top:18px;" data-review-node="b-9fc9c45dc4a7">
+          <div class="kicker reveal" data-review-node="b-be12fd788f82">Transformer sans perdre l'origine</div>
+          <h2 class="t-h2 reveal" data-review-node="b-87e76d501a31">Curater, c'est construire la confiance.</h2>
 
-          <div class="pipeline reveal">
-            <div class="pipeline-state">
-              <span class="t-label accent-text-strong">Entrée</span>
-              <h3 class="t-h3" style="margin:22px 0;">Données brutes</h3>
-              <p class="t-body" style="color:var(--ink-dark-2);">Doublons, alias, champs absents, formats hétérogènes.</p>
+          <div class="pipeline reveal" data-review-node="b-278345a301a5">
+            <div class="pipeline-state" data-review-node="b-d56f82220293">
+              <span class="t-label accent-text-strong" data-review-node="b-c613a5534909">Entrée</span>
+              <h3 class="t-h3" style="margin:22px 0;" data-review-node="b-2354a4b905fb">Données brutes</h3>
+              <p class="t-body" style="color:var(--ink-dark-2);" data-review-node="b-a0bc34b86d2f">Doublons, alias, champs absents, formats hétérogènes.</p>
             </div>
-            <div class="pipeline-arrow">→</div>
-            <div class="verb-stack">
-              <div class="verb fragment">sélectionner</div>
-              <div class="verb fragment">normaliser</div>
-              <div class="verb fragment">dédupliquer</div>
-              <div class="verb fragment">enrichir</div>
-              <div class="verb fragment">valider</div>
+            <div class="pipeline-arrow" data-review-node="b-bb9dbb3ec7bc">→</div>
+            <div class="verb-stack" data-review-node="b-6358c4c1143d">
+              <div class="verb fragment" data-review-node="b-2570f067d8f7">sélectionner</div>
+              <div class="verb fragment" data-review-node="b-887cf0a5f429">normaliser</div>
+              <div class="verb fragment" data-review-node="b-b8c4876af984">dédupliquer</div>
+              <div class="verb fragment" data-review-node="b-f86c4423de53">enrichir</div>
+              <div class="verb fragment" data-review-node="b-cf2da648e7e9">valider</div>
             </div>
-            <div class="pipeline-arrow">→</div>
-            <div class="pipeline-state trusted">
-              <span class="t-label accent-text-strong">Sortie</span>
-              <h3 class="t-h3" style="margin:22px 0;">Donnée qualifiée</h3>
-              <p class="t-body" style="color:var(--ink-dark-2);">Identité, qualité, version et provenance explicites.</p>
+            <div class="pipeline-arrow" data-review-node="b-2a04f21e4fff">→</div>
+            <div class="pipeline-state trusted" data-review-node="b-fdf2466f207f">
+              <span class="t-label accent-text-strong" data-review-node="b-152618d3167a">Sortie</span>
+              <h3 class="t-h3" style="margin:22px 0;" data-review-node="b-b8ba3ebe5934">Donnée qualifiée</h3>
+              <p class="t-body" style="color:var(--ink-dark-2);" data-review-node="b-2f26cff9e5f5">Identité, qualité, version et provenance explicites.</p>
             </div>
           </div>
         </div>
 
-        <div class="foot-band">
-          <span class="t-small t-mono t-muted">DATA FACTORY = CAPACITÉ DE TRANSFORMATION ET DE CONTRÔLE</span>
-          <span class="t-label accent-text-strong">Curation</span>
+        <div class="foot-band" data-review-node="b-bc2bbb9d6166">
+          <span class="t-small t-mono t-muted" data-review-node="b-50e6d5b3d53d">DATA FACTORY = CAPACITÉ DE TRANSFORMATION ET DE CONTRÔLE</span>
+          <span class="t-label accent-text-strong" data-review-node="b-be939c4046a3">Curation</span>
         </div>
       </div>
     </section>
@@ -2725,44 +2904,44 @@ html.final-state .hud-controls,html.final-state .key-hint,html.final-state .edit
     <!-- ====================================================================
          SLIDE 11 — METADATA ET LINEAGE
          ==================================================================== -->
-    <section class="slide s-light technical-slide" data-slide="11">
-      <div class="si">
-        <div class="chrome-band">
-          <span class="t-label">10 · Metadata &amp; lineage</span>
-          <span class="pill">Le fil d'Ariane</span>
+    <section class="slide s-light technical-slide" data-slide="11" data-review-slide="s-beab3c216efd" data-review-node="b-87d6afca9e1b">
+      <div class="si" data-review-node="b-7dc8d7a129ed">
+        <div class="chrome-band" data-review-node="b-949c56413b1d">
+          <span class="t-label" data-review-node="b-4c5dbdb1172c">10 · Metadata &amp; lineage</span>
+          <span class="pill" data-review-node="b-596979fb4dda">Le fil d'Ariane</span>
         </div>
 
-        <div class="lineage-layout">
-          <div>
-            <div class="kicker reveal">La donnée sur la donnée</div>
-            <h2 class="t-h2 reveal">Savoir ce que c'est,<br>qui en répond,<br>et d'où cela vient.</h2>
-            <p class="t-body reveal" style="margin-top:28px; color:var(--ink-dark-2); max-width:720px;">
+        <div class="lineage-layout" data-review-node="b-5134d00787b7">
+          <div data-review-node="b-fde19dcb8ba0">
+            <div class="kicker reveal" data-review-node="b-936e33311e22">La donnée sur la donnée</div>
+            <h2 class="t-h2 reveal" data-review-node="b-4e8b00265971">Savoir ce que c'est,<br data-review-node="b-426f638ec20e">qui en répond,<br data-review-node="b-20bdb144ad17">et d'où cela vient.</h2>
+            <p class="t-body reveal" style="margin-top:28px; color:var(--ink-dark-2); max-width:720px;" data-review-node="b-9394f977c83e">
               Une transformation utile doit rester explicable :
               on peut remonter du résultat à la source et à la règle appliquée.
             </p>
           </div>
 
-          <div>
-            <div class="metadata-orbit reveal-scale">
-              <div class="meta-chip m1">propriétaire</div>
-              <div class="meta-chip m2">version</div>
-              <div class="meta-chip m3">qualité</div>
-              <div class="meta-chip m4">statut</div>
-              <div class="meta-core">Application<br>Orion</div>
+          <div data-review-node="b-f9eab953b5ad">
+            <div class="metadata-orbit reveal-scale" data-review-node="b-e27c32024ba4">
+              <div class="meta-chip m1" data-review-node="b-f0a414c222b1">propriétaire</div>
+              <div class="meta-chip m2" data-review-node="b-99412378ffc7">version</div>
+              <div class="meta-chip m3" data-review-node="b-7f62c8ef8c41">qualité</div>
+              <div class="meta-chip m4" data-review-node="b-47bd9e46507b">statut</div>
+              <div class="meta-core" data-review-node="b-2d632807323e">Application<br data-review-node="b-5edce568cb1d">Orion</div>
             </div>
-            <div class="trace reveal">
-              <div class="trace-box">DOC-01</div>
-              <div class="trace-arrow">→</div>
-              <div class="trace-box">validation</div>
-              <div class="trace-arrow">→</div>
-              <div class="trace-box">relation</div>
+            <div class="trace reveal" data-review-node="b-7a4d47ca4366">
+              <div class="trace-box" data-review-node="b-b64761861d87">DOC-01</div>
+              <div class="trace-arrow" data-review-node="b-78ca888a8635">→</div>
+              <div class="trace-box" data-review-node="b-3d3cd35e3cc1">validation</div>
+              <div class="trace-arrow" data-review-node="b-24ab1aa6f6f5">→</div>
+              <div class="trace-box" data-review-node="b-3094cd01166b">relation</div>
             </div>
           </div>
         </div>
 
-        <div class="foot-band">
-          <span class="t-small t-mono t-muted">SOURCE → TRANSFORMATION → RÉSULTAT</span>
-          <span class="t-label accent-text-strong">Traçabilité</span>
+        <div class="foot-band" data-review-node="b-d7ff3c367872">
+          <span class="t-small t-mono t-muted" data-review-node="b-4f8c2585177c">SOURCE → TRANSFORMATION → RÉSULTAT</span>
+          <span class="t-label accent-text-strong" data-review-node="b-aa4d4afd1740">Traçabilité</span>
         </div>
       </div>
     </section>
@@ -2770,15 +2949,15 @@ html.final-state .hud-controls,html.final-state .key-hint,html.final-state .edit
     <!-- ====================================================================
          SLIDE 12 — CARTE SOURCES + CURATION
          ==================================================================== -->
-    <section class="slide s-light map-slide technical-slide" data-slide="12">
-      <div class="si">
-        <div class="chrome-band">
-          <span class="t-label">11 · Carte relue</span>
-          <span class="pill accent">2 — De la source à la donnée fiable</span>
+    <section class="slide s-light map-slide technical-slide" data-slide="12" data-review-slide="s-75c17bf1d5e1" data-review-node="b-4d6b1110531c">
+      <div class="si" data-review-node="b-190954f1472f">
+        <div class="chrome-band" data-review-node="b-8f6d1a9ee23c">
+          <span class="t-label" data-review-node="b-b6003582db1d">11 · Carte relue</span>
+          <span class="pill accent" data-review-node="b-1e8459f7e693">2 — De la source à la donnée fiable</span>
         </div>
-        <h2 class="map-heading">La confiance se construit avant le stockage.</h2>
-        <p class="map-subhead">Sources, intégration, curation et gouvernance forment une continuité.</p>
-        <div class="data-map-mount" data-map-state="sources-curation" role="img" aria-label="Architecture data avec les Sources, l'intégration, la curation et la gouvernance mises en évidence">
+        <h2 class="map-heading" data-review-node="b-80ee61d10c67">La confiance se construit avant le stockage.</h2>
+        <p class="map-subhead" data-review-node="b-e33b2aabb7bf">Sources, intégration, curation et gouvernance forment une continuité.</p>
+        <div class="data-map-mount" data-map-state="sources-curation" role="img" aria-label="Architecture data avec les Sources, l'intégration, la curation et la gouvernance mises en évidence" data-review-node="b-e340a986f948">
 
         </div>
       </div>
@@ -2787,61 +2966,61 @@ html.final-state .hud-controls,html.final-state .key-hint,html.final-state .edit
     <!-- ====================================================================
          SLIDE 13 — DOMAINE ≠ STRUCTURE DES DOCUMENTS
          ==================================================================== -->
-    <section class="slide s-dark grid technical-slide" data-slide="13">
-      <div class="si">
-        <div class="chrome-band">
-          <span class="t-label t-muted">12 · Passer au métier</span>
-          <span class="pill accent">Le modèle avant l'outil</span>
+    <section class="slide s-dark grid technical-slide" data-slide="13" data-review-slide="s-be86ddc6e773" data-review-node="b-63852ca4255b">
+      <div class="si" data-review-node="b-5928e897d33f">
+        <div class="chrome-band" data-review-node="b-330fb808ba08">
+          <span class="t-label t-muted" data-review-node="b-a36cac3fb1cf">12 · Passer au métier</span>
+          <span class="pill accent" data-review-node="b-dc787bc5ceb0">Le modèle avant l'outil</span>
         </div>
 
-        <div class="section-body" style="justify-content:flex-start; padding-top:12px;">
-          <div class="kicker reveal">Changement de regard</div>
-          <h2 class="t-h2 reveal">Le domaine n'est pas la structure des documents.</h2>
+        <div class="section-body" style="justify-content:flex-start; padding-top:12px;" data-review-node="b-8cbc809931ed">
+          <div class="kicker reveal" data-review-node="b-b5ece4eebf37">Changement de regard</div>
+          <h2 class="t-h2 reveal" data-review-node="b-1fcbfb4f446f">Le domaine n'est pas la structure des documents.</h2>
 
-          <div class="split-layout comparison reveal" style="margin-top:34px;">
-            <article class="split-panel paper-surface">
-              <span class="t-label accent-text-strong">Le fichier</span>
-              <h3 class="t-h3" style="margin:20px 0 12px;">Organisation éditoriale</h3>
-              <div class="document-meta"><span>DOC-042</span><span>version 7 · PDF</span></div>
-              <div class="doc-outline">
-                <div class="doc-row">1. Introduction</div>
-                <div class="doc-row">2. Périmètre</div>
-                <div class="doc-row">3. Responsabilités</div>
-                <div class="doc-row">4. Exceptions</div>
+          <div class="split-layout comparison reveal" style="margin-top:34px;" data-review-node="b-c6063bf1849c">
+            <article class="split-panel paper-surface" data-review-node="b-028b9afcce03">
+              <span class="t-label accent-text-strong" data-review-node="b-cb8c61f00eb1">Le fichier</span>
+              <h3 class="t-h3" style="margin:20px 0 12px;" data-review-node="b-46511a902593">Organisation éditoriale</h3>
+              <div class="document-meta" data-review-node="b-e58525854b1f"><span data-review-node="b-7f0865f5a24e">DOC-042</span><span data-review-node="b-dac82a7818ac">version 7 · PDF</span></div>
+              <div class="doc-outline" data-review-node="b-fb90b6ecb4e4">
+                <div class="doc-row" data-review-node="b-ba8bfa2e0e55">1. Introduction</div>
+                <div class="doc-row" data-review-node="b-df806cc7ccc3">2. Périmètre</div>
+                <div class="doc-row" data-review-node="b-d35d5110f341">3. Responsabilités</div>
+                <div class="doc-row" data-review-node="b-fe0d3b33587d">4. Exceptions</div>
               </div>
-              <p class="t-small" style="margin-top:22px; color:var(--ink-dark-2);">
+              <p class="t-small" style="margin-top:22px; color:var(--ink-dark-2);" data-review-node="b-8e5991184c30">
                 Une section n'est pas automatiquement une entité métier.
               </p>
             </article>
 
-            <article class="split-panel emphasis">
-              <span class="t-label accent-text">Le domaine</span>
-              <h3 class="t-h3" style="margin:20px 0 12px;">Concepts et relations</h3>
-              <div class="domain-links">
-                <svg class="domain-graph-lines" viewBox="0 0 760 390" aria-hidden="true">
-                  <defs>
-                    <marker id="domainArrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
-                      <path d="M0,0 L8,4 L0,8 Z" fill="#4589ff"></path>
+            <article class="split-panel emphasis" data-review-node="b-4eb97e0c4b49">
+              <span class="t-label accent-text" data-review-node="b-4023e23871d3">Le domaine</span>
+              <h3 class="t-h3" style="margin:20px 0 12px;" data-review-node="b-8e9d26caeecd">Concepts et relations</h3>
+              <div class="domain-links" data-review-node="b-87435b8ac097">
+                <svg class="domain-graph-lines" viewBox="0 0 760 390" aria-hidden="true" data-review-node="b-7ee5be86080c">
+                  <defs data-review-node="b-84cab0cea554">
+                    <marker id="domainArrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" data-review-node="b-13d1d3af1bfe">
+                      <path d="M0,0 L8,4 L0,8 Z" fill="#4589ff" data-review-node="b-a9bab292b414"></path>
                     </marker>
                   </defs>
-                  <line x1="192" y1="193" x2="568" y2="81" stroke="#4589ff" stroke-width="2" marker-end="url(#domainArrow)"></line>
-                  <line x1="192" y1="207" x2="568" y2="309" stroke="#4589ff" stroke-width="2" marker-end="url(#domainArrow)"></line>
-                  <line x1="648" y1="124" x2="648" y2="266" stroke="#4589ff" stroke-width="2" marker-end="url(#domainArrow)"></line>
+                  <line x1="192" y1="193" x2="568" y2="81" stroke="#4589ff" stroke-width="2" marker-end="url(#domainArrow)" data-review-node="b-fe7817fee925"></line>
+                  <line x1="192" y1="207" x2="568" y2="309" stroke="#4589ff" stroke-width="2" marker-end="url(#domainArrow)" data-review-node="b-b42a3001b812"></line>
+                  <line x1="648" y1="124" x2="648" y2="266" stroke="#4589ff" stroke-width="2" marker-end="url(#domainArrow)" data-review-node="b-50640ace43e6"></line>
                 </svg>
-                <div class="domain-edge-label e1">maintient</div>
-                <div class="domain-edge-label e2">affecte</div>
-                <div class="domain-edge-label e3">traite</div>
-                <div class="domain-node d1">Application</div>
-                <div class="domain-node d2">Team</div>
-                <div class="domain-node d3">Incident</div>
+                <div class="domain-edge-label e1" data-review-node="b-b9deddebfe14">maintient</div>
+                <div class="domain-edge-label e2" data-review-node="b-74b9005f0452">affecte</div>
+                <div class="domain-edge-label e3" data-review-node="b-7d5edde40a0e">traite</div>
+                <div class="domain-node d1" data-review-node="b-1244e7bb148d">Application</div>
+                <div class="domain-node d2" data-review-node="b-3986c271f3ea">Team</div>
+                <div class="domain-node d3" data-review-node="b-60d1ea219ed0">Incident</div>
               </div>
             </article>
           </div>
         </div>
 
-        <div class="foot-band">
-          <span class="t-small t-mono t-muted">LE MODÈLE DÉCRIT LE MÉTIER · PAS LA MISE EN PAGE</span>
-          <span class="t-label accent-text">Domaine</span>
+        <div class="foot-band" data-review-node="b-f0a01a542223">
+          <span class="t-small t-mono t-muted" data-review-node="b-3ae96dd81b33">LE MODÈLE DÉCRIT LE MÉTIER · PAS LA MISE EN PAGE</span>
+          <span class="t-label accent-text" data-review-node="b-1c93cd877620">Domaine</span>
         </div>
       </div>
     </section>
@@ -2849,37 +3028,37 @@ html.final-state .hud-controls,html.final-state .key-hint,html.final-state .edit
     <!-- ====================================================================
          SLIDE 14 — CAPSULE C2
          ==================================================================== -->
-    <section class="slide s-light technical-slide" data-slide="14">
-      <div class="si">
-        <div class="chrome-band">
-          <span class="t-label">13 · Rappel du domaine S4</span>
-          <span class="pill accent">Acquis à réutiliser</span>
+    <section class="slide s-light technical-slide" data-slide="14" data-review-slide="s-4542c3f742b4" data-review-node="b-5f9f3b4a1b4b">
+      <div class="si" data-review-node="b-0c2b371af0a0">
+        <div class="chrome-band" data-review-node="b-08b369277f8d">
+          <span class="t-label" data-review-node="b-e5bc03919125">13 · Rappel du domaine S4</span>
+          <span class="pill accent" data-review-node="b-3ba127201ad7">Acquis à réutiliser</span>
         </div>
 
-        <div class="section-body" style="justify-content:flex-start; padding-top:8px;">
-          <div class="kicker reveal">Du domaine à sa projection</div>
-          <h2 class="t-h2 reveal">Les mots du métier restent indépendants de la technologie.</h2>
+        <div class="section-body" style="justify-content:flex-start; padding-top:8px;" data-review-node="b-10fd66922a89">
+          <div class="kicker reveal" data-review-node="b-e35a4222ee6e">Du domaine à sa projection</div>
+          <h2 class="t-h2 reveal" data-review-node="b-3f2d4da7d6e1">Les mots du métier restent indépendants de la technologie.</h2>
 
-          <div class="hex-boundary reveal-scale">
-            <div class="hex-inner">
-              <span class="t-label accent-text-strong">domain/</span>
-              <h3 class="t-h2" style="font-size:48px;">Application</h3>
-              <div class="domain-principles">
-                <span class="principle-chip">Entity</span>
-                <span class="principle-chip">Value Object</span>
-                <span class="principle-chip">Invariant</span>
+          <div class="hex-boundary reveal-scale" data-review-node="b-c3bc958d10d7">
+            <div class="hex-inner" data-review-node="b-84d871a35a57">
+              <span class="t-label accent-text-strong" data-review-node="b-c0ced6a7d777">domain/</span>
+              <h3 class="t-h2" style="font-size:48px;" data-review-node="b-e95d39db1e2a">Application</h3>
+              <div class="domain-principles" data-review-node="b-f6629d6ab549">
+                <span class="principle-chip" data-review-node="b-6462e32ae603">Entity</span>
+                <span class="principle-chip" data-review-node="b-b09360fb4d10">Value Object</span>
+                <span class="principle-chip" data-review-node="b-650a33776a3e">Invariant</span>
               </div>
-              <p class="t-body" style="max-width:480px; text-align:center; color:var(--ink-dark-2);">
+              <p class="t-body" style="max-width:480px; text-align:center; color:var(--ink-dark-2);" data-review-node="b-fb5bf81dcea6">
                 Identité stable, vocabulaire explicite, règle vérifiée à la construction.
               </p>
             </div>
           </div>
-          <div class="tech-outside reveal">Neo4j / Aura<br>reste à l'extérieur</div>
+          <div class="tech-outside reveal" data-review-node="b-c3cd58104110">Neo4j / Aura<br data-review-node="b-d0c99795b0e6">reste à l'extérieur</div>
         </div>
 
-        <div class="foot-band">
-          <span class="t-small t-mono t-muted">ZÉRO IMPORT NEO4J · STREAMLIT · SDK DANS DOMAIN/</span>
-          <span class="t-label accent-text-strong">Acquis S4</span>
+        <div class="foot-band" data-review-node="b-3c40ed228915">
+          <span class="t-small t-mono t-muted" data-review-node="b-53110de57657">ZÉRO IMPORT NEO4J · STREAMLIT · SDK DANS DOMAIN/</span>
+          <span class="t-label accent-text-strong" data-review-node="b-ce48dc2d9bae">Acquis S4</span>
         </div>
       </div>
     </section>
@@ -2887,39 +3066,39 @@ html.final-state .hud-controls,html.final-state .key-hint,html.final-state .edit
     <!-- ====================================================================
          SLIDE 15 — DU TEXTE À L'ASSERTION
          ==================================================================== -->
-    <section class="slide s-light technical-slide" data-slide="15">
-      <div class="si">
-        <div class="chrome-band">
-          <span class="t-label">14 · Construire la connaissance</span>
-          <span class="pill">Du texte au fait validé</span>
+    <section class="slide s-light technical-slide" data-slide="15" data-review-slide="s-52ea68f3dfbf" data-review-node="b-bc0cbce0b0e2">
+      <div class="si" data-review-node="b-8714372340d9">
+        <div class="chrome-band" data-review-node="b-1c70af7e339e">
+          <span class="t-label" data-review-node="b-a0ac93e6d5b7">14 · Construire la connaissance</span>
+          <span class="pill" data-review-node="b-1040f5301f84">Du texte au fait validé</span>
         </div>
 
-        <div class="section-body" style="justify-content:flex-start; padding-top:18px;">
-          <div class="kicker reveal">Lire, qualifier, structurer</div>
-          <h2 class="t-h2 reveal">Un document contient des affirmations.</h2>
+        <div class="section-body" style="justify-content:flex-start; padding-top:18px;" data-review-node="b-511279b7608a">
+          <div class="kicker reveal" data-review-node="b-a3c195656b57">Lire, qualifier, structurer</div>
+          <h2 class="t-h2 reveal" data-review-node="b-10dee51517fd">Un document contient des affirmations.</h2>
 
-          <div class="assertion-flow reveal">
-            <div class="source-excerpt">
+          <div class="assertion-flow reveal" data-review-node="b-0309c3a5a2a5">
+            <div class="source-excerpt" data-review-node="b-bd29e24c976a">
               « Depuis janvier 2026,
-              <span class="highlight">l'équipe Payments est responsable de l'application Orion</span>. »
-              <div class="source-badge">DOC-01 · version 3 · § Responsabilités</div>
+              <span class="highlight" data-review-node="b-ee6605b5aae8">l'équipe Payments est responsable de l'application Orion</span>. »
+              <div class="source-badge" data-review-node="b-738a693606d3">DOC-01 · version 3 · § Responsabilités</div>
             </div>
-            <div class="assertion-arrow">→</div>
-            <div class="triplet">
-              <span class="t-label accent-text">Assertion validée</span>
-              <div class="triplet-row">
-                <div class="triplet-token">Orion</div>
-                <div>— OWNED_BY →</div>
-                <div class="triplet-token">Payments</div>
+            <div class="assertion-arrow" data-review-node="b-749b806621ef">→</div>
+            <div class="triplet" data-review-node="b-d314dab96a71">
+              <span class="t-label accent-text" data-review-node="b-6b422421acad">Assertion validée</span>
+              <div class="triplet-row" data-review-node="b-eb4ff76db16e">
+                <div class="triplet-token" data-review-node="b-c2df6e82295c">Orion</div>
+                <div data-review-node="b-19f54e4d0161">— OWNED_BY →</div>
+                <div class="triplet-token" data-review-node="b-90c91f4fbbe4">Payments</div>
               </div>
-              <div class="source-badge">sourceId = DOC-01<br>evidence = passage exact</div>
+              <div class="source-badge" data-review-node="b-6ec95d2647ca">sourceId = DOC-01<br data-review-node="b-4d940a52f830">evidence = passage exact</div>
             </div>
           </div>
         </div>
 
-        <div class="foot-band">
-          <span class="t-small t-mono t-muted">UN TEXTE N'EST PAS AUTOMATIQUEMENT UN FAIT</span>
-          <span class="t-label accent-text-strong">Assertion sourcée</span>
+        <div class="foot-band" data-review-node="b-ea2b102dd2d7">
+          <span class="t-small t-mono t-muted" data-review-node="b-63581b38bf95">UN TEXTE N'EST PAS AUTOMATIQUEMENT UN FAIT</span>
+          <span class="t-label accent-text-strong" data-review-node="b-9498ae6e1cd5">Assertion sourcée</span>
         </div>
       </div>
     </section>
@@ -2927,40 +3106,40 @@ html.final-state .hud-controls,html.final-state .key-hint,html.final-state .edit
     <!-- ====================================================================
          SLIDE 16 — IDENTITÉ ET ALIAS
          ==================================================================== -->
-    <section class="slide s-invert technical-slide" data-slide="16">
-      <div class="si">
-        <div class="chrome-band">
-          <span class="t-label">15 · Résoudre l'identité</span>
-          <span class="pill accent">Avant les relations</span>
+    <section class="slide s-invert technical-slide" data-slide="16" data-review-slide="s-a76a6d56d052" data-review-node="b-2a7ee9ff870e">
+      <div class="si" data-review-node="b-e8a9a4a0c25e">
+        <div class="chrome-band" data-review-node="b-734397c5f462">
+          <span class="t-label" data-review-node="b-499edb6c1bd3">15 · Résoudre l'identité</span>
+          <span class="pill accent" data-review-node="b-d28dc9379bbe">Avant les relations</span>
         </div>
 
-        <div class="section-body" style="justify-content:flex-start; padding-top:24px;">
-          <div class="kicker reveal">Un objet, plusieurs noms</div>
-          <h2 class="t-h2 reveal">Les alias convergent vers un identifiant stable.</h2>
+        <div class="section-body" style="justify-content:flex-start; padding-top:24px;" data-review-node="b-eca3cf8231b0">
+          <div class="kicker reveal" data-review-node="b-ca0ef74579b3">Un objet, plusieurs noms</div>
+          <h2 class="t-h2 reveal" data-review-node="b-778853d9ffaa">Les alias convergent vers un identifiant stable.</h2>
 
-          <div class="alias-layout reveal">
-            <div class="alias-stack">
-              <div class="alias-item">« Orion »</div>
-              <div class="alias-item">« App Orion »</div>
-              <div class="alias-item">« ORN-42 »</div>
+          <div class="alias-layout reveal" data-review-node="b-37d6ca5629c8">
+            <div class="alias-stack" data-review-node="b-fcaf37e16e6c">
+              <div class="alias-item" data-review-node="b-c15ae13f0eb6">« Orion »</div>
+              <div class="alias-item" data-review-node="b-68e3e0221162">« App Orion »</div>
+              <div class="alias-item" data-review-node="b-8c7470bbbccc">« ORN-42 »</div>
             </div>
-            <div class="alias-arrow">→</div>
-            <div class="identity-card">
-              <span class="t-label accent-text">Application</span>
-              <h3 class="t-h2" style="font-size:52px; margin-top:20px;">Orion</h3>
-              <div class="identity-id">id = app-orion</div>
+            <div class="alias-arrow" data-review-node="b-109db7874581">→</div>
+            <div class="identity-card" data-review-node="b-d0d337cbb6f5">
+              <span class="t-label accent-text" data-review-node="b-f3695b016e3e">Application</span>
+              <h3 class="t-h2" style="font-size:52px; margin-top:20px;" data-review-node="b-a6f7d6236ab2">Orion</h3>
+              <div class="identity-id" data-review-node="b-defdd72c0193">id = app-orion</div>
             </div>
           </div>
 
-          <div class="note-card reveal" style="margin-top:34px; display:flex; justify-content:space-between; align-items:center;">
-            <span class="t-body">Sans résolution d'identité :</span>
-            <strong class="t-body accent-text-strong">trois faux nœuds · trois vérités divergentes</strong>
+          <div class="note-card reveal" style="margin-top:34px; display:flex; justify-content:space-between; align-items:center;" data-review-node="b-0f99a33b22d6">
+            <span class="t-body" data-review-node="b-5b07c7a75b1b">Sans résolution d'identité :</span>
+            <strong class="t-body accent-text-strong" data-review-node="b-6ec08a11a488">trois faux nœuds · trois vérités divergentes</strong>
           </div>
         </div>
 
-        <div class="foot-band">
-          <span class="t-small t-mono t-muted">L'IDENTITÉ NE DOIT PAS DÉPENDRE DE L'ORTHOGRAPHE D'UNE SOURCE</span>
-          <span class="t-label accent-text-strong">Identité</span>
+        <div class="foot-band" data-review-node="b-531bf3ea4f23">
+          <span class="t-small t-mono t-muted" data-review-node="b-50a2fabb888f">L'IDENTITÉ NE DOIT PAS DÉPENDRE DE L'ORTHOGRAPHE D'UNE SOURCE</span>
+          <span class="t-label accent-text-strong" data-review-node="b-ce9e2f639781">Identité</span>
         </div>
       </div>
     </section>
@@ -2968,43 +3147,43 @@ html.final-state .hud-controls,html.final-state .key-hint,html.final-state .edit
     <!-- ====================================================================
          SLIDE 17 — PROPERTY GRAPH
          ==================================================================== -->
-    <section class="slide s-light technical-slide" data-slide="17">
-      <div class="si">
-        <div class="chrome-band">
-          <span class="t-label">16 · La grammaire du graphe</span>
-          <span class="pill">Property Graph</span>
+    <section class="slide s-light technical-slide" data-slide="17" data-review-slide="s-676e2ea4f2bf" data-review-node="b-30b402a99a97">
+      <div class="si" data-review-node="b-61530144af91">
+        <div class="chrome-band" data-review-node="b-99eb8ecce661">
+          <span class="t-label" data-review-node="b-4e364dd1bd3a">16 · La grammaire du graphe</span>
+          <span class="pill" data-review-node="b-7555fa3a1779">Property Graph</span>
         </div>
 
-        <div class="section-body" style="justify-content:flex-start; padding-top:16px;">
-          <div class="kicker reveal">Peu de primitives, beaucoup de sens</div>
-          <h2 class="t-h2 reveal">Nœuds, relations, propriétés et direction.</h2>
+        <div class="section-body" style="justify-content:flex-start; padding-top:16px;" data-review-node="b-306c3b431f52">
+          <div class="kicker reveal" data-review-node="b-8ca7cf91c41a">Peu de primitives, beaucoup de sens</div>
+          <h2 class="t-h2 reveal" data-review-node="b-efae05e53b9a">Nœuds, relations, propriétés et direction.</h2>
 
-          <div class="graph-grammar reveal">
-            <div class="graph-stage" role="img" aria-label="Une application Orion reliée à une équipe Payments par la relation OWNED_BY">
-              <div class="g-node left">
-                <span class="g-label">:Application</span>
-                <span class="g-value">Orion</span>
+          <div class="graph-grammar reveal" data-review-node="b-1ed063873868">
+            <div class="graph-stage" role="img" aria-label="Une application Orion reliée à une équipe Payments par la relation OWNED_BY" data-review-node="b-746882b2189e">
+              <div class="g-node left" data-review-node="b-a57471a00a60">
+                <span class="g-label" data-review-node="b-1749586a9fad">:Application</span>
+                <span class="g-value" data-review-node="b-37972bdb4032">Orion</span>
               </div>
-              <div class="g-edge"></div>
-              <div class="g-rel">OWNED_BY</div>
-              <div class="g-node right">
-                <span class="g-label">:Team</span>
-                <span class="g-value">Payments</span>
+              <div class="g-edge" data-review-node="b-4927f7aa9c5f"></div>
+              <div class="g-rel" data-review-node="b-b560b2a9ec5b">OWNED_BY</div>
+              <div class="g-node right" data-review-node="b-3275058793a0">
+                <span class="g-label" data-review-node="b-2f9c188e3ab9">:Team</span>
+                <span class="g-value" data-review-node="b-5d1a02cfbc32">Payments</span>
               </div>
             </div>
 
-            <div class="annotation-list">
-              <div class="annotation"><strong>NODE</strong> · une chose avec une identité.</div>
-              <div class="annotation"><strong>LABEL</strong> · son type dans la projection.</div>
-              <div class="annotation"><strong>RELATION</strong> · un verbe métier orienté.</div>
-              <div class="annotation"><strong>PROPERTY</strong> · une valeur portée par un nœud ou une relation.</div>
+            <div class="annotation-list" data-review-node="b-2f5f16611ff4">
+              <div class="annotation" data-review-node="b-c84b623618f5"><strong data-review-node="b-170020d97be6">NODE</strong> · une chose avec une identité.</div>
+              <div class="annotation" data-review-node="b-02a16e59f0a8"><strong data-review-node="b-ba5267b832db">LABEL</strong> · son type dans la projection.</div>
+              <div class="annotation" data-review-node="b-536bdabd9e7b"><strong data-review-node="b-a72cf065ac7f">RELATION</strong> · un verbe métier orienté.</div>
+              <div class="annotation" data-review-node="b-cc633c968206"><strong data-review-node="b-88766918b6c6">PROPERTY</strong> · une valeur portée par un nœud ou une relation.</div>
             </div>
           </div>
         </div>
 
-        <div class="foot-band">
-          <span class="t-small t-mono t-muted">(SUJET)-[:VERBE]→(OBJET)</span>
-          <span class="t-label accent-text-strong">Property Graph</span>
+        <div class="foot-band" data-review-node="b-293058cf8e97">
+          <span class="t-small t-mono t-muted" data-review-node="b-7ca02d206103">(SUJET)-[:VERBE]→(OBJET)</span>
+          <span class="t-label accent-text-strong" data-review-node="b-be6f222d39d0">Property Graph</span>
         </div>
       </div>
     </section>
@@ -3012,63 +3191,63 @@ html.final-state .hud-controls,html.final-state .key-hint,html.final-state .edit
     <!-- ====================================================================
          SLIDE 18 — MINI-DOMAINE DU TP
          ==================================================================== -->
-    <section class="slide s-light technical-slide" data-slide="18">
-      <div class="si">
-        <div class="chrome-band">
-          <span class="t-label">17 · Exemple fil rouge</span>
-          <span class="pill accent">Mini-domaine du TP</span>
+    <section class="slide s-light technical-slide" data-slide="18" data-review-slide="s-e1b7f30e158b" data-review-node="b-20c2e84f6203">
+      <div class="si" data-review-node="b-4c752a30f99c">
+        <div class="chrome-band" data-review-node="b-5fa70c503f1b">
+          <span class="t-label" data-review-node="b-2bb3aeb682b7">17 · Exemple fil rouge</span>
+          <span class="pill accent" data-review-node="b-38024f5fd5ce">Mini-domaine du TP</span>
         </div>
 
-        <div class="section-body" style="justify-content:flex-start; padding-top:10px;">
-          <div class="kicker reveal">Un modèle volontairement petit</div>
-          <h2 class="t-h2 reveal">Incidents, applications, équipes et technologies.</h2>
+        <div class="section-body" style="justify-content:flex-start; padding-top:10px;" data-review-node="b-a2f86ce471e0">
+          <div class="kicker reveal" data-review-node="b-ded60275fed7">Un modèle volontairement petit</div>
+          <h2 class="t-h2 reveal" data-review-node="b-0fd184da7f6c">Incidents, applications, équipes et technologies.</h2>
 
-          <div class="mini-domain reveal-scale" role="img" aria-label="Graphe exemple reliant incidents, applications, équipes, technologies et procédures">
-            <svg viewBox="0 0 1640 610" aria-hidden="true">
-              <defs>
-                <marker id="arrowHead" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
-                  <path d="M0,0 L10,4 L0,8 z" fill="#4589ff"></path>
+          <div class="mini-domain reveal-scale" role="img" aria-label="Graphe exemple reliant incidents, applications, équipes, technologies et procédures" data-review-node="b-e68febee1af8">
+            <svg viewBox="0 0 1640 610" aria-hidden="true" data-review-node="b-95104d5babb1">
+              <defs data-review-node="b-bf842c4d14c9">
+                <marker id="arrowHead" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" data-review-node="b-69509b2e574d">
+                  <path d="M0,0 L10,4 L0,8 z" fill="#4589ff" data-review-node="b-07d9a840e57d"></path>
                 </marker>
               </defs>
 
-              <line class="edge-line" x1="280" y1="170" x2="600" y2="250"></line>
-              <line class="edge-line" x1="760" y1="250" x2="1040" y2="160"></line>
-              <line class="edge-line" x1="760" y1="310" x2="1050" y2="430"></line>
-              <line class="edge-line" x1="1240" y1="160" x2="1430" y2="300"></line>
-              <line class="edge-line" x1="1240" y1="430" x2="1430" y2="330"></line>
+              <line class="edge-line" x1="280" y1="170" x2="600" y2="250" data-review-node="b-74c50fdaccb3"></line>
+              <line class="edge-line" x1="760" y1="250" x2="1040" y2="160" data-review-node="b-7550c1323dd7"></line>
+              <line class="edge-line" x1="760" y1="310" x2="1050" y2="430" data-review-node="b-36e00af60a99"></line>
+              <line class="edge-line" x1="1240" y1="160" x2="1430" y2="300" data-review-node="b-2d0a5f2e971d"></line>
+              <line class="edge-line" x1="1240" y1="430" x2="1430" y2="330" data-review-node="b-0f24126a2efc"></line>
 
-              <text class="edge-label" x="440" y="180">AFFECTS</text>
-              <text class="edge-label" x="900" y="175">OWNED_BY</text>
-              <text class="edge-label" x="910" y="405">USES</text>
-              <text class="edge-label" x="1370" y="180">FOLLOWS</text>
-              <text class="edge-label" x="1370" y="440">COVERS</text>
+              <text class="edge-label" x="440" y="180" data-review-node="b-7158cb30f69e">AFFECTS</text>
+              <text class="edge-label" x="900" y="175" data-review-node="b-247e223ba08e">OWNED_BY</text>
+              <text class="edge-label" x="910" y="405" data-review-node="b-f42b5392ce0d">USES</text>
+              <text class="edge-label" x="1370" y="180" data-review-node="b-a6c0b5eb5278">FOLLOWS</text>
+              <text class="edge-label" x="1370" y="440" data-review-node="b-173761c0d9af">COVERS</text>
 
-              <rect class="node-shape" x="80" y="100" rx="34" width="210" height="130"></rect>
-              <text class="node-type" x="185" y="140">:Incident</text>
-              <text class="node-title" x="185" y="185">INC-204</text>
+              <rect class="node-shape" x="80" y="100" rx="34" width="210" height="130" data-review-node="b-990ef7390458"></rect>
+              <text class="node-type" x="185" y="140" data-review-node="b-dc0fcb2847e7">:Incident</text>
+              <text class="node-title" x="185" y="185" data-review-node="b-de71dcc6f88c">INC-204</text>
 
-              <rect class="node-dark" x="570" y="215" rx="34" width="230" height="140"></rect>
-              <text class="node-type" x="685" y="258" style="fill:#4589ff;">:Application</text>
-              <text class="node-title light" x="685" y="310">Orion</text>
+              <rect class="node-dark" x="570" y="215" rx="34" width="230" height="140" data-review-node="b-b9eb34d5bc8f"></rect>
+              <text class="node-type" x="685" y="258" style="fill:#4589ff;" data-review-node="b-4bcb0558aaf0">:Application</text>
+              <text class="node-title light" x="685" y="310" data-review-node="b-92710c073c69">Orion</text>
 
-              <rect class="node-shape" x="1030" y="90" rx="34" width="230" height="130"></rect>
-              <text class="node-type" x="1145" y="130">:Team</text>
-              <text class="node-title" x="1145" y="178">Payments</text>
+              <rect class="node-shape" x="1030" y="90" rx="34" width="230" height="130" data-review-node="b-e7939ccd1d89"></rect>
+              <text class="node-type" x="1145" y="130" data-review-node="b-93c36c75b2ab">:Team</text>
+              <text class="node-title" x="1145" y="178" data-review-node="b-52a5190c3e10">Payments</text>
 
-              <rect class="node-shape" x="1030" y="375" rx="34" width="230" height="130"></rect>
-              <text class="node-type" x="1145" y="415">:Technology</text>
-              <text class="node-title" x="1145" y="463">Kafka</text>
+              <rect class="node-shape" x="1030" y="375" rx="34" width="230" height="130" data-review-node="b-d7742015d2fb"></rect>
+              <text class="node-type" x="1145" y="415" data-review-node="b-8713525710d5">:Technology</text>
+              <text class="node-title" x="1145" y="463" data-review-node="b-c8f7369dd7ab">Kafka</text>
 
-              <rect class="node-shape" x="1420" y="250" rx="34" width="190" height="130"></rect>
-              <text class="node-type" x="1515" y="290">:Procedure</text>
-              <text class="node-title" x="1515" y="338">P-17</text>
+              <rect class="node-shape" x="1420" y="250" rx="34" width="190" height="130" data-review-node="b-c7cc666d343e"></rect>
+              <text class="node-type" x="1515" y="290" data-review-node="b-69da15fcd8a6">:Procedure</text>
+              <text class="node-title" x="1515" y="338" data-review-node="b-7d2c0aab1c4d">P-17</text>
             </svg>
           </div>
         </div>
 
-        <div class="foot-band">
-          <span class="t-small t-mono t-muted">5 LABELS · DES RELATIONS NOMMÉES PAR DES VERBES</span>
-          <span class="t-label accent-text-strong">Exemple du TP</span>
+        <div class="foot-band" data-review-node="b-36966b1b52d7">
+          <span class="t-small t-mono t-muted" data-review-node="b-50360fc16f60">5 LABELS · DES RELATIONS NOMMÉES PAR DES VERBES</span>
+          <span class="t-label accent-text-strong" data-review-node="b-238dac182491">Exemple du TP</span>
         </div>
       </div>
     </section>
@@ -3076,46 +3255,46 @@ html.final-state .hud-controls,html.final-state .key-hint,html.final-state .edit
     <!-- ====================================================================
          SLIDE 19 — QUESTIONS RELATIONNELLES
          ==================================================================== -->
-    <section class="slide s-dark technical-slide" data-slide="19">
-      <div class="si">
-        <div class="chrome-band">
-          <span class="t-label t-muted">18 · Tester le modèle</span>
-          <span class="pill accent">Le chemin comme réponse</span>
+    <section class="slide s-dark technical-slide" data-slide="19" data-review-slide="s-2feb2b9e1165" data-review-node="b-698daf282b33">
+      <div class="si" data-review-node="b-ddee048b72b9">
+        <div class="chrome-band" data-review-node="b-f8a6299083ee">
+          <span class="t-label t-muted" data-review-node="b-d2070e89c218">18 · Tester le modèle</span>
+          <span class="pill accent" data-review-node="b-7b6b6c9a55cd">Le chemin comme réponse</span>
         </div>
 
-        <div class="section-body" style="justify-content:flex-start; padding-top:16px;">
-          <div class="kicker reveal">La question justifie le graphe</div>
-          <h2 class="t-h2 reveal">Une bonne question traverse les relations.</h2>
+        <div class="section-body" style="justify-content:flex-start; padding-top:16px;" data-review-node="b-957cd6204aa9">
+          <div class="kicker reveal" data-review-node="b-1c801ed5e56e">La question justifie le graphe</div>
+          <h2 class="t-h2 reveal" data-review-node="b-a1dce85a5c94">Une bonne question traverse les relations.</h2>
 
-          <div class="question-grid reveal">
-            <div class="question-stack">
-              <article class="question-card">
-                <div class="question-depth">1 saut</div>
-                <p class="t-body">Quelle application est affectée par l'incident INC-204 ?</p>
+          <div class="question-grid reveal" data-review-node="b-75418162afb1">
+            <div class="question-stack" data-review-node="b-6cc43f5de14d">
+              <article class="question-card" data-review-node="b-69536fd66015">
+                <div class="question-depth" data-review-node="b-b780bfb1e5ca">1 saut</div>
+                <p class="t-body" data-review-node="b-9c20d51f90e8">Quelle application est affectée par l'incident INC-204 ?</p>
               </article>
-              <article class="question-card active">
-                <div class="question-depth">2 sauts</div>
-                <p class="t-body">Quelle équipe possède l'application affectée par INC-204 ?</p>
+              <article class="question-card active" data-review-node="b-19c245545e17">
+                <div class="question-depth" data-review-node="b-a27eb30afb82">2 sauts</div>
+                <p class="t-body" data-review-node="b-03aeb03337e4">Quelle équipe possède l'application affectée par INC-204 ?</p>
               </article>
-              <article class="question-card">
-                <div class="question-depth">Contrôle</div>
-                <p class="t-body">Quelles sources justifient chaque relation du chemin ?</p>
+              <article class="question-card" data-review-node="b-ee5256721682">
+                <div class="question-depth" data-review-node="b-1d168cd0fb3e">Contrôle</div>
+                <p class="t-body" data-review-node="b-de7b1973e22f">Quelles sources justifient chaque relation du chemin ?</p>
               </article>
             </div>
 
-            <div class="path-panel" role="img" aria-label="Chemin Incident vers Application vers Team">
-              <div class="path-node">INC-204<br><span class="t-label accent-text-strong">Incident</span></div>
-              <div class="path-edge">— AFFECTS →</div>
-              <div class="path-node">Orion<br><span class="t-label accent-text-strong">Application</span></div>
-              <div class="path-edge">— OWNED_BY →</div>
-              <div class="path-node">Payments<br><span class="t-label accent-text-strong">Team</span></div>
+            <div class="path-panel" role="img" aria-label="Chemin Incident vers Application vers Team" data-review-node="b-7df3f85e238b">
+              <div class="path-node" data-review-node="b-d4923ee2ad88">INC-204<br data-review-node="b-af0f36bf6f1c"><span class="t-label accent-text-strong" data-review-node="b-7aa0dd892cc8">Incident</span></div>
+              <div class="path-edge" data-review-node="b-cb24eb312273">— AFFECTS →</div>
+              <div class="path-node" data-review-node="b-54b9c426ead4">Orion<br data-review-node="b-2201e1022fa2"><span class="t-label accent-text-strong" data-review-node="b-f2b50564bafb">Application</span></div>
+              <div class="path-edge" data-review-node="b-04d948148a04">— OWNED_BY →</div>
+              <div class="path-node" data-review-node="b-dc44b3d1eaf5">Payments<br data-review-node="b-dc8027d474a1"><span class="t-label accent-text-strong" data-review-node="b-ab068a13e572">Team</span></div>
             </div>
           </div>
         </div>
 
-        <div class="foot-band">
-          <span class="t-small t-mono t-muted">LE GRAPHE EST UTILE QUAND LA RÉPONSE DÉPEND D'UN CHEMIN</span>
-          <span class="t-label accent-text">Questions relationnelles</span>
+        <div class="foot-band" data-review-node="b-e1a42bcaa831">
+          <span class="t-small t-mono t-muted" data-review-node="b-372c3b6c7ffe">LE GRAPHE EST UTILE QUAND LA RÉPONSE DÉPEND D'UN CHEMIN</span>
+          <span class="t-label accent-text" data-review-node="b-a8fa25cdd39d">Questions relationnelles</span>
         </div>
       </div>
     </section>
@@ -3123,51 +3302,51 @@ html.final-state .hud-controls,html.final-state .key-hint,html.final-state .edit
     <!-- ====================================================================
          SLIDE 20 — PROVENANCE
          ==================================================================== -->
-    <section class="slide s-light technical-slide" data-slide="20">
-      <div class="si">
-        <div class="chrome-band">
-          <span class="t-label">19 · Prouver les relations</span>
-          <span class="pill">Provenance</span>
+    <section class="slide s-light technical-slide" data-slide="20" data-review-slide="s-807c663734cb" data-review-node="b-9f1589d24e6a">
+      <div class="si" data-review-node="b-41b6c8667681">
+        <div class="chrome-band" data-review-node="b-26fac935c5ab">
+          <span class="t-label" data-review-node="b-9576994176de">19 · Prouver les relations</span>
+          <span class="pill" data-review-node="b-1f48e3f81426">Provenance</span>
         </div>
 
-        <div class="section-body" style="justify-content:flex-start; padding-top:16px;">
-          <div class="kicker reveal">Une relation n'est pas décorative</div>
-          <h2 class="t-h2 reveal">Une relation sans preuve reste fragile.</h2>
+        <div class="section-body" style="justify-content:flex-start; padding-top:16px;" data-review-node="b-1022572bb85d">
+          <div class="kicker reveal" data-review-node="b-bf68d3e560fa">Une relation n'est pas décorative</div>
+          <h2 class="t-h2 reveal" data-review-node="b-95b3be8f1ce9">Une relation sans preuve reste fragile.</h2>
 
-          <div class="provenance-layout reveal">
-            <div class="relation-proof">
-              <div class="relation-chain">
-                <div class="relation-node">Orion</div>
-                <div class="relation-arrow">— OWNED_BY →</div>
-                <div class="relation-node">Payments</div>
+          <div class="provenance-layout reveal" data-review-node="b-f388b3d0d33a">
+            <div class="relation-proof" data-review-node="b-742757506348">
+              <div class="relation-chain" data-review-node="b-4f1aa42c3e21">
+                <div class="relation-node" data-review-node="b-0e9d52a31895">Orion</div>
+                <div class="relation-arrow" data-review-node="b-59f6f6b690a0">— OWNED_BY →</div>
+                <div class="relation-node" data-review-node="b-3e5f1c440cc6">Payments</div>
               </div>
-              <div class="relation-properties">
-                <div><span class="accent-text">sourceId</span> = "DOC-01"</div>
-                <div><span class="accent-text">evidence</span> = "Payments est responsable d'Orion."</div>
-                <div><span class="accent-text">validFrom</span> = "2026-01"</div>
+              <div class="relation-properties" data-review-node="b-1cf70495c817">
+                <div data-review-node="b-55a1f56c2a9f"><span class="accent-text" data-review-node="b-cdc066c1acc4">sourceId</span> = "DOC-01"</div>
+                <div data-review-node="b-715501b6be86"><span class="accent-text" data-review-node="b-6ae8dfbfa089">evidence</span> = "Payments est responsable d'Orion."</div>
+                <div data-review-node="b-e4326c125c43"><span class="accent-text" data-review-node="b-3b1c86407099">validFrom</span> = "2026-01"</div>
               </div>
             </div>
 
-            <div class="truth-stack">
-              <div class="truth-item">
-                <div class="truth-kind">FAIT</div>
-                <p class="t-body">Présent explicitement dans une source identifiée.</p>
+            <div class="truth-stack" data-review-node="b-431d85c970a9">
+              <div class="truth-item" data-review-node="b-0c3d543453ea">
+                <div class="truth-kind" data-review-node="b-8034bc734b37">FAIT</div>
+                <p class="t-body" data-review-node="b-b6447120d39e">Présent explicitement dans une source identifiée.</p>
               </div>
-              <div class="truth-item">
-                <div class="truth-kind">INTERPRÉTATION</div>
-                <p class="t-body">Choix du groupe, documenté comme tel.</p>
+              <div class="truth-item" data-review-node="b-46f0a61aef04">
+                <div class="truth-kind" data-review-node="b-bc24c1a3efca">INTERPRÉTATION</div>
+                <p class="t-body" data-review-node="b-f5fbb0345864">Choix du groupe, documenté comme tel.</p>
               </div>
-              <div class="truth-item">
-                <div class="truth-kind">INCONNU</div>
-                <p class="t-body">L'information manque : on ne l'invente pas.</p>
+              <div class="truth-item" data-review-node="b-21b98540b361">
+                <div class="truth-kind" data-review-node="b-b91aa101a193">INCONNU</div>
+                <p class="t-body" data-review-node="b-e1737ee79a23">L'information manque : on ne l'invente pas.</p>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="foot-band">
-          <span class="t-small t-mono t-muted">FAIT · INTERPRÉTATION · INCONNU</span>
-          <span class="t-label accent-text-strong">Provenance</span>
+        <div class="foot-band" data-review-node="b-3ccb04b8f5fd">
+          <span class="t-small t-mono t-muted" data-review-node="b-e2f2f51b34e0">FAIT · INTERPRÉTATION · INCONNU</span>
+          <span class="t-label accent-text-strong" data-review-node="b-98e25dbac702">Provenance</span>
         </div>
       </div>
     </section>
@@ -3175,15 +3354,15 @@ html.final-state .hud-controls,html.final-state .key-hint,html.final-state .edit
     <!-- ====================================================================
          SLIDE 21 — CARTE KNOWLEDGE
          ==================================================================== -->
-    <section class="slide s-light map-slide technical-slide" data-slide="21">
-      <div class="si">
-        <div class="chrome-band">
-          <span class="t-label">20 · Carte relue</span>
-          <span class="pill accent">3 — Knowledge layer</span>
+    <section class="slide s-light map-slide technical-slide" data-slide="21" data-review-slide="s-5eac2f722d3f" data-review-node="b-2df984a21d63">
+      <div class="si" data-review-node="b-0793249d7cdb">
+        <div class="chrome-band" data-review-node="b-2f61ee78e73b">
+          <span class="t-label" data-review-node="b-430b550ba37b">20 · Carte relue</span>
+          <span class="pill accent" data-review-node="b-212f114ad8ba">3 — Knowledge layer</span>
         </div>
-        <h2 class="map-heading">Les assertions validées deviennent une projection graphe.</h2>
-        <p class="map-subhead">Le sens vient du domaine ; Neo4j stocke une projection reconstruite depuis des artefacts versionnés.</p>
-        <div class="data-map-mount" data-map-state="knowledge" role="img" aria-label="Architecture data avec le trajet jusqu'à la couche Knowledge et au stockage Graph mis en évidence">
+        <h2 class="map-heading" data-review-node="b-a78e1dd131c0">Les assertions validées deviennent une projection graphe.</h2>
+        <p class="map-subhead" data-review-node="b-007a269c2b34">Le sens vient du domaine ; Neo4j stocke une projection reconstruite depuis des artefacts versionnés.</p>
+        <div class="data-map-mount" data-map-state="knowledge" role="img" aria-label="Architecture data avec le trajet jusqu'à la couche Knowledge et au stockage Graph mis en évidence" data-review-node="b-0a0134022b34">
 
         </div>
       </div>
@@ -3192,49 +3371,49 @@ html.final-state .hud-controls,html.final-state .key-hint,html.final-state .edit
     <!-- ====================================================================
          SLIDE 22 — DATA PRODUCT
          ==================================================================== -->
-    <section class="slide s-light technical-slide" data-slide="22">
-      <div class="si">
-        <div class="chrome-band">
-          <span class="t-label">21 · Rendre la donnée utilisable</span>
-          <span class="pill">Data Product</span>
+    <section class="slide s-light technical-slide" data-slide="22" data-review-slide="s-1cc68422a1fe" data-review-node="b-e8337fac23c0">
+      <div class="si" data-review-node="b-66d1501c9715">
+        <div class="chrome-band" data-review-node="b-c026cd3a7823">
+          <span class="t-label" data-review-node="b-b710fcd5b6e8">21 · Rendre la donnée utilisable</span>
+          <span class="pill" data-review-node="b-42fa252c7c9e">Data Product</span>
         </div>
 
-        <div class="section-body" style="justify-content:flex-start; padding-top:12px;">
-          <div class="kicker reveal">Au-delà de la base</div>
-          <h2 class="t-h2 reveal">Une base de données n'est pas encore un produit.</h2>
+        <div class="section-body" style="justify-content:flex-start; padding-top:12px;" data-review-node="b-1fb6e960ff40">
+          <div class="kicker reveal" data-review-node="b-f125241fe3b9">Au-delà de la base</div>
+          <h2 class="t-h2 reveal" data-review-node="b-8c9ee58b80dc">Une base de données n'est pas encore un produit.</h2>
 
-          <div class="product-layout reveal">
-            <div class="product-core">
-              <div class="product-diamond"><span>Data<br>Product</span></div>
+          <div class="product-layout reveal" data-review-node="b-51bdde792401">
+            <div class="product-core" data-review-node="b-65e04a68b020">
+              <div class="product-diamond" data-review-node="b-ae7bdfc513d4"><span data-review-node="b-22b25f90920a">Data<br data-review-node="b-eaa6cf298ce5">Product</span></div>
             </div>
-            <div class="responsibility-grid">
-              <article class="responsibility">
-                <span class="t-label accent-text-strong">Pour qui ?</span>
-                <h3 class="t-h3" style="margin-top:18px;">Des utilisateurs</h3>
-                <p class="t-body" style="margin-top:12px; color:var(--ink-dark-2);">Des besoins et des questions identifiés.</p>
+            <div class="responsibility-grid" data-review-node="b-5c9c078ff99c">
+              <article class="responsibility" data-review-node="b-58963e7b3708">
+                <span class="t-label accent-text-strong" data-review-node="b-36805e634d8e">Pour qui ?</span>
+                <h3 class="t-h3" style="margin-top:18px;" data-review-node="b-e1b39f4bf62c">Des utilisateurs</h3>
+                <p class="t-body" style="margin-top:12px; color:var(--ink-dark-2);" data-review-node="b-07daa7134768">Des besoins et des questions identifiés.</p>
               </article>
-              <article class="responsibility">
-                <span class="t-label accent-text-strong">Par qui ?</span>
-                <h3 class="t-h3" style="margin-top:18px;">Un responsable</h3>
-                <p class="t-body" style="margin-top:12px; color:var(--ink-dark-2);">Quelqu'un répond de la qualité et de l'évolution.</p>
+              <article class="responsibility" data-review-node="b-1339e9c7b40e">
+                <span class="t-label accent-text-strong" data-review-node="b-eb702d0b4601">Par qui ?</span>
+                <h3 class="t-h3" style="margin-top:18px;" data-review-node="b-d6b2bb6d1393">Un responsable</h3>
+                <p class="t-body" style="margin-top:12px; color:var(--ink-dark-2);" data-review-node="b-17dd64293d79">Quelqu'un répond de la qualité et de l'évolution.</p>
               </article>
-              <article class="responsibility">
-                <span class="t-label accent-text-strong">Comment ?</span>
-                <h3 class="t-h3" style="margin-top:18px;">Un contrat</h3>
-                <p class="t-body" style="margin-top:12px; color:var(--ink-dark-2);">Schéma, accès, documentation et règles d'usage.</p>
+              <article class="responsibility" data-review-node="b-c58aeeb604e9">
+                <span class="t-label accent-text-strong" data-review-node="b-b9870c10a35a">Comment ?</span>
+                <h3 class="t-h3" style="margin-top:18px;" data-review-node="b-d97cd59f5a9d">Un contrat</h3>
+                <p class="t-body" style="margin-top:12px; color:var(--ink-dark-2);" data-review-node="b-48ec6e4e8e4e">Schéma, accès, documentation et règles d'usage.</p>
               </article>
-              <article class="responsibility">
-                <span class="t-label accent-text-strong">Avec quelle confiance ?</span>
-                <h3 class="t-h3" style="margin-top:18px;">Une qualité visible</h3>
-                <p class="t-body" style="margin-top:12px; color:var(--ink-dark-2);">Fraîcheur, complétude, provenance et limites.</p>
+              <article class="responsibility" data-review-node="b-f516d94bd014">
+                <span class="t-label accent-text-strong" data-review-node="b-16cfb7036a8c">Avec quelle confiance ?</span>
+                <h3 class="t-h3" style="margin-top:18px;" data-review-node="b-1fe0a6b62ba7">Une qualité visible</h3>
+                <p class="t-body" style="margin-top:12px; color:var(--ink-dark-2);" data-review-node="b-8b6b6cccba85">Fraîcheur, complétude, provenance et limites.</p>
               </article>
             </div>
           </div>
         </div>
 
-        <div class="foot-band">
-          <span class="t-small t-mono t-muted">UTILISATEURS · OWNERSHIP · CONTRAT · QUALITÉ</span>
-          <span class="t-label accent-text-strong">Data Product</span>
+        <div class="foot-band" data-review-node="b-259066ab2898">
+          <span class="t-small t-mono t-muted" data-review-node="b-e891e128df0f">UTILISATEURS · OWNERSHIP · CONTRAT · QUALITÉ</span>
+          <span class="t-label accent-text-strong" data-review-node="b-0b9a7fbc32e2">Data Product</span>
         </div>
       </div>
     </section>
@@ -3242,65 +3421,65 @@ html.final-state .hud-controls,html.final-state .key-hint,html.final-state .edit
     <!-- ====================================================================
          SLIDE 23 — DATA MESH
          ==================================================================== -->
-    <section class="slide s-light course-plate-slide technical-slide" data-slide="23" aria-label="Data Mesh et produits de données">
-      <div class="si">
-        <div class="chrome-band"><span class="t-label">22 · Changer d’échelle</span><span class="pill accent">Data Mesh</span></div>
-        <h2 class="t-h2">Distribuer la responsabilité, garder des règles communes.</h2>
-        <figure class="course-plate"><div class="plate-surface"><a href="../../assets/infographics/data-mesh-products.png" target="_blank" rel="noopener noreferrer" aria-label="Ouvrir la planche Data Mesh en pleine résolution"><img src="../../assets/infographics/data-mesh-products.png" width="1672" height="941" alt="Data Mesh : les équipes Clients, Ventes, Logistique et Finance possèdent leurs produits de données. Ventes consomme les références clients ; Logistique consomme les commandes validées. La plateforme fournit des outils en libre-service ; les domaines participent à une gouvernance fédérée."></a></div></figure>
-        <div class="foot-band"><span class="t-small t-mono">Exemple de commerce · Les mêmes principes s’appliquent aux produits du projet · Image complète au clic</span></div>
+    <section class="slide s-light course-plate-slide technical-slide" data-slide="23" aria-label="Data Mesh et produits de données" data-review-slide="s-e528d2d85583" data-review-node="b-fb00ae42dbd6">
+      <div class="si" data-review-node="b-4f4e28306e8e">
+        <div class="chrome-band" data-review-node="b-0ce7d4087e41"><span class="t-label" data-review-node="b-aa6c5954b917">22 · Changer d’échelle</span><span class="pill accent" data-review-node="b-2a17a4d26a4c">Data Mesh</span></div>
+        <h2 class="t-h2" data-review-node="b-d4eba5022054">Distribuer la responsabilité, garder des règles communes.</h2>
+        <figure class="course-plate" data-review-node="b-981fe845e901"><div class="plate-surface" data-review-node="b-bbadbf03ddd0"><a href="../../assets/infographics/data-mesh-products.png" target="_blank" rel="noopener noreferrer" aria-label="Ouvrir la planche Data Mesh en pleine résolution" data-review-node="b-803d995181f9"><img src="../../assets/infographics/data-mesh-products.png" width="1672" height="941" alt="Data Mesh : les équipes Clients, Ventes, Logistique et Finance possèdent leurs produits de données. Ventes consomme les références clients ; Logistique consomme les commandes validées. La plateforme fournit des outils en libre-service ; les domaines participent à une gouvernance fédérée." data-review-node="b-fcc1596a2616"></a></div></figure>
+        <div class="foot-band" data-review-node="b-378bd7312e17"><span class="t-small t-mono" data-review-node="b-7e36f94b8f1f">Exemple de commerce · Les mêmes principes s’appliquent aux produits du projet · Image complète au clic</span></div>
       </div>
     </section>
 
     <!-- ====================================================================
          SLIDE 24 — NEO4J AURA
          ==================================================================== -->
-    <section class="slide s-dark grid technical-slide" data-slide="24">
-      <div class="si">
-        <div class="chrome-band">
-          <span class="t-label t-muted">23 · Passer à l'outil</span>
-          <span class="pill accent">Neo4j Aura</span>
+    <section class="slide s-dark grid technical-slide" data-slide="24" data-review-slide="s-75638e568acc" data-review-node="b-0c39c63def8b">
+      <div class="si" data-review-node="b-8bbf673f4210">
+        <div class="chrome-band" data-review-node="b-63c78073d521">
+          <span class="t-label t-muted" data-review-node="b-e097ceed259a">23 · Passer à l'outil</span>
+          <span class="pill accent" data-review-node="b-a7e976386ea1">Neo4j Aura</span>
         </div>
 
-        <div class="section-body" style="justify-content:flex-start; padding-top:12px;">
-          <div class="kicker reveal">Un vrai moteur, sans serveur local</div>
-          <h2 class="t-h2 reveal">Pourquoi Aura pour le TP ?</h2>
+        <div class="section-body" style="justify-content:flex-start; padding-top:12px;" data-review-node="b-2a7c7b2e74bd">
+          <div class="kicker reveal" data-review-node="b-dcfb5b66b1de">Un vrai moteur, sans serveur local</div>
+          <h2 class="t-h2 reveal" data-review-node="b-c41a447b6480">Pourquoi Aura pour le TP ?</h2>
 
-          <div class="aura-grid reveal">
-            <div class="aura-hero">
-              <div>
-                <div class="aura-logo">Neo4j Aura</div>
-                <p class="t-lead" style="margin-top:20px; color:var(--ink-cream-2); max-width:780px;">
+          <div class="aura-grid reveal" data-review-node="b-959c6bcea0ab">
+            <div class="aura-hero" data-review-node="b-d756a9c5928a">
+              <div data-review-node="b-0682cc002d59">
+                <div class="aura-logo" data-review-node="b-7371fa064999">Neo4j Aura</div>
+                <p class="t-lead" style="margin-top:20px; color:var(--ink-cream-2); max-width:780px;" data-review-node="b-514c4a66b575">
                   Construire, requêter et visualiser le graphe directement dans le navigateur.
                 </p>
               </div>
-              <div class="aura-flow">
-                <span>Query</span>
-                <span>Cypher</span>
-                <span>Graph view</span>
-                <span>Export PNG</span>
+              <div class="aura-flow" data-review-node="b-334d6d365964">
+                <span data-review-node="b-fc92639dffa4">Query</span>
+                <span data-review-node="b-376c538fa379">Cypher</span>
+                <span data-review-node="b-064ca461f730">Graph view</span>
+                <span data-review-node="b-054afdf96cbd">Export PNG</span>
               </div>
             </div>
 
-            <div class="aura-reasons">
-              <article class="aura-reason">
-                <span class="t-label accent-text-strong">Installation</span>
-                <h3 class="t-h3" style="margin-top:16px;">Aucun serveur local</h3>
+            <div class="aura-reasons" data-review-node="b-7d468706eec5">
+              <article class="aura-reason" data-review-node="b-bb29decae2a8">
+                <span class="t-label accent-text-strong" data-review-node="b-47b4849e4400">Installation</span>
+                <h3 class="t-h3" style="margin-top:16px;" data-review-node="b-0e709d63e3f0">Aucun serveur local</h3>
               </article>
-              <article class="aura-reason">
-                <span class="t-label accent-text-strong">Apprentissage</span>
-                <h3 class="t-h3" style="margin-top:16px;">Neo4j et Cypher réels</h3>
+              <article class="aura-reason" data-review-node="b-25ca19241639">
+                <span class="t-label accent-text-strong" data-review-node="b-15d32886ad5d">Apprentissage</span>
+                <h3 class="t-h3" style="margin-top:16px;" data-review-node="b-9064cab5cff2">Neo4j et Cypher réels</h3>
               </article>
-              <article class="aura-reason">
-                <span class="t-label accent-text-strong">Prérequis</span>
-                <h3 class="t-h3" style="margin-top:16px;">1 instance / groupe, prête avant S5</h3>
+              <article class="aura-reason" data-review-node="b-3f68ae49f248">
+                <span class="t-label accent-text-strong" data-review-node="b-ce7126e49fe3">Prérequis</span>
+                <h3 class="t-h3" style="margin-top:16px;" data-review-node="b-fa88f1f3e8d5">1 instance / groupe, prête avant S5</h3>
               </article>
             </div>
           </div>
         </div>
 
-        <div class="foot-band">
-          <span class="t-small t-mono t-muted">CORPUS PUBLIC OU SYNTHÉTIQUE UNIQUEMENT</span>
-          <span class="t-label accent-text">AuraDB Free</span>
+        <div class="foot-band" data-review-node="b-2ac5f4792a16">
+          <span class="t-small t-mono t-muted" data-review-node="b-f86c68255823">CORPUS PUBLIC OU SYNTHÉTIQUE UNIQUEMENT</span>
+          <span class="t-label accent-text" data-review-node="b-e98e13fd1c19">AuraDB Free</span>
         </div>
       </div>
     </section>
@@ -3308,50 +3487,50 @@ html.final-state .hud-controls,html.final-state .key-hint,html.final-state .edit
     <!-- ====================================================================
          SLIDE 25 — CYPHER
          ==================================================================== -->
-    <section class="slide s-light technical-slide" data-slide="25">
-      <div class="si">
-        <div class="chrome-band">
-          <span class="t-label">24 · Construire avec Cypher</span>
-          <span class="pill accent">Protéger · créer · vérifier</span>
+    <section class="slide s-light technical-slide" data-slide="25" data-review-slide="s-7d483ac19125" data-review-node="b-83b20a2d5608">
+      <div class="si" data-review-node="b-7628d4231896">
+        <div class="chrome-band" data-review-node="b-ce50d06b9fea">
+          <span class="t-label" data-review-node="b-22fc2f965921">24 · Construire avec Cypher</span>
+          <span class="pill accent" data-review-node="b-c2f42e0e7d59">Protéger · créer · vérifier</span>
         </div>
 
-        <div class="section-body" style="justify-content:flex-start; padding-top:8px;">
-          <div class="kicker reveal">Un script, trois responsabilités</div>
-          <h2 class="t-h2 reveal">Le graphe doit être rejouable.</h2>
+        <div class="section-body" style="justify-content:flex-start; padding-top:8px;" data-review-node="b-312653fc33df">
+          <div class="kicker reveal" data-review-node="b-d7e56e6bb403">Un script, trois responsabilités</div>
+          <h2 class="t-h2 reveal" data-review-node="b-b0e2d98d8362">Le graphe doit être rejouable.</h2>
 
-          <div class="code-flow reveal">
-            <article class="code-step">
-              <div class="code-head">01 · CONSTRAINT</div>
-              <pre>CREATE CONSTRAINT
+          <div class="code-flow reveal" data-review-node="b-0c900e8675db">
+            <article class="code-step" data-review-node="b-799f06ceab36">
+              <div class="code-head" data-review-node="b-036237637c86">01 · CONSTRAINT</div>
+              <pre data-review-node="b-2c24381523e6">CREATE CONSTRAINT
 application_id
 IF NOT EXISTS
 FOR (a:Application)
 REQUIRE a.id IS UNIQUE;</pre>
-              <p class="code-caption">Protéger l'identité et empêcher les doublons.</p>
+              <p class="code-caption" data-review-node="b-0c6980391c17">Protéger l'identité et empêcher les doublons.</p>
             </article>
-            <article class="code-step">
-              <div class="code-head">02 · MERGE</div>
-              <pre>MERGE (a:Application {
+            <article class="code-step" data-review-node="b-bf9f13195eab">
+              <div class="code-head" data-review-node="b-a208b93b186a">02 · MERGE</div>
+              <pre data-review-node="b-f3fb66ff1343">MERGE (a:Application {
   id: "app-orion"
 })
 SET a.name = "Orion";</pre>
-              <p class="code-caption">Créer ou retrouver sans dupliquer au second passage.</p>
+              <p class="code-caption" data-review-node="b-4143d719d1a2">Créer ou retrouver sans dupliquer au second passage.</p>
             </article>
-            <article class="code-step">
-              <div class="code-head">03 · MATCH</div>
-              <pre>MATCH path =
+            <article class="code-step" data-review-node="b-9220135d476f">
+              <div class="code-head" data-review-node="b-7f6e174b38ad">03 · MATCH</div>
+              <pre data-review-node="b-d165ee6edc9a">MATCH path =
   (:Incident)-[:AFFECTS]-&gt;
   (:Application)-[:OWNED_BY]-&gt;
   (:Team)
 RETURN path;</pre>
-              <p class="code-caption">Contrôler que le chemin attendu existe réellement.</p>
+              <p class="code-caption" data-review-node="b-eab91d649b06">Contrôler que le chemin attendu existe réellement.</p>
             </article>
           </div>
         </div>
 
-        <div class="foot-band">
-          <span class="t-small t-mono t-muted">CONSTRAINT · MERGE · MATCH</span>
-          <span class="t-label accent-text-strong">Cypher minimal</span>
+        <div class="foot-band" data-review-node="b-f6ed458c7d10">
+          <span class="t-small t-mono t-muted" data-review-node="b-8d97c4243604">CONSTRAINT · MERGE · MATCH</span>
+          <span class="t-label accent-text-strong" data-review-node="b-472d53fd670c">Cypher minimal</span>
         </div>
       </div>
     </section>
@@ -3359,42 +3538,42 @@ RETURN path;</pre>
     <!-- ====================================================================
          SLIDE 26 — MISSION DU TP
          ==================================================================== -->
-    <section class="slide s-dark technical-slide" data-slide="26">
-      <div class="si">
-        <div class="chrome-band">
-          <span class="t-label t-muted">25 · Travaux pratiques</span>
-          <span class="pill accent">80 minutes</span>
+    <section class="slide s-dark technical-slide" data-slide="26" data-review-slide="s-b7acbd6ba4f0" data-review-node="b-dbfb8afa9219">
+      <div class="si" data-review-node="b-14c0c77c00df">
+        <div class="chrome-band" data-review-node="b-762b8d26712e">
+          <span class="t-label t-muted" data-review-node="b-4ea88e955694">25 · Travaux pratiques</span>
+          <span class="pill accent" data-review-node="b-21947cee05fa">80 minutes</span>
         </div>
 
-        <div class="section-body" style="justify-content:flex-start; padding-top:10px;">
-          <div class="kicker reveal">Mission</div>
-          <h2 class="t-h2 reveal">Du domaine S4 au graphe, puis à GraphRAG.</h2>
+        <div class="section-body" style="justify-content:flex-start; padding-top:10px;" data-review-node="b-9b1b9ca53967">
+          <div class="kicker reveal" data-review-node="b-f9566e38eefb">Mission</div>
+          <h2 class="t-h2 reveal" data-review-node="b-d7c214fa702c">Du domaine S4 au graphe, puis à GraphRAG.</h2>
 
-          <div class="mission-grid reveal">
-            <div class="mission-main">
-              <span class="t-label accent-text-strong">Votre défi</span>
-              <h3>Construire un graphe sourcé et l'utiliser dans GraphRAG.</h3>
-              <p class="t-body" style="color:var(--ink-dark-2); max-width:850px;">
+          <div class="mission-grid reveal" data-review-node="b-a787fc778b3b">
+            <div class="mission-main" data-review-node="b-45fc810a7d0d">
+              <span class="t-label accent-text-strong" data-review-node="b-46fae1e18c40">Votre défi</span>
+              <h3 data-review-node="b-8e5c679bbd5e">Construire un graphe sourcé et l'utiliser dans GraphRAG.</h3>
+              <p class="t-body" style="color:var(--ink-dark-2); max-width:850px;" data-review-node="b-9634ccdded3b">
                 À partir du domaine métier construit en S4 et de documents publics ou synthétiques :
                 définir la projection, écrire le script Cypher, valider les chemins,
                 puis comparer RAG seul et RAG enrichi par le graphe.
               </p>
             </div>
 
-            <div class="deliverables">
-              <div class="deliverable">graph_model.md</div>
-              <div class="deliverable">graph.cypher</div>
-              <div class="deliverable">capture PNG</div>
-              <div class="deliverable">2 chemins validés</div>
-              <div class="deliverable">comparaison RAG / GraphRAG</div>
+            <div class="deliverables" data-review-node="b-13d4e02dd064">
+              <div class="deliverable" data-review-node="b-526180260d76">graph_model.md</div>
+              <div class="deliverable" data-review-node="b-94aaf7c56fe5">graph.cypher</div>
+              <div class="deliverable" data-review-node="b-090f17e1e3da">capture PNG</div>
+              <div class="deliverable" data-review-node="b-91a0da18c7b4">2 chemins validés</div>
+              <div class="deliverable" data-review-node="b-b7a89fcaafda">comparaison RAG / GraphRAG</div>
             </div>
           </div>
-          <figure class="mission-path"><img src="../../assets/diagrams/graphrag-path.svg" alt="Domaine S4 vers assertions sourcées, projection graphe, parcours borné et contexte GraphRAG."></figure>
+          <figure class="mission-path" data-review-node="b-a80c68308892"><img src="../../assets/diagrams/graphrag-path.svg" alt="Domaine S4 vers assertions sourcées, projection graphe, parcours borné et contexte GraphRAG." data-review-node="b-67b09c3ad08e"></figure>
         </div>
 
-        <div class="foot-band">
-          <span class="t-small t-mono t-muted">AUCUNE DONNÉE CONFIDENTIELLE · AUCUNE EXTRACTION AUTOMATIQUE REQUISE</span>
-          <span class="t-label accent-text">TP S5</span>
+        <div class="foot-band" data-review-node="b-7f2c21cafae3">
+          <span class="t-small t-mono t-muted" data-review-node="b-754fd8c238e4">AUCUNE DONNÉE CONFIDENTIELLE · AUCUNE EXTRACTION AUTOMATIQUE REQUISE</span>
+          <span class="t-label accent-text" data-review-node="b-d52478388e70">TP S5</span>
         </div>
       </div>
     </section>
@@ -3402,66 +3581,66 @@ RETURN path;</pre>
     <!-- ====================================================================
          SLIDE 27 — DÉROULÉ DU TP
          ==================================================================== -->
-    <section class="slide s-light technical-slide" data-slide="27">
-      <div class="si">
-        <div class="chrome-band">
-          <span class="t-label">26 · Déroulé du TP</span>
-          <span class="pill accent">Total · 80 min</span>
+    <section class="slide s-light technical-slide" data-slide="27" data-review-slide="s-4b650e16afb1" data-review-node="b-ba9a5465c132">
+      <div class="si" data-review-node="b-a653c59adad7">
+        <div class="chrome-band" data-review-node="b-c33e6dd94726">
+          <span class="t-label" data-review-node="b-3630579beb33">26 · Déroulé du TP</span>
+          <span class="pill accent" data-review-node="b-d2935987e9c2">Total · 80 min</span>
         </div>
 
-        <div class="section-body" style="justify-content:flex-start; padding-top:12px;">
-          <div class="kicker reveal">Un chemin contrôlé</div>
-          <h2 class="t-h2 reveal">80 minutes pour construire, connecter et comparer.</h2>
+        <div class="section-body" style="justify-content:flex-start; padding-top:12px;" data-review-node="b-9c2cd4e69b17">
+          <div class="kicker reveal" data-review-node="b-ea0f9e1612cc">Un chemin contrôlé</div>
+          <h2 class="t-h2 reveal" data-review-node="b-dc80581c34c6">80 minutes pour construire, connecter et comparer.</h2>
 
-          <div class="tp-timeline reveal">
-            <article class="tp-step">
-              <div class="tp-minute">05'</div>
-              <div class="tp-title">Connexion</div>
-              <div class="tp-copy">Ouvrir Aura et exécuter la requête de test.</div>
+          <div class="tp-timeline reveal" data-review-node="b-c4ff8fa9e812">
+            <article class="tp-step" data-review-node="b-2935f70b89d1">
+              <div class="tp-minute" data-review-node="b-8caf2fe73d2c">05'</div>
+              <div class="tp-title" data-review-node="b-3028d5ee2c4e">Connexion</div>
+              <div class="tp-copy" data-review-node="b-9ca0078c757e">Ouvrir Aura et exécuter la requête de test.</div>
             </article>
-            <article class="tp-step">
-              <div class="tp-minute">10'</div>
-              <div class="tp-title">Projection</div>
-              <div class="tp-copy">Projeter le domaine S4 en labels et relations.</div>
+            <article class="tp-step" data-review-node="b-4003b0ccae64">
+              <div class="tp-minute" data-review-node="b-8aebdda45419">10'</div>
+              <div class="tp-title" data-review-node="b-1333ad1fd532">Projection</div>
+              <div class="tp-copy" data-review-node="b-4d7a199df577">Projeter le domaine S4 en labels et relations.</div>
             </article>
-            <article class="tp-step">
-              <div class="tp-minute">15'</div>
-              <div class="tp-title">Nœuds</div>
-              <div class="tp-copy">Créer contraintes et entités avec MERGE.</div>
+            <article class="tp-step" data-review-node="b-966456d8b9af">
+              <div class="tp-minute" data-review-node="b-9a827aee49d7">15'</div>
+              <div class="tp-title" data-review-node="b-a12e8477e921">Nœuds</div>
+              <div class="tp-copy" data-review-node="b-c8edfcb6fb47">Créer contraintes et entités avec MERGE.</div>
             </article>
-            <article class="tp-step">
-              <div class="tp-minute">15'</div>
-              <div class="tp-title">Relations</div>
-              <div class="tp-copy">Ajouter sourceId et evidence.</div>
+            <article class="tp-step" data-review-node="b-3c06eb7f8205">
+              <div class="tp-minute" data-review-node="b-ed44a0a9a29f">15'</div>
+              <div class="tp-title" data-review-node="b-317c93c41d7c">Relations</div>
+              <div class="tp-copy" data-review-node="b-5e20723e36c3">Ajouter sourceId et evidence.</div>
             </article>
-            <article class="tp-step">
-              <div class="tp-minute">10'</div>
-              <div class="tp-title">Validation</div>
-              <div class="tp-copy">Visualiser et vérifier les chemins.</div>
+            <article class="tp-step" data-review-node="b-09f294c99299">
+              <div class="tp-minute" data-review-node="b-f2ccb3c7c1b1">10'</div>
+              <div class="tp-title" data-review-node="b-09136729ed08">Validation</div>
+              <div class="tp-copy" data-review-node="b-15b79bb2bb4c">Visualiser et vérifier les chemins.</div>
             </article>
-            <article class="tp-step">
-              <div class="tp-minute">15'</div>
-              <div class="tp-title">GraphRAG</div>
-              <div class="tp-copy">Résoudre, parcourir 1–2 sauts et enrichir le contexte.</div>
+            <article class="tp-step" data-review-node="b-5f24a5046f14">
+              <div class="tp-minute" data-review-node="b-3175fee6d165">15'</div>
+              <div class="tp-title" data-review-node="b-a6c96b1a3de3">GraphRAG</div>
+              <div class="tp-copy" data-review-node="b-00a7eef7788d">Résoudre, parcourir 1–2 sauts et enrichir le contexte.</div>
             </article>
-            <article class="tp-step">
-              <div class="tp-minute">10'</div>
-              <div class="tp-title">Comparaison</div>
-              <div class="tp-copy">Comparer RAG seul, GraphRAG et fallback.</div>
+            <article class="tp-step" data-review-node="b-3ef13e2781f2">
+              <div class="tp-minute" data-review-node="b-39300f90f588">10'</div>
+              <div class="tp-title" data-review-node="b-a4612b79015f">Comparaison</div>
+              <div class="tp-copy" data-review-node="b-3bfda23316cd">Comparer RAG seul, GraphRAG et fallback.</div>
             </article>
           </div>
 
-          <div class="criteria-row reveal">
-            <div class="criterion">IDs stables</div>
-            <div class="criterion">provenance</div>
-            <div class="criterion">chemin à 2 sauts</div>
-            <div class="criterion">script rejouable</div>
+          <div class="criteria-row reveal" data-review-node="b-a250747d16a2">
+            <div class="criterion" data-review-node="b-dc15ea4c705d">IDs stables</div>
+            <div class="criterion" data-review-node="b-8fb3359f59a7">provenance</div>
+            <div class="criterion" data-review-node="b-d3b6131db883">chemin à 2 sauts</div>
+            <div class="criterion" data-review-node="b-3f375eef8dee">script rejouable</div>
           </div>
         </div>
 
-        <div class="foot-band">
-          <span class="t-small t-mono t-muted">PLAN B : MERMAID / STREAMLIT LOCAL POUR VISUALISER — SANS NEO4J NI CYPHER</span>
-          <span class="t-label accent-text-strong">Critères d'acceptation</span>
+        <div class="foot-band" data-review-node="b-36c380212f1d">
+          <span class="t-small t-mono t-muted" data-review-node="b-16183cd2339d">PLAN B : MERMAID / STREAMLIT LOCAL POUR VISUALISER — SANS NEO4J NI CYPHER</span>
+          <span class="t-label accent-text-strong" data-review-node="b-6cfd4d6c9e3a">Critères d'acceptation</span>
         </div>
       </div>
     </section>
@@ -3469,15 +3648,15 @@ RETURN path;</pre>
     <!-- ====================================================================
          SLIDE 28 — CARTE FINALE
          ==================================================================== -->
-    <section class="slide s-light map-slide technical-slide" data-slide="28">
-      <div class="si">
-        <div class="chrome-band">
-          <span class="t-label">27 · Conclusion</span>
-          <span class="pill accent">Vous savez lire la carte</span>
+    <section class="slide s-light map-slide technical-slide" data-slide="28" data-review-slide="s-f828737fd639" data-review-node="b-80000e26fb12">
+      <div class="si" data-review-node="b-10c7475eb77d">
+        <div class="chrome-band" data-review-node="b-5149d680b3bd">
+          <span class="t-label" data-review-node="b-346a64f69581">27 · Conclusion</span>
+          <span class="pill accent" data-review-node="b-fdeff97d0094">Vous savez lire la carte</span>
         </div>
-        <h2 class="map-heading">Le graphe est construit, validé et consommé avec mesure.</h2>
-        <p class="map-subhead">Vous savez reconstruire la projection, borner les parcours et reconnaître les questions pour lesquelles GraphRAG n'apporte rien.</p>
-        <div class="data-map-mount" data-map-state="s5-complete" role="img" aria-label="Architecture data finale avec le trajet Sources, curation, Knowledge Graph et GraphRAG mis en évidence">
+        <h2 class="map-heading" data-review-node="b-aebdd5bd422d">Le graphe est construit, validé et consommé avec mesure.</h2>
+        <p class="map-subhead" data-review-node="b-a57f2e1615cb">Vous savez reconstruire la projection, borner les parcours et reconnaître les questions pour lesquelles GraphRAG n'apporte rien.</p>
+        <div class="data-map-mount" data-map-state="s5-complete" role="img" aria-label="Architecture data finale avec le trajet Sources, curation, Knowledge Graph et GraphRAG mis en évidence" data-review-node="b-8f426d6c720c">
 
 
         </div>
