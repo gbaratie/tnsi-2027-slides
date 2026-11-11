@@ -7,7 +7,7 @@ Préparation : 9 novembre 2026. Les ressources sont conservées localement ; auc
 | Fichier | Slide / rôle | Provenance, droits et traitement |
 |---|---|---|
 | `photos/circuit-board.jpg` | 3 · rappeler le matériel physique | Harrison Broadbent, [Unsplash — 1mu9gF8OhNk](https://unsplash.com/photos/1mu9gF8OhNk), [licence Unsplash](https://unsplash.com/license). Copie inchangée de la ressource déjà sourcée du [deck IoT](../../../s04/01-cours-iot-interconnexion/assets/manifest.md), recadrée verticalement par CSS. Photo contextuelle de composants, sans attribution à un datacenter ou fournisseur. |
-| `photos/datacenter-illustration.png` | 1 · ouverture, infrastructure matérielle | Illustration originale générée avec `image_gen.imagegen`, 1672×941 px. Infrastructure fictive, statut indiqué sur la slide ; aucun fournisseur réel représenté. Original inchangé ; recadrage plein cadre et voile marine CSS. |
+| `photos/datacenter-illustration.png` | Ancienne couverture conservée, hors affichage | Illustration originale générée avec `image_gen.imagegen`, 1672×941 px. Infrastructure fictive, statut enregistré dans ce manifeste ; aucun fournisseur réel représenté. Original inchangé ; recadrage plein cadre et voile marine CSS. |
 | `infographics/cloud-technical-summary.png` | 19 · carte du dépôt au service | Planche pédagogique originale générée avec `image_gen.imagegen`, 1672×941 px, avec la synthèse IoT du dépôt réellement transmise comme référence graphique. Scénario fictif ; aucune architecture de production certifiée. Image inchangée, consultable au clic. Un court connecteur SVG natif complète code → pipeline dans le HTML. |
 
 Les prompts, références, originaux de génération et contrôles sont documentés dans le dossier interne de conception Cloud. Les captures fournies par l'auteur ont guidé le contenu ; leurs images et affirmations non vérifiées ne sont pas reproduites.
@@ -42,3 +42,7 @@ Les piles physique/VM, le pool cloud, la matrice de responsabilités, les topolo
 IBM Plex Sans 400/500/600/700 et IBM Plex Mono 400 sont chargées depuis les fontes locales partagées sans modification : [provenance et licence OFL 1.1](../../../assets/fonts/plex/manifest.md).
 
 Le canevas fixe 1920×1080 est réduit uniformément. Les fragments au clavier des caractéristiques cloud, pratiques multicloud et termes CI/CD sont complets en mode final, avec réduction des mouvements et à l'impression. Des textes alternatifs accompagnent images, logos et schémas.
+
+## Nouvelle couverture photographique
+
+La slide 1 utilise `../../assets/photos/datacenter-taylor-vick.jpg`, photo Taylor Vick / Unsplash. [Source et licence](../../../assets/photos/manifest.md). La restriction CDN décrite ci-dessus concernait la préparation précédente ; la photographie est désormais téléchargée et livrée localement.

@@ -2442,9 +2442,26 @@ body{font-family:'IBM Plex Sans',sans-serif;font-synthesis:none}
 .map-slide .kicker,.course-plate-slide .kicker{margin-bottom:12px}
 html.final-state #review-toggle,html.final-state #review-panel{display:none!important}
 @media print{.data-cover-image,.data-cover-shade{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+
+/* Ouverture photographique Unsplash — exigence auteur. */
+@font-face{font-family:'IBM Plex Sans';src:url('../../assets/fonts/plex/IBMPlexSans-Regular-Latin.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'IBM Plex Sans';src:url('../../assets/fonts/plex/IBMPlexSans-SemiBold-Latin.woff2') format('woff2');font-weight:600 800;font-display:swap}
+@font-face{font-family:'IBM Plex Mono';src:url('../../assets/fonts/plex/IBMPlexMono-Regular-Latin.woff2') format('woff2');font-weight:400 700;font-display:swap}
+:root{--font-display:'IBM Plex Sans',sans-serif;--font-body:'IBM Plex Sans',sans-serif;--font-mono:'IBM Plex Mono',monospace;--display:'IBM Plex Sans',sans-serif;--body:'IBM Plex Sans',sans-serif;--mono:'IBM Plex Mono',monospace}
+.unsplash-cover{isolation:isolate;background:#00205b!important;color:#edf4ff!important}.unsplash-cover::before,.unsplash-cover::after{display:none!important}.unsplash-cover .si{position:absolute!important;inset:0;z-index:2;padding:64px 96px!important;display:flex;flex-direction:column}.unsplash-cover>.cover-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}.unsplash-cover>.cover-veil{position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(0,20,62,.98),rgba(0,28,77,.82) 50%,rgba(0,32,91,.18))}.unsplash-cover .chrome-band{border-bottom:1px solid #a6c8ff55;padding-bottom:24px;color:#d0e2ff;font:20px 'IBM Plex Mono',monospace;display:flex;justify-content:space-between}.unsplash-cover .chrome-band *{color:#d0e2ff!important;font-size:20px!important}.unsplash-cover h1{font:600 98px/1.04 'IBM Plex Sans',sans-serif!important;letter-spacing:-.045em!important;max-width:1600px!important;color:#fff!important}.unsplash-cover h1 span{color:#fff!important}.unsplash-cover .kicker{font:400 23px 'IBM Plex Mono',monospace;color:#a6c8ff!important;margin-bottom:28px}.unsplash-cover .t-lead,.unsplash-cover .lead{font:400 33px/1.4 'IBM Plex Sans',sans-serif!important;max-width:1120px!important;color:#d0e2ff!important}.unsplash-cover .t-lead strong{color:#fff}.unsplash-cover .hero-copy{max-width:1500px;margin:auto 0!important}.unsplash-cover .foot-band{padding-bottom:35px!important;color:#d0e2ff!important}.unsplash-cover .foot-band *{font-size:18px!important;color:#d0e2ff!important}.unsplash-cover .cover-credit{position:absolute;z-index:3;left:96px;bottom:28px;color:#d0e2ff;font:18px 'IBM Plex Mono',monospace}.unsplash-cover .data-cover-image,.unsplash-cover .data-cover-shade,.unsplash-cover .r-photo-bg,.unsplash-cover .r-photo-shade,.unsplash-cover .r-photo-credit{display:none!important}.unsplash-cover .r-cover-copy{max-width:1120px}.unsplash-cover .r-cover-statement{max-width:430px;font-size:36px;align-self:flex-end;color:#edf4ff}.unsplash-cover .body{background:none!important}.unsplash-cover .r-cover-track{color:#d0e2ff}
+
+@media(prefers-reduced-motion:reduce){.slide,.slide *{animation:none!important;transition:none!important}}
+@media print{.hud,.hud-controls,.deck-controls,.edit-hotzone,.edit-toggle{display:none!important}}
+.unsplash-cover .data-cover-credit{display:none!important}
+
+/* Cadrage de la photographie Data validée : conserver les graphiques visibles. */
+.unsplash-cover>.cover-photo{object-position:55% 60%}
+/* Crédit photographique visible au-dessus des commandes. */
+.unsplash-cover .cover-credit{bottom:82px}
 </style>
+
 <!-- deck-review:start -->
-<script type="application/json" id="review-config">{"deckId": "01-cours-data-knowledge-graphs", "sourcePath": "teacher/slides/s05/01-cours-data-knowledge-graphs/slides.html", "sourceHash": "sha256:8fea217fefa796bbf868c64551761b8bcb845cc2026a6f9ed1a03deaf894f60c"}</script>
+<script type="application/json" id="review-config">{"deckId": "01-cours-data-knowledge-graphs", "sourcePath": "teacher/slides/s05/01-cours-data-knowledge-graphs/slides.html", "sourceHash": "sha256:c2863e0975fc35f01938084e36a5c512f2a2d5463d583820659f251faf596d89"}</script>
 <script>
 /* Shared static deck review editor. Embedded by build.py; no network calls. */
 (() => {
@@ -2767,40 +2784,38 @@ html.final-state #review-toggle,html.final-state #review-panel{display:none!impo
     <!-- ====================================================================
          SLIDE 01 — COUVERTURE
          ==================================================================== -->
-    <section class="slide s-dark grid active technical-slide data-cover" data-slide="1" data-review-slide="s-92394342aa8e" data-review-node="b-f5612f3c8455">
-<img class="data-cover-image" src="assets/illustrations/documents-to-graph.png" alt="Illustration conceptuelle : des documents dispersés et leurs relations organisées en réseau." data-review-node="b-737b0c1a9564">
-<div class="data-cover-shade" aria-hidden="true" data-review-node="b-38833a328443"></div>
-      <div class="si" data-review-node="b-d8a4b2aff21e">
-        <div class="chrome-band" data-review-node="b-db479ccc7265">
-          <span class="t-label t-muted" data-review-node="b-b29ebee7b7c9">Université Paris Dauphine–PSL · M2 MIAGE</span>
-          <span class="pill accent" data-review-node="b-bed4b3ce8efb">S5 · Organiser la donnée</span>
-        </div>
-
-        <div class="hero-copy" data-review-node="b-8a10a7d13e3c">
-          <div class="kicker reveal" data-review-node="b-e90ce91ae1dc">Data Management &amp; Knowledge Graphs</div>
-          <h1 class="t-display reveal" style="max-width: 1560px;" data-review-node="b-f6fd335441da">
-            Organiser<br data-review-node="b-1fb08b8934da">
-            <span class="accent-text" data-review-node="b-0fb96e6201c7">la donnée</span>
-          </h1>
-          <p class="t-lead reveal" style="max-width: 1240px; margin-top: 30px;" data-review-node="b-25d576e2c4eb">
+    <section class="slide s-dark grid active technical-slide data-cover unsplash-cover" data-photo-source="unsplash" data-review-node="b-f5612f3c8455" data-review-slide="s-92394342aa8e" data-slide="1"><img alt="Écran d’analyse de performances présentant des histogrammes et des courbes." class="cover-photo" src="../../assets/photos/analytics-luke-chesser.jpg"/><div aria-hidden="true" class="cover-veil" data-review-node="b-f65b206a5ab2"></div><div class="cover-credit" data-review-node="b-001cc5e9a549">Photo Luke Chesser / Unsplash</div>
+<img alt="Ancienne illustration conceptuelle (hors couverture photographique)." class="data-cover-image" data-review-node="b-737b0c1a9564" src="assets/illustrations/documents-to-graph.png"/>
+<div aria-hidden="true" class="data-cover-shade" data-review-node="b-38833a328443"></div>
+<div class="si" data-review-node="b-d8a4b2aff21e">
+<div class="chrome-band" data-review-node="b-db479ccc7265">
+<span class="t-label t-muted" data-review-node="b-b29ebee7b7c9">Université Paris Dauphine–PSL · M2 MIAGE</span>
+<span class="pill accent" data-review-node="b-bed4b3ce8efb">S5 · Organiser la donnée</span>
+</div>
+<div class="hero-copy" data-review-node="b-8a10a7d13e3c">
+<div class="kicker reveal" data-review-node="b-e90ce91ae1dc">Data Management &amp; Knowledge Graphs</div>
+<h1 class="t-display reveal" data-review-node="b-f6fd335441da" style="max-width: 1560px;">
+            Organiser<br data-review-node="b-1fb08b8934da"/>
+<span class="accent-text" data-review-node="b-0fb96e6201c7">la donnée</span>
+</h1>
+<p class="t-lead reveal" data-review-node="b-25d576e2c4eb" style="max-width: 1240px; margin-top: 30px;">
             Des documents dispersés à un graphe de connaissances
             <strong data-review-node="b-06ef3babaf1c">sourcé, visualisé et reconstructible</strong>.
           </p>
-          <div class="reveal" style="display:flex; gap:12px; margin-top:38px;" data-review-node="b-5b748ccdf641">
-            <span class="pill" data-review-node="b-58751c20d0e5">Sources</span>
-            <span class="pill" data-review-node="b-4be605c8e2ef">Curation</span>
-            <span class="pill" data-review-node="b-0191085e958a">Domaine</span>
-            <span class="pill" data-review-node="b-1fe69550fe72">Knowledge</span>
-            <span class="pill accent" data-review-node="b-8c8105e64477">Neo4j Aura</span>
-          </div>
-        </div>
-
-        <div class="foot-band" data-review-node="b-7b83521b81d4">
-          <span class="t-small t-mono t-muted" data-review-node="b-6daa6e1a5b67">TRANSITION NUMÉRIQUE DES SYSTÈMES D'INFORMATION</span>
-          <span class="t-label accent-text" data-review-node="b-556f8fb9af76">Thématique 03</span>
-        </div>
-      </div>
-    <div class="data-cover-credit" data-review-node="b-1a8f3af54ab2">Illustration générée · représentation conceptuelle</div>
+<div class="reveal" data-review-node="b-5b748ccdf641" style="display:flex; gap:12px; margin-top:38px;">
+<span class="pill" data-review-node="b-58751c20d0e5">Sources</span>
+<span class="pill" data-review-node="b-4be605c8e2ef">Curation</span>
+<span class="pill" data-review-node="b-0191085e958a">Domaine</span>
+<span class="pill" data-review-node="b-1fe69550fe72">Knowledge</span>
+<span class="pill accent" data-review-node="b-8c8105e64477">Neo4j Aura</span>
+</div>
+</div>
+<div class="foot-band" data-review-node="b-7b83521b81d4">
+<span class="t-small t-mono t-muted" data-review-node="b-6daa6e1a5b67">TRANSITION NUMÉRIQUE DES SYSTÈMES D'INFORMATION</span>
+<span class="t-label accent-text" data-review-node="b-556f8fb9af76">Thématique 03</span>
+</div>
+</div>
+<div class="data-cover-credit" data-review-node="b-1a8f3af54ab2">Illustration générée · représentation conceptuelle</div>
 </section>
 
     <!-- ====================================================================

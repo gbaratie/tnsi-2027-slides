@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TNSI Dauphine — 07. Thématique 07 · Architecture Logicielle</title>
 <!-- Google Fonts: Bricolage Grotesque, DM Sans, DM Mono -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+
+
+
 
 <style>
 /* ==========================================================================
@@ -55,7 +55,7 @@ html, body {
   margin: 0;
   overflow: hidden;
   background: #00153D;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'IBM Plex Sans', sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -144,7 +144,7 @@ html, body {
    2. TYPOGRAPHIE
    ========================================================================== */
 .t-display {
-  font-family: 'Bricolage Grotesque', sans-serif;
+  font-family: 'IBM Plex Sans', sans-serif;
   font-weight: 800;
   font-size: 96px;
   line-height: 0.98;
@@ -153,23 +153,23 @@ html, body {
 }
 
 .t-lead {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'IBM Plex Sans', sans-serif;
   font-weight: 400;
   font-size: 26px;
   line-height: 1.55;
 }
 
 .t-small {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'IBM Plex Sans', sans-serif;
   font-weight: 400;
   font-size: 14px;
   line-height: 1.5;
 }
 
-.t-mono { font-family: 'DM Mono', monospace; }
+.t-mono { font-family: 'IBM Plex Mono', monospace; }
 
 .t-label {
-  font-family: 'DM Mono', monospace;
+  font-family: 'IBM Plex Mono', monospace;
   font-weight: 500;
   font-size: 13px;
   letter-spacing: 0.14em;
@@ -208,7 +208,7 @@ html, body {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  font-family: 'DM Mono', monospace;
+  font-family: 'IBM Plex Mono', monospace;
   font-weight: 700;
   font-size: 13px;
   letter-spacing: 0.16em;
@@ -231,7 +231,7 @@ html, body {
   gap: 8px;
   padding: 6px 14px;
   border-radius: 999px;
-  font-family: 'DM Mono', monospace;
+  font-family: 'IBM Plex Mono', monospace;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -283,7 +283,7 @@ html, body {
   background: rgba(237, 244, 255, 0.06);
   border: 1px solid rgba(237, 244, 255, 0.16);
   color: var(--ink-dark-1);
-  font-family: 'DM Mono', monospace;
+  font-family: 'IBM Plex Mono', monospace;
   font-size: 12px;
   padding: 6px 12px;
   border-radius: 4px;
@@ -297,7 +297,7 @@ html, body {
 }
 
 .key-hint {
-  font-family: 'DM Mono', monospace;
+  font-family: 'IBM Plex Mono', monospace;
   font-size: 11px;
   letter-spacing: 0.08em;
   color: rgba(237, 244, 255, 0.4);
@@ -310,9 +310,20 @@ html, body {
   border-radius: 3px;
   color: rgba(237, 244, 255, 0.8);
 }
+
+/* Ouverture photographique Unsplash — exigence auteur. */
+@font-face{font-family:'IBM Plex Sans';src:url('../../assets/fonts/plex/IBMPlexSans-Regular-Latin.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'IBM Plex Sans';src:url('../../assets/fonts/plex/IBMPlexSans-SemiBold-Latin.woff2') format('woff2');font-weight:600 800;font-display:swap}
+@font-face{font-family:'IBM Plex Mono';src:url('../../assets/fonts/plex/IBMPlexMono-Regular-Latin.woff2') format('woff2');font-weight:400 700;font-display:swap}
+:root{--font-display:'IBM Plex Sans',sans-serif;--font-body:'IBM Plex Sans',sans-serif;--font-mono:'IBM Plex Mono',monospace;--display:'IBM Plex Sans',sans-serif;--body:'IBM Plex Sans',sans-serif;--mono:'IBM Plex Mono',monospace}
+.unsplash-cover{isolation:isolate;background:#00205b!important;color:#edf4ff!important}.unsplash-cover::before,.unsplash-cover::after{display:none!important}.unsplash-cover .si{position:absolute!important;inset:0;z-index:2;padding:64px 96px!important;display:flex;flex-direction:column}.unsplash-cover>.cover-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}.unsplash-cover>.cover-veil{position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(0,20,62,.98),rgba(0,28,77,.82) 50%,rgba(0,32,91,.18))}.unsplash-cover .chrome-band{border-bottom:1px solid #a6c8ff55;padding-bottom:24px;color:#d0e2ff;font:20px 'IBM Plex Mono',monospace;display:flex;justify-content:space-between}.unsplash-cover .chrome-band *{color:#d0e2ff!important;font-size:20px!important}.unsplash-cover h1{font:600 98px/1.04 'IBM Plex Sans',sans-serif!important;letter-spacing:-.045em!important;max-width:1600px!important;color:#fff!important}.unsplash-cover h1 span{color:#fff!important}.unsplash-cover .kicker{font:400 23px 'IBM Plex Mono',monospace;color:#a6c8ff!important;margin-bottom:28px}.unsplash-cover .t-lead,.unsplash-cover .lead{font:400 33px/1.4 'IBM Plex Sans',sans-serif!important;max-width:1120px!important;color:#d0e2ff!important}.unsplash-cover .t-lead strong{color:#fff}.unsplash-cover .hero-copy{max-width:1500px;margin:auto 0!important}.unsplash-cover .foot-band{padding-bottom:35px!important;color:#d0e2ff!important}.unsplash-cover .foot-band *{font-size:18px!important;color:#d0e2ff!important}.unsplash-cover .cover-credit{position:absolute;z-index:3;left:96px;bottom:28px;color:#d0e2ff;font:18px 'IBM Plex Mono',monospace}.unsplash-cover .data-cover-image,.unsplash-cover .data-cover-shade,.unsplash-cover .r-photo-bg,.unsplash-cover .r-photo-shade,.unsplash-cover .r-photo-credit{display:none!important}.unsplash-cover .r-cover-copy{max-width:1120px}.unsplash-cover .r-cover-statement{max-width:430px;font-size:36px;align-self:flex-end;color:#edf4ff}.unsplash-cover .body{background:none!important}.unsplash-cover .r-cover-track{color:#d0e2ff}
+
+@media(prefers-reduced-motion:reduce){.slide,.slide *{animation:none!important;transition:none!important}}
+@media print{.hud,.hud-controls,.deck-controls,.edit-hotzone,.edit-toggle{display:none!important}}
 </style>
+
 <!-- deck-review:start -->
-<script type="application/json" id="review-config">{"deckId": "02-architecture-theorique", "sourcePath": "teacher/slides/s04/02-architecture-theorique/slides.html", "sourceHash": "sha256:aa4b7a90059e0697bcbc6e9a913ad669f80a9aa0a42ac12c62e5054fdaee5cf2"}</script>
+<script type="application/json" id="review-config">{"deckId": "02-architecture-theorique", "sourcePath": "teacher/slides/s04/02-architecture-theorique/slides.html", "sourceHash": "sha256:a3e758dfaac0cb74b50f29926873f45502123998ef6bf33ab873156adf1252f4"}</script>
 <script>
 /* Shared static deck review editor. Embedded by build.py; no network calls. */
 (() => {
@@ -633,32 +644,30 @@ html, body {
 <div class="deck-viewport">
   <main class="deck-stage" id="deckStage">
     <!-- SLIDE 1 : PAGE DE GARDE -->
-    <section class="slide s-dark active" data-slide="1" data-review-slide="s-ea5b410729b1" data-review-node="b-a7cd5bc3dd5e">
-      <div class="si" data-review-node="b-fbc05556fee1">
-        <div class="chrome-band" data-review-node="b-fdfcbe6dfb55">
-          <span class="t-label t-muted" data-review-node="b-343665092b2a">Université Paris Dauphine–PSL</span>
-          <span class="pill accent" data-review-node="b-d7754562ec1c">Clean Code · Hexagonale · SOLID</span>
-        </div>
-
-        <div style="margin-top: auto; margin-bottom: auto; max-width: 1550px;" data-review-node="b-cdb1d9ee98f8">
-          <div class="kicker" data-review-node="b-512f7f457ad8">Ingénierie & Bonnes Pratiques</div>
-          <h1 class="t-display" style="margin-bottom: 24px;" data-review-node="b-ac007d887c68">
-            Architecture Logicielle<br data-review-node="b-908677d6d302"><span style='color: var(--accent-glow);' data-review-node="b-944aa29f71d5">& Bonnes Pratiques</span>
-          </h1>
-          <p class="t-lead" style="max-width: 1250px; font-size: 27px; line-height: 1.5;" data-review-node="b-51fdec45a59c">
+    <section class="slide s-dark active unsplash-cover" data-photo-source="unsplash" data-review-node="b-a7cd5bc3dd5e" data-review-slide="s-ea5b410729b1" data-slide="1"><img alt="Un ordinateur portable affichant du code." class="cover-photo" src="../../assets/photos/coding-florian-olivo.jpg"/><div aria-hidden="true" class="cover-veil" data-review-node="b-b7e0cbfa15ab"></div><div class="cover-credit" data-review-node="b-06b7e379a8f7">Photo Florian Olivo / Unsplash</div>
+<div class="si" data-review-node="b-fbc05556fee1">
+<div class="chrome-band" data-review-node="b-fdfcbe6dfb55">
+<span class="t-label t-muted" data-review-node="b-343665092b2a">Université Paris Dauphine–PSL</span>
+<span class="pill accent" data-review-node="b-d7754562ec1c">Clean Code · Hexagonale · SOLID</span>
+</div>
+<div data-review-node="b-cdb1d9ee98f8" style="margin-top: auto; margin-bottom: auto; max-width: 1550px;">
+<div class="kicker" data-review-node="b-512f7f457ad8">Ingénierie &amp; Bonnes Pratiques</div>
+<h1 class="t-display" data-review-node="b-ac007d887c68" style="margin-bottom: 24px;">
+            Architecture Logicielle<br data-review-node="b-908677d6d302"/><span data-review-node="b-944aa29f71d5" style="color: var(--accent-glow);">&amp; Bonnes Pratiques</span>
+</h1>
+<p class="t-lead" data-review-node="b-51fdec45a59c" style="max-width: 1250px; font-size: 27px; line-height: 1.5;">
             Bâtir des systèmes pérennes et testables : <strong data-review-node="b-a50a9195b1d9">Clean Code</strong>, <strong data-review-node="b-7a6cb6595945">Architecture Hexagonale</strong>, principes <strong data-review-node="b-d42d2d11972b">SOLID</strong>, Monolithe Modulaire vs Microservices et refactoring DRY.
           </p>
-        </div>
-
-        <div class="foot-band" data-review-node="b-d35bc4bf7b4c">
-          <div style="display:flex; gap: 32px; align-items: center;" data-review-node="b-2e174fd12a5f">
-            <span class="t-small t-mono t-muted" data-review-node="b-fde9ac0b2f53">M2 MIAGE TNSI</span>
-            <span class="t-small t-mono t-muted" data-review-node="b-8b53e1f30712">PORTS & ADAPTATEURS · SOLID · REFACTORING · TESTS</span>
-          </div>
-          <span class="t-label" style="color: var(--accent-glow);" data-review-node="b-fec08b35a257">Thématique 07 · Architecture Logicielle</span>
-        </div>
-      </div>
-    </section>
+</div>
+<div class="foot-band" data-review-node="b-d35bc4bf7b4c">
+<div data-review-node="b-2e174fd12a5f" style="display:flex; gap: 32px; align-items: center;">
+<span class="t-small t-mono t-muted" data-review-node="b-fde9ac0b2f53">M2 MIAGE TNSI</span>
+<span class="t-small t-mono t-muted" data-review-node="b-8b53e1f30712">PORTS &amp; ADAPTATEURS · SOLID · REFACTORING · TESTS</span>
+</div>
+<span class="t-label" data-review-node="b-fec08b35a257" style="color: var(--accent-glow);">Thématique 07 · Architecture Logicielle</span>
+</div>
+</div>
+</section>
   </main>
 </div>
 

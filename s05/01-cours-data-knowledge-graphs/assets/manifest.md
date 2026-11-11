@@ -4,7 +4,7 @@ Harmonisation du 9 novembre 2026. Les images, pictogrammes et fontes sont locaux
 
 ## Illustration
 
-`illustrations/documents-to-graph.png` · slide 1 : illustration éditoriale originale produite avec `image_gen.imagegen`, 1672×941 px. Documents et réseau conceptuels, sans entreprise, système réel ou extraction automatique représentés. Original copié sans modification de pixels ; recadrage 16:9 et voiles marine en CSS pour le titre, l'en-tête et le crédit. Le statut « Illustration générée · représentation conceptuelle » est visible sur la slide. Prompt et contrôle conservés dans le dossier interne Data.
+`illustrations/documents-to-graph.png` · ancienne couverture conservée, hors affichage : illustration éditoriale originale produite avec `image_gen.imagegen`, 1672×941 px. Documents et réseau conceptuels, sans entreprise, système réel ou extraction automatique représentés. Original copié sans modification de pixels ; recadrage 16:9 et voiles marine en CSS pour le titre, l'en-tête et le crédit. Cette illustration ne sert plus de photographie d’ouverture. Prompt et contrôle conservés dans le dossier interne Data.
 
 ## Pictogrammes
 
@@ -23,3 +23,9 @@ Famille unique [Lucide](https://lucide.dev/), licence [ISC locale](icons/LICENSE
 - IBM Plex Sans et IBM Plex Mono : [fichiers locaux et licences](../../../assets/fonts/plex/manifest.md). Toute la typographie HTML utilise ces familles ; les textes déjà incorporés aux planches restent rasterisés.
 
 Le scénario Orion, le code et les données du support sont des exemples pédagogiques. Aucun logo de fournisseur n'a été ajouté par cette harmonisation.
+
+## Couverture photographique
+
+La slide 1 utilise `../../assets/photos/analytics-luke-chesser.jpg`, photo Luke Chesser / Unsplash. [Source et licence](../../../assets/photos/manifest.md). Recadrage et voile marine CSS ; ressource locale hors ligne.
+
+Le 11 novembre 2026, l’auteur a retenu un écran de visualisation de données pour remplacer les livres de la couverture. Le récit, les diagrammes et les 28 slides sont conservés.
