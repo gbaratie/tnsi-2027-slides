@@ -1,0 +1,20 @@
+[
+  {
+    "model": "HuggingFaceTB/SmolLM3-3B",
+    "gpu_Wh_per_1000_queries": 18.35,
+    "test_date": "December 2025",
+    "class": "A"
+  },
+  {
+    "model": "mistralai/Mistral-Nemo-Instruct-2407",
+    "gpu_Wh_per_1000_queries": 23.189999999999998,
+    "test_date": "December 2025",
+    "class": "A"
+  },
+  {
+    "model": "google/gemma-3-4b-pt",
+    "gpu_Wh_per_1000_queries": 34.3867,
+    "test_date": "December 2025",
+    "class": "A"
+  }
+]

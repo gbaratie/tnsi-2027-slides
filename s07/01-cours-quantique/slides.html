@@ -1,0 +1,1999 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TNSI 2027 · Du transistor au qubit : propriétés, roadmaps, acteurs et France, usages, accès cloud et Quantum Safe. Parcours de 15 minutes, M2 MIAGE Dauphine–PSL.">
+  <title>TNSI Dauphine — Quantique : théorie et usages émergents</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+/* ===========================================
+   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   Include this ENTIRE file in every presentation.
+   Slides are authored at 1920×1080 and scaled as a whole.
+   =========================================== */
+
+/* 1. Lock the browser viewport */
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    background: var(--stage-bg, #000);
+}
+
+/* 2. Full-window deck viewport */
+.deck-viewport {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    background: var(--stage-bg, #000);
+}
+
+/* 3. Fixed 16:9 design canvas.
+   JavaScript sets transform: translate(...) scale(...). */
+.deck-stage {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    transform-origin: 0 0;
+    background: var(--slide-bg, #fff);
+}
+
+/* 4. Slides stack inside the fixed stage.
+   Content must be laid out at 1920×1080, not reflowed per device. */
+.slide {
+    position: absolute;
+    inset: 0;
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    display: block;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    background: var(--slide-bg, #fff);
+}
+
+.slide.active,
+.slide.visible {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 1;
+}
+
+/* 5. Keep media inside authored slide bounds */
+img,
+video,
+canvas,
+svg {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+/* 6. Presentation chrome stays outside the slide design system */
+.deck-controls {
+    position: fixed;
+    left: 50%;
+    bottom: 22px;
+    transform: translateX(-50%);
+    z-index: 1000;
+}
+
+/* 7. Print one fixed-size slide per page */
+@media print {
+    html,
+    body {
+        width: 1920px;
+        height: auto;
+        overflow: visible;
+        background: #fff;
+    }
+
+    .deck-viewport {
+        position: static;
+        overflow: visible;
+        background: #fff;
+    }
+
+    .deck-stage {
+        position: static;
+        width: auto;
+        height: auto;
+        transform: none !important;
+        background: none;
+    }
+
+    .slide {
+        position: relative;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        width: 1920px;
+        height: 1080px;
+        break-after: page;
+        page-break-after: always;
+    }
+
+    .slide:last-child {
+        break-after: auto;
+        page-break-after: auto;
+    }
+
+    .deck-controls {
+        display: none !important;
+    }
+}
+
+/* 8. Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.2s !important;
+    }
+}
+
+/* === THÈME DAUPHINE PSL / IBM · variables du preset === */
+:root {
+  --bg-dark:    #00205B;
+  --bg-dark-alt:#001A4D;
+  --bg-cream:   #d0e2ff;
+  --bg-cream-alt:#a6c8ff;
+  --ink-cream:  #edf4ff;
+  --ink-cream-2:rgba(237,244,255,0.62);
+  --ink-cream-3:rgba(237,244,255,0.35);
+  --ink-dark:   #00205B;
+  --ink-dark-2: rgba(0,32,91,0.68);
+  --ink-dark-3: rgba(0,32,91,0.38);
+  --accent:     #4589ff;
+  --accent-2:   #0f62fe;
+  --border-d:   rgba(237,244,255,0.14);
+  --border-c:   rgba(0,32,91,0.16);
+  --pad-x: 106px;
+  --pad-y: 59px;
+  --stage-bg: var(--bg-dark-alt);
+  --slide-bg: var(--bg-dark);
+  --hud-height: 56px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; -webkit-font-smoothing: antialiased; }
+button, input { font: inherit; }
+button, a, input { touch-action: manipulation; }
+button { cursor: pointer; }
+button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid var(--accent); outline-offset: 5px; }
+a { color: inherit; text-underline-offset: 4px; }
+.external-mark { display: inline-block; width: .75em; height: .75em; vertical-align: -.04em; }
+button { color: inherit; }
+
+/* === STRUCTURE FIXE ET CHROME === */
+.slide { color: var(--ink-cream); transition-property: opacity; transition-duration: .2s; }
+.deck-stage { transition-property: none; }
+.slide.s-dark::before {
+  content: '';
+  position: absolute; bottom: -120px; right: -120px;
+  width: 1100px; height: 1000px; border-radius: 50%;
+  background: radial-gradient(ellipse at 70% 80%,
+    rgba(15,98,254,0.28) 0%, rgba(0,67,206,0.12) 40%, transparent 70%);
+  z-index: 0; pointer-events: none;
+}
+.slide-inner { position: relative; z-index: 1; height: 100%; padding: var(--pad-y) var(--pad-x) 40px; display: flex; flex-direction: column; }
+.chrome, .slide-footer, .mono, .eyebrow, .kicker { font-family: 'DM Mono', monospace; }
+.chrome { display: flex; justify-content: space-between; padding-bottom: 22px; border-bottom: 1px solid var(--border-d); color: var(--ink-cream-2); font-size: 15px; letter-spacing: .1em; text-transform: uppercase; }
+.heading { margin: 38px 0 26px; }
+.kicker, .eyebrow { font-size: 16px; line-height: 1.6; letter-spacing: .12em; text-transform: uppercase; }
+.kicker { color: var(--accent); margin-bottom: 16px; }
+h1, h2, h3, .large-index { font-family: 'Bricolage Grotesque', sans-serif; }
+h2 { max-width: 1660px; font-size: 68px; letter-spacing: -.035em; font-weight: 700; line-height: 1.06; }
+h3 { font-size: 38px; line-height: 1.15; letter-spacing: -.02em; margin-bottom: 22px; }
+p, li, td { font-size: 28px; line-height: 1.5; }
+p, li { text-wrap: pretty; }
+.lead { font-size: 31px; line-height: 1.5; }
+.small { font-size: 22px; line-height: 1.55; color: var(--ink-cream-2); }
+.eyebrow { color: var(--accent); margin-bottom: 20px; }
+.content { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: center; gap: 34px; padding: 8px 0 26px; }
+.slide-footer { display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 48px; padding-top: 18px; border-top: 1px solid var(--border-d); font-size: 16px; color: var(--ink-cream-2); }
+.slide-footer a { max-width: 1050px; font-size: 16px; text-decoration-color: var(--border-d); }
+.slide-footer span:last-child { color: var(--accent); }
+.two-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 70px; align-items: center; }
+.three-columns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 60px; }
+.paper { background: var(--bg-cream); color: var(--ink-dark); padding: 42px; border-radius: 8px; }
+.paper .small { color: var(--ink-dark-2); }
+.paper .eyebrow { color: var(--accent-2); }
+.takeaway { padding: 23px 0 0 24px; border-left: 4px solid var(--accent); font-size: 27px; line-height: 1.45; }
+.dash-list { list-style: none; display: grid; gap: 23px; margin: 24px 0 30px; }
+.dash-list li { position: relative; padding-left: 30px; }
+.dash-list li::before { position: absolute; left: 0; content: '—'; color: var(--accent); }
+.s-light { background: var(--bg-cream); color: var(--ink-dark); }
+.s-light .chrome, .s-light .slide-footer { border-color: var(--border-c); color: var(--ink-dark-2); }
+.s-light .kicker, .s-light .eyebrow, .s-light .slide-footer span:last-child { color: var(--accent-2); }
+.s-light .small { color: var(--ink-dark-2); }
+.s-light .slide-footer a { text-decoration-color: var(--border-c); }
+
+/* === COUVERTURE ET PÉRIMÈTRE === */
+.cover .content { padding-top: 0; }
+.cover-grid { display: grid; grid-template-columns: 1.35fr 1fr; gap: 40px; align-items: center; }
+.cover-copy h1 { font-size: 132px; font-weight: 800; letter-spacing: -.05em; line-height: 1; margin: 24px 0 30px; }
+.cover-sub { font-family: 'Bricolage Grotesque', sans-serif; font-size: 65px; font-weight: 600; line-height: 1.07; letter-spacing: -.025em; margin-bottom: 35px; }
+.cover-copy .lead { color: var(--ink-cream-2); font-size: 28px; }
+.cover-route { display: flex; gap: 26px; border-top: 1px solid var(--border-d); padding-top: 25px; margin-top: 55px; font: 17px 'DM Mono', monospace; }
+.cover-art svg { width: 100%; height: 560px; }
+.cover-art .art-label { fill: var(--bg-cream); font: 80px 'Bricolage Grotesque', sans-serif; }
+.cover-art p { text-align: center; font-size: 18px; color: var(--ink-cream-2); margin-top: 28px; }
+.domains { padding: 15px 0 30px; }
+.domains article { padding-right: 25px; border-right: 1px solid var(--border-d); }
+.domains article:last-child { border-right: 0; }
+.large-index { font-size: 96px; font-weight: 700; color: var(--accent); line-height: 1; display: block; margin-bottom: 27px; }
+.domains h3 { font-size: 46px; }
+.domains .example { margin-top: 26px; color: var(--ink-cream-2); font-size: 25px; }
+
+/* === QUBIT, PHASE ET INTRICATION === */
+.qubit-grid { grid-template-columns: 1.05fr 1fr; }
+.equation { font-family: 'Bricolage Grotesque', sans-serif; font-size: 66px; letter-spacing: -.025em; margin: 22px 0; }
+.equation-note { color: var(--accent); font-family: 'DM Mono', monospace; font-size: 29px; margin-bottom: 35px; }
+.measure-result { display: flex; align-items: center; gap: 30px; margin: 14px 0; }
+.measure-result strong { font: 74px 'Bricolage Grotesque', sans-serif; }
+.measure-result span { font-size: 28px; }
+.paper hr { height: 1px; border: 0; background: var(--border-c); margin: 22px 0; }
+.paper p { font-size: 26px; }
+.circuit { display: flex; align-items: center; width: 1340px; margin: 0 auto; font-family: 'DM Mono', monospace; }
+.circuit .ket { font-size: 42px; padding-right: 25px; }
+.wire { height: 2px; background: var(--ink-cream-2); flex: 1; }
+.gate { display: grid; place-items: center; min-width: 80px; height: 74px; font-size: 33px; border: 2px solid var(--accent); background: var(--bg-dark-alt); }
+.phase-gate { min-width: 130px; background: var(--bg-cream); color: var(--ink-dark); }
+.measure-gate { min-width: 158px; font-size: 25px; }
+.demo-layout { display: grid; grid-template-columns: .95fr 1fr; gap: 70px; align-items: center; }
+.phase-controls .lead { font-size: 29px; margin-bottom: 25px; }
+.phase-controls label { display: flex; justify-content: space-between; align-items: center; font: 25px 'DM Mono', monospace; }
+.phase-controls output { color: var(--accent); font-size: 35px; }
+#phase { display: block; width: 100%; margin: 25px 0 18px; accent-color: var(--accent); height: 22px; }
+.phase-presets { display: flex; gap: 15px; margin-bottom: 23px; }
+.phase-presets button { min-width: 90px; border: 1px solid var(--border-d); padding: 10px 18px; background: var(--bg-dark-alt); border-radius: 5px; font-size: 22px; }
+.phase-presets button:hover { border-color: var(--accent); }
+.probability-panel { padding: 32px 38px; }
+.probability-panel .eyebrow { font-size: 15px; }
+.probability { display: grid; grid-template-columns: 70px 1fr 90px; gap: 20px; align-items: center; margin: 24px 0; font: 25px 'DM Mono', monospace; }
+.probability output { text-align: right; }
+.bar-track { height: 34px; background: var(--border-c); border-radius: 3px; overflow: hidden; }
+.bar { height: 100%; background: var(--accent-2); transition: width .2s ease; }
+.probability-panel .formula { font-size: 20px; margin-bottom: 23px; }
+.primary-button { background: var(--ink-dark); color: var(--ink-cream); border: 0; padding: 13px 23px; font-size: 24px; border-radius: 5px; }
+.probability-panel .sample-result { font-size: 21px; margin: 15px 0 7px; min-height: 65px; }
+.probability-panel .simulation-label { font: 15px 'DM Mono', monospace; color: var(--ink-dark-2); }
+.bell-equation { font-size: 62px; margin: 30px 0; }
+.entangled-grid .small { margin-top: 30px; }
+.bell-outcomes { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.outcome { border-top: 3px solid var(--accent); padding-top: 20px; }
+.outcome span { font: 102px 'Bricolage Grotesque', sans-serif; display: block; }
+.outcome strong { font: 35px 'DM Mono', monospace; color: var(--accent); }
+.bell-outcomes .small { grid-column: 1 / -1; }
+
+/* === WORKFLOW ET FIABILITÉ === */
+.workflow { display: grid; grid-template-columns: 1fr 48px 1.2fr 48px 1fr 48px 1fr; gap: 20px; align-items: stretch; }
+.workflow article { padding-top: 25px; border-top: 2px solid var(--border-c); }
+.workflow article .eyebrow { display: block; font-size: 15px; }
+.workflow article h3 { font-size: 35px; margin-bottom: 17px; }
+.workflow article p { font-size: 26px; }
+.workflow .quantum-step { background: var(--bg-dark); padding: 25px; color: var(--ink-cream); border-radius: 5px; }
+.workflow .quantum-step .eyebrow { color: var(--accent); }
+.flow-arrow { align-self: center; text-align: center; font-size: 38px; color: var(--accent-2); }
+.exponential { display: flex; gap: 50px; align-items: center; margin-top: 36px; border-top: 1px solid var(--border-c); padding-top: 30px; }
+.exponential strong { font: 104px 'Bricolage Grotesque', sans-serif; min-width: 200px; }
+.exponential strong sup { font-size: 58px; }
+.exponential p { font-size: 27px; }
+.noise-grid { gap: 60px; }
+.noise-grid .dash-list li { font-size: 27px; }
+.logical-qubit { padding: 34px; }
+.qubit-code { display: grid; grid-template-columns: repeat(3, 20px) 55px 120px; grid-template-rows: repeat(3, 20px); gap: 10px; align-items: center; width: 300px; margin: 27px 0; }
+.qubit-code i { width: 20px; height: 20px; border-radius: 50%; background: var(--accent-2); }
+.qubit-code i:nth-child(4) { grid-row: 2; grid-column: 1; }
+.qubit-code i:nth-child(5) { grid-row: 2; grid-column: 2; }
+.qubit-code i:nth-child(6) { grid-row: 2; grid-column: 3; }
+.qubit-code i:nth-child(7) { grid-row: 3; grid-column: 1; }
+.qubit-code i:nth-child(8) { grid-row: 3; grid-column: 2; }
+.qubit-code i:nth-child(9) { grid-row: 3; grid-column: 3; }
+.qubit-code span { grid-column: 4; grid-row: 1 / 4; font-size: 40px; text-align: center; }
+.qubit-code b { grid-column: 5; grid-row: 1 / 4; font-size: 46px; }
+.logical-qubit > p { font-size: 25px; }
+.evidence { margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--border-c); }
+.evidence strong { font-size: 22px; }
+.evidence .small { font-size: 22px; margin-top: 10px; }
+
+/* === CAS D’USAGE === */
+.chemistry-grid { grid-template-columns: .7fr 1.3fr; gap: 80px; }
+.chemistry-stat > strong { display: block; font: 230px/.95 'Bricolage Grotesque', sans-serif; color: var(--bg-cream); letter-spacing: -.06em; }
+.chemistry-stat > span { display: block; font-size: 31px; line-height: 1.35; margin: 23px 0; }
+.chemistry-stat > p { margin-top: 25px; }
+.case-row { border-top: 1px solid var(--border-d); padding-top: 19px; margin-bottom: 21px; }
+.case-row .eyebrow { display: block; margin-bottom: 8px; }
+.case-row p { font-size: 27px; }
+.case-headline { font-size: 56px; margin: 24px 0; }
+.optimization-grid .lead, .sensing-grid .lead { font-size: 29px; }
+.optimization-grid .small, .sensing-grid .small { margin-top: 30px; }
+.benchmark > div { padding: 23px 0; border-top: 1px solid var(--border-d); }
+.benchmark strong { font-family: 'Bricolage Grotesque', sans-serif; font-size: 34px; display: block; margin-bottom: 10px; }
+.benchmark span { display: block; font-size: 28px; line-height: 1.45; }
+.crypto-grid .lead { font-size: 29px; }
+.harvest { display: flex; gap: 18px; align-items: center; margin: 33px 0; padding: 19px 0; border-top: 1px solid var(--border-d); border-bottom: 1px solid var(--border-d); font-size: 24px; }
+.harvest b { font-size: 38px; color: var(--accent); }
+.standards { padding: 37px; }
+.standards > div { display: flex; justify-content: space-between; align-items: baseline; gap: 20px; border-bottom: 1px solid var(--border-c); padding: 19px 0; }
+.standards strong { font: 32px 'DM Mono', monospace; }
+.standards span { font-size: 23px; }
+.standards .small { font-size: 23px; margin-top: 25px; }
+.ground-diagram svg { width: 100%; height: 440px; }
+.ground-diagram text { fill: var(--ink-cream); font: 25px 'DM Sans', sans-serif; }
+.ground-diagram figcaption { font: 17px 'DM Mono', monospace; text-align: center; color: var(--ink-cream-2); margin-top: 8px; }
+
+/* === SYNTHÈSE ET ANNEXES === */
+.summary .content { gap: 0; }
+.summary-line { display: grid; grid-template-columns: 80px 1fr 260px; gap: 30px; align-items: center; padding: 26px 0; border-top: 1px solid var(--border-c); }
+.summary-line > span { font: 44px 'DM Mono', monospace; color: var(--accent-2); }
+.summary-line h3 { font-size: 36px; margin-bottom: 8px; }
+.summary-line p { font-size: 26px; color: var(--ink-dark-2); }
+.summary-line > b { font: 17px 'DM Mono', monospace; justify-self: end; }
+.closing-thought { font-family: 'Bricolage Grotesque', sans-serif; font-size: 43px; margin-top: 35px; letter-spacing: -.025em; }
+.comparison { border-collapse: collapse; width: 100%; table-layout: fixed; }
+.comparison th, .comparison td { text-align: left; vertical-align: top; padding: 25px 25px 25px 0; border-bottom: 1px solid var(--border-d); }
+.comparison thead th { font: 17px 'DM Mono', monospace; text-transform: uppercase; letter-spacing: .08em; color: var(--accent); }
+.comparison tbody th { font-family: 'Bricolage Grotesque', sans-serif; font-size: 31px; font-weight: 600; line-height: 1.25; }
+.comparison td { font-size: 27px; line-height: 1.45; }
+.comparison th:first-child { width: 25%; }
+.comparison th:nth-child(2) { width: 35%; }
+.hardware-table td { font-size: 26px; }
+.hardware-table th, .hardware-table td { padding-top: 20px; padding-bottom: 20px; }
+.security-comparison { align-items: stretch; gap: 60px; }
+.security-comparison > article { padding: 35px; }
+.security-comparison .lead { font-size: 28px; }
+.security-comparison li { font-size: 26px; }
+.security-comparison .dash-list { margin-bottom: 0; }
+.source-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 65px; }
+.source-grid a { display: flex; align-items: baseline; gap: 24px; text-decoration: none; padding: 25px 0; border-top: 1px solid var(--border-d); }
+.source-grid a > span { font: 24px 'DM Mono', monospace; color: var(--accent); }
+.source-grid h3 { font-size: 34px; margin: 0 0 8px; }
+.source-grid p { font-size: 22px; color: var(--ink-cream-2); }
+.source-grid a:hover h3 { text-decoration: underline; }
+
+/* === NAVIGATION, ÉDITION LOCALE ET ACCESSIBILITÉ === */
+.deck-hud { position: fixed; bottom: 0; left: 0; right: 0; z-index: 1000; height: var(--hud-height); display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 0 20px; background: var(--bg-dark-alt); border-top: 1px solid var(--border-d); color: var(--ink-cream); font: 13px 'DM Mono', monospace; }
+.hud-group { display: flex; gap: 10px; align-items: center; }
+.hud-group button { border: 1px solid var(--border-d); padding: 8px 12px; border-radius: 4px; background: transparent; font-size: 13px; }
+.hud-group button:hover { background: var(--accent-2); }
+.hud-group button:disabled { opacity: .35; cursor: default; }
+.hud-group .key-hint { color: var(--ink-cream-2); margin-left: 12px; }
+.progress-track { height: 3px; position: absolute; left: 0; right: 0; top: 0; background: var(--border-d); }
+#progressBar { height: 100%; width: 4.5455%; background: var(--accent); }
+.edit-hotzone { position: fixed; top: 0; left: 0; width: 80px; height: 80px; z-index: 2000; }
+.edit-toggle { position: fixed; top: 14px; left: 14px; z-index: 2001; opacity: 0; pointer-events: none; background: var(--bg-cream); color: var(--ink-dark); border: 0; padding: 12px 17px; border-radius: 4px; font-size: 15px; transition: opacity .2s; }
+.edit-toggle.show, .edit-toggle.active, .edit-toggle:focus-visible { opacity: 1; pointer-events: auto; }
+.editable { white-space: pre-line; }
+.editing .editable { outline: 2px dashed var(--accent); outline-offset: 6px; cursor: text; }
+.editing .editable:focus { outline-style: solid; }
+#notice { position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%); z-index: 2002; max-width: calc(100% - 30px); background: var(--bg-cream); color: var(--ink-dark); border-radius: 5px; padding: 12px 18px; font-size: 15px; }
+#notice:empty { display: none; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+@media (max-width: 700px) { .key-hint, #printBtn, #saveBtn { display: none; } .deck-hud { padding: 0 8px; gap: 6px; } .hud-group { gap: 6px; } .hud-group button { padding: 8px; } }
+
+
+/* === V2 · CLASSIQUE, PROPRIÉTÉS, ROADMAPS, ACTEURS ET CLOUD === */
+.computer-comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 65px; align-items: stretch; }
+.computer-comparison > article { padding: 30px 36px; }
+.computer-comparison h3 { font-size: 35px; margin-bottom: 20px; }
+.computer-comparison article > p:not(.eyebrow):not(.small) { font-size: 27px; }
+.computer-comparison .small { font-size: 23px; margin-top: 23px; }
+.digital-switch { height: 94px; display: flex; align-items: center; gap: 35px; margin-bottom: 25px; }
+.digital-switch span { font: 74px 'Bricolage Grotesque', sans-serif; }
+.digital-switch i { position: relative; width: 120px; height: 2px; background: var(--accent); }
+.digital-switch i::before, .digital-switch i::after { content: ''; position: absolute; width: 14px; height: 14px; top: -6px; border: 2px solid var(--accent); border-radius: 50%; background: var(--bg-dark); }
+.digital-switch i::before { left: -5px; }.digital-switch i::after { right: -5px; }
+.comparison-state { height: 94px; display: flex; align-items: center; font: 58px 'Bricolage Grotesque', sans-serif; margin-bottom: 25px; }
+.qubit-properties .content { gap: 24px; }
+.qubit-properties .equation { font-size: 60px; margin: 12px 0; }
+.qubit-properties .equation-note { margin-bottom: 18px; }
+.qubit-properties .lead { font-size: 29px; }
+.qubit-properties .paper { padding: 26px 35px; }
+.qubit-properties .paper .eyebrow { margin-bottom: 8px; }
+.qubit-properties .measure-result { margin: 8px 0; }
+.qubit-properties .measure-result strong { font-size: 58px; }
+.qubit-properties .paper > p:not(.eyebrow) { font-size: 24px; }
+.qubit-properties .paper hr { margin: 13px 0; }
+.property-notes { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; border-top: 1px solid var(--border-d); padding-top: 19px; }
+.property-notes p { font-size: 24px; line-height: 1.4; }
+.property-notes strong { color: var(--accent); }
+.qubit-properties .takeaway { font-size: 23px; padding-top: 8px; }
+.history-timeline { display: grid; grid-template-columns: repeat(5,1fr); gap: 28px; }
+.history-timeline article { border-top: 3px solid var(--accent); padding-top: 28px; }
+.history-timeline article > strong { display: block; font: 58px 'Bricolage Grotesque', sans-serif; color: var(--bg-cream); letter-spacing: -.04em; margin-bottom: 24px; }
+.history-timeline .eyebrow { display: block; font-size: 15px; margin-bottom: 14px; }
+.history-timeline h3 { font-size: 32px; min-height: 78px; margin-bottom: 20px; }
+.history-timeline p { font-size: 25px; line-height: 1.45; }
+.future-roadmap { display: grid; gap: 0; }
+.future-roadmap article { display: grid; grid-template-columns: 145px 1fr 270px; align-items: center; gap: 32px; padding: 22px 0; border-top: 1px solid var(--border-d); }
+.future-roadmap article > strong { font: 56px 'Bricolage Grotesque', sans-serif; color: var(--accent); }
+.future-roadmap h3 { font-size: 32px; margin: 0 0 8px; }
+.future-roadmap p { font-size: 25px; line-height: 1.35; }
+.future-roadmap article > span { font: 17px/1.8 'DM Mono',monospace; color: var(--ink-cream-2); }
+.usecase-overview { padding: 20px 0; gap: 55px; }
+.usecase-overview article { border-top: 2px solid var(--accent); padding-top: 27px; }
+.usecase-overview h3 { font-size: 44px; margin: 25px 0; }
+.usecase-overview article > p:not(.small) { font-size: 28px; min-height: 130px; }
+.usecase-overview a { display: block; margin: 22px 0; font: 20px 'DM Mono', monospace; color: var(--accent); }
+.usecase-overview .small { font-size: 24px; }
+.actors-layout { display: grid; grid-template-columns: 1.1fr 1fr; gap: 70px; align-items: center; }
+.world-actors > div { padding: 20px 0; border-top: 1px solid var(--border-d); }
+.world-actors h3 { font-size: 28px; margin-bottom: 9px; color: var(--accent); }
+.world-actors p { font-size: 28px; line-height: 1.35; }
+.world-actors p > span { font-size: 20px; }
+.france-panel { padding: 30px 37px; }
+.france-panel .eyebrow { margin-bottom: 14px; }
+.france-panel > h3 { font-size: 35px; margin-bottom: 21px; }
+.france-panel dl > div { display: grid; grid-template-columns: 1fr 1.2fr; gap: 16px; border-top: 1px solid var(--border-c); padding: 13px 0; font-size: 25px; }
+.france-panel dt { font-weight: 700; }
+.france-panel .france-infrastructure { font-size: 22px; border-top: 1px solid var(--border-c); padding-top: 21px; margin-top: 10px; }
+.cloud-layout { display: grid; grid-template-columns: 1.1fr .9fr; gap: 85px; align-items: center; }
+.cloud-start h3 { font-size: 38px; margin-bottom: 18px; }
+.cloud-start ol { list-style: none; display: grid; gap: 18px; }
+.cloud-start li { display: flex; align-items: baseline; gap: 20px; font-size: 25px; line-height: 1.4; }
+.cloud-start li b { color: var(--accent); font: 20px 'DM Mono',monospace; }
+.cloud-cta { display: inline-block; padding: 14px 25px; margin: 24px 0 12px; background: var(--bg-cream); color: var(--ink-dark); border-radius: 5px; font-size: 25px; font-weight: 500; text-decoration: none; }
+.cloud-cta:hover { background: var(--bg-cream-alt); }
+.cloud-start .small { font-size: 20px; }
+.cloud-alternatives > a { display: block; text-decoration: none; padding: 12px 0; border-top: 1px solid var(--border-d); }
+.cloud-alternatives strong { font-family: 'Bricolage Grotesque',sans-serif; display: block; font-size: 28px; line-height: 1.15; margin-bottom: 6px; }
+.cloud-alternatives span { display: block; font-size: 23px; line-height: 1.35; color: var(--ink-cream-2); }
+.cloud-alternatives > a:hover strong { text-decoration: underline; }
+.safe-actions { display: grid; gap: 0; }
+.safe-actions article { display: grid; grid-template-columns: 75px 1fr; gap: 20px; padding: 20px 0; border-top: 1px solid var(--border-c); align-items: baseline; }
+.safe-actions article > strong { font: 35px 'DM Mono',monospace; color: var(--accent-2); }
+.safe-actions h3 { font-size: 34px; margin-bottom: 7px; }
+.safe-actions p { font-size: 26px; line-height: 1.4; color: var(--ink-dark-2); }
+.quantum-safe-actions .content { gap: 25px; }
+.safe-eu { display: grid; grid-template-columns: 1fr 70px 1fr; align-items: center; gap: 15px; padding: 20px 25px; background: var(--bg-dark); color: var(--ink-cream); border-radius: 5px; }
+.safe-eu > span { font-size: 23px; }.safe-eu > span:nth-child(2) { text-align: center; font-size: 33px; color: var(--accent); }
+.safe-eu strong { color: var(--bg-cream-alt); margin-right: 16px; }
+.safe-eu > p { grid-column: 1 / -1; font-size: 18px; color: var(--ink-cream-2); line-height: 1.3; }
+.quantum-safe-actions .closing-thought { font-size: 34px; margin: 0; }
+.extended-sources { gap: 0 65px; }.extended-sources a { padding: 17px 0; }.extended-sources h3 { font-size: 30px; }.extended-sources p { font-size: 21px; }
+
+/* === IMPRESSION · UNE SLIDE PAR PAGE 16:9 === */
+@page { size: 20in 11.25in; margin: 0; }
+@media print {
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; transition: none !important; }
+  .deck-hud, .edit-hotzone, .edit-toggle, #notice { display: none !important; }
+  .editable { outline: none !important; }
+  .phase-presets, #phase, #sampleBtn { display: none; }
+  .slide { break-inside: avoid; }
+}
+
+  </style>
+<!-- deck-review:start -->
+<script type="application/json" id="review-config">{"deckId": "01-cours-quantique", "sourcePath": "teacher/slides/s07/01-cours-quantique/slides.html", "sourceHash": "sha256:d39ca76a3d043a0bef2890e769223ccf68da39a8a282d3f213186242fc6d8aa4"}</script>
+<script type="application/json" id="review-layouts">[{"id": "cover-photo", "label": "Couverture photographique", "description": "Une photo plein cadre, un voile marine et un grand titre pour introduire un sujet."}, {"id": "photo-explanation", "label": "Photo + explications", "description": "Une photo d\u2019un c\u00f4t\u00e9, les id\u00e9es ou responsabilit\u00e9s expliqu\u00e9es de l\u2019autre."}, {"id": "diagram-explanation", "label": "Sch\u00e9ma + explications", "description": "Un sch\u00e9ma de m\u00e9canisme ou d\u2019architecture accompagn\u00e9 de ses principes et de sa l\u00e9gende."}, {"id": "sequence", "label": "Diagramme de s\u00e9quence", "description": "Des participants, des appels et des retours pour expliquer un flux dans son ordre d\u2019ex\u00e9cution."}, {"id": "steps-code", "label": "\u00c9tapes + code", "description": "Un pas \u00e0 pas \u00e0 c\u00f4t\u00e9 d\u2019un extrait de code, avec un r\u00e9sultat attendu ou une v\u00e9rification."}, {"id": "comparison", "label": "Comparaison", "description": "Deux ou plusieurs options mises en regard avec les m\u00eames crit\u00e8res."}, {"id": "visual-summary", "label": "Synth\u00e8se visuelle", "description": "Une vue d\u2019ensemble qui relie les concepts, leurs r\u00f4les et leurs relations."}, {"id": "workshop-board", "label": "Consignes de TP", "description": "Les actions, livrables et v\u00e9rifications r\u00e9unis sur une vue statique \u00e0 laisser projet\u00e9e."}]</script>
+<script>
+/* Slide overview: isolated live thumbnails and pointer/keyboard sorting, no dependency. */
+(() => {
+  'use strict';
+  window.createDeckReviewOverview = callbacks => {
+    const style = document.createElement('style');
+    style.textContent = `
+      #review-overview{position:fixed;inset:0;margin:auto;width:calc(100vw - 32px);max-width:1600px;height:calc(var(--review-viewport-height,100dvh) - 32px);max-height:none;padding:0;border:1px solid #c3d0e1;border-radius:12px;background:#f1f5fb;color:#17263b;overflow:hidden;font:14px/1.4 system-ui,sans-serif}
+      #review-overview[open]{display:flex;flex-direction:column}#review-overview::backdrop{background:#00153fcc}
+      #review-overview *{box-sizing:border-box;letter-spacing:normal;text-transform:none}
+      #review-overview h2{font:600 24px/1.2 system-ui;margin:0;color:#17263b}
+      #review-overview button{font:14px/1.4 system-ui;min-height:44px;border:1px solid #b9c9de;border-radius:6px;padding:9px 14px;background:white;color:#17263b;cursor:pointer}
+      #review-overview button:disabled{opacity:.45;cursor:default}
+      #review-overview :focus-visible{outline:3px solid #3478e5;outline-offset:3px}
+      #review-overview-header{padding:20px 24px;background:white;border-bottom:1px solid #d5deeb;flex-shrink:0}
+      #review-overview-heading{display:flex;align-items:center;justify-content:space-between;gap:20px}
+      #review-overview-actions{display:flex;gap:10px;align-items:center}
+      #review-overview #review-overview-close{background:#174ec0;color:white;border-color:#174ec0}
+      #review-overview-help{font:14px/1.5 system-ui;margin:10px 0 0;color:#526278}
+      #review-overview-scroll{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;padding:24px;touch-action:pan-y}
+      #review-overview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(245px,1fr));gap:22px;list-style:none;margin:0;padding:0;align-items:stretch}
+      #review-overview .review-sort-card{position:relative;min-width:0;overflow:hidden;border:2px solid #d2dceb;border-radius:8px;background:white;cursor:grab;user-select:none}
+      #review-overview .review-sort-card.is-current{border-color:#174ec0}
+      #review-overview .review-sort-card.is-dragging{opacity:.35;border-style:dashed}
+      #review-overview .review-sort-card.is-keyboard-dragging{outline:3px solid #3478e5;outline-offset:3px}
+      .review-sort-preview{position:relative;width:100%;aspect-ratio:16/9;background:#d0e2ff;overflow:hidden;pointer-events:none}
+      #review-overview .review-sort-preview iframe{position:absolute;inset:0;border:0;width:1920px!important;height:1080px!important;max-width:none!important;max-height:none!important;transform-origin:0 0;pointer-events:none}
+      #review-overview .review-sort-number{position:absolute;left:8px;top:8px;padding:4px 8px;border-radius:4px;background:#001a4de8;color:white;font:600 13px/1.5 system-ui;pointer-events:none}
+      #review-overview .review-sort-grip{position:absolute;right:6px;top:6px;min-width:44px;padding:8px;background:#fffef5eb;border-color:#9fb2cf;cursor:grab;touch-action:none}
+      #review-overview .review-sort-grip svg{display:block;width:20px;height:20px;margin:auto;pointer-events:none}
+      #review-overview .review-sort-title{display:block;width:100%;min-height:66px;border:0;border-radius:0;padding:12px;text-align:left;font-weight:600;background:white;cursor:pointer;white-space:normal}
+      #review-overview .review-sort-title span{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;line-height:1.35}
+      #review-overview .review-sort-badges{padding:0 12px 10px;min-height:26px;font:12px/1.4 system-ui;color:#526278}
+      #review-overview .review-sort-ghost{position:fixed;left:0;top:0;z-index:2;opacity:.96;pointer-events:none;border:2px solid #174ec0;border-radius:8px;background:white;box-shadow:0 12px 32px #001a4d40;overflow:hidden}
+      #review-overview-status{flex-shrink:0;margin:0;padding:12px 24px;background:white;border-top:1px solid #d5deeb;font:14px/1.5 system-ui;color:#30476d;min-height:46px}
+      @media(max-width:600px){#review-overview{width:100vw;height:var(--review-viewport-height,100dvh);border:0;border-radius:0}#review-overview-header{padding:14px 16px}#review-overview h2{font-size:20px}#review-overview-heading{align-items:flex-start;gap:10px}#review-overview-actions{gap:6px}#review-overview button{padding:8px 10px}#review-overview #review-reset-order{font-size:12px;max-width:110px}#review-overview-help{font-size:12px}#review-overview-scroll{padding:16px}#review-overview-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}#review-overview .review-sort-title{font-size:13px;padding:10px;min-height:72px}#review-overview .review-sort-grip{top:3px;right:3px}#review-overview-status{font-size:12px;padding:10px 16px}}
+      @media print{#review-overview{display:none!important}}
+    `;
+    document.head.append(style);
+    const dialog = document.createElement('dialog'); dialog.id = 'review-overview';
+    dialog.setAttribute('aria-labelledby','review-overview-title');
+    dialog.setAttribute('aria-describedby','review-overview-help');
+    dialog.innerHTML = `<header id="review-overview-header"><div id="review-overview-heading"><h2 id="review-overview-title">Organiser les slides</h2><div id="review-overview-actions"><button id="review-reset-order" type="button">Rétablir l’ordre</button><button id="review-overview-close" type="button">Terminer</button></div></div><p id="review-overview-help">Glissez les miniatures pour changer l’ordre. Sur téléphone, utilisez la poignée. Au clavier : Espace sur la poignée, puis les flèches ; Espace pour poser, Échap pour annuler.</p></header><div id="review-overview-scroll"><ol id="review-overview-grid" aria-label="Ordre des slides"></ol></div><p id="review-overview-status" role="status" aria-live="polite"></p>`;
+    document.body.append(dialog);
+    const grid = dialog.querySelector('#review-overview-grid'), scroll = dialog.querySelector('#review-overview-scroll');
+    const status = dialog.querySelector('#review-overview-status'), reset = dialog.querySelector('#review-reset-order');
+    const cards = new Map(); let drag = null, ghost = null, animation = 0, returnFocus;
+    const resize = new ResizeObserver(entries => entries.forEach(({target,contentRect}) => {
+      target.querySelector('iframe').style.transform = `scale(${contentRect.width/1920})`;
+    }));
+    function thumbnail(source) {
+      // A sandboxed document keeps SVG IDs and slide selectors out of the live deck.
+      const preview = document.implementation.createHTMLDocument('Miniature de slide');
+      const base = preview.createElement('base'); base.href = document.baseURI; preview.head.append(base);
+      document.head.querySelectorAll('style,link[rel="stylesheet"]').forEach(node => preview.head.append(node.cloneNode(true)));
+      [...document.body.attributes].filter(attr => !attr.name.startsWith('on') && attr.name!=='class').forEach(attr => preview.body.setAttribute(attr.name,attr.value));
+      preview.documentElement.lang = document.documentElement.lang || 'fr';
+      preview.documentElement.className = 'final-state';
+      const viewport = preview.createElement('div'); viewport.className = 'deck-viewport';
+      const stage = preview.createElement('main'); stage.id = 'deckStage'; stage.className = 'deck-stage';
+      const slide = source.cloneNode(true);
+      slide.classList.add('active','visible'); slide.removeAttribute('inert'); slide.removeAttribute('aria-hidden');
+      slide.querySelectorAll('script,iframe,object,embed').forEach(node => node.remove());
+      slide.querySelectorAll('[contenteditable],[autofocus]').forEach(node => {node.removeAttribute('contenteditable');node.removeAttribute('autofocus');});
+      slide.querySelectorAll('.fragment,.reveal,.reveal-scale,[data-step]').forEach(node => node.classList.add('visible'));
+      // Empty siblings retain :first-child/:nth-child/:last-child layout rules.
+      [...source.parentElement.children].forEach(node => stage.append(node===source ? slide : preview.createElement('template')));
+      viewport.append(stage); preview.body.append(viewport);
+      const final = preview.createElement('style');
+      final.textContent = `html,body{margin:0!important;width:1920px!important;height:1080px!important;overflow:hidden!important}.deck-viewport{position:relative!important;inset:auto!important;width:1920px!important;height:1080px!important;overflow:hidden!important}#deckStage{position:relative!important;inset:auto!important;width:1920px!important;height:1080px!important;transform:none!important}.slide{position:absolute!important;inset:0!important;width:1920px!important;height:1080px!important;opacity:1!important;visibility:visible!important;pointer-events:none!important}.slide *{animation:none!important;transition:none!important;caret-color:transparent!important;outline:none!important}.fragment,.reveal,.reveal-scale,[data-step]{opacity:1!important;visibility:visible!important;transform:none!important}.review-text-changed{background:transparent!important}.deck-controls,.deck-hud,.hud-controls,.hud,#review-toggle,#review-panel{display:none!important}`;
+      preview.head.append(final);
+      return '<!doctype html>\n'+preview.documentElement.outerHTML;
+    }
+    function makeCard(info) {
+      const card = document.createElement('li'); card.className = 'review-sort-card'; card.dataset.sortSlide = info.id;
+      const image = document.createElement('div'); image.className = 'review-sort-preview';
+      const frame = document.createElement('iframe'); frame.setAttribute('sandbox','allow-same-origin');
+      frame.title = 'Miniature de la slide'; frame.tabIndex = -1; frame.setAttribute('aria-hidden','true');
+      frame.loading = 'lazy'; frame.srcdoc = thumbnail(info.node);
+      frame.onload = () => {frame.dataset.ready='true';}; image.append(frame);
+      const number = document.createElement('span'); number.className = 'review-sort-number';
+      const grip = document.createElement('button'); grip.type = 'button'; grip.className = 'review-sort-grip'; grip.setAttribute('aria-pressed','false');
+      grip.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><circle cx="8" cy="5" r="2"/><circle cx="16" cy="5" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/><circle cx="8" cy="19" r="2"/><circle cx="16" cy="19" r="2"/></svg>';
+      const title = document.createElement('button'); title.type = 'button'; title.className = 'review-sort-title'; title.append(document.createElement('span'));
+      title.onclick = () => {close();callbacks.select(info.id);};
+      const badges = document.createElement('div'); badges.className = 'review-sort-badges';
+      card.append(image,number,grip,title,badges); resize.observe(image); return card;
+    }
+    function commitDOMOrder() {
+      callbacks.slides().forEach((info,index) => {
+        const card = cards.get(info.id), reference = grid.children[index];
+        if (card !== reference) {
+          if (grid.moveBefore) grid.moveBefore(card,reference || null);
+          else grid.insertBefore(card,reference || null);
+        }
+      });
+    }
+    function sync() {
+      if (!dialog.open) return;
+      const infos = callbacks.slides(), ids = new Set(infos.map(info=>info.id));
+      cards.forEach((card,id) => {if(!ids.has(id)){resize.unobserve(card.querySelector('.review-sort-preview'));card.remove();cards.delete(id);}});
+      infos.forEach((info,index) => {
+        if (!cards.has(info.id)) {const card=makeCard(info);cards.set(info.id,card);grid.append(card);}
+        const card = cards.get(info.id); card.style.order = index;
+        card.setAttribute('aria-posinset',index+1); card.setAttribute('aria-setsize',infos.length);
+        card.classList.toggle('is-current',info.id===callbacks.current());
+        card.querySelector('.review-sort-number').textContent = String(index+1).padStart(2,'0');
+        const title = card.querySelector('.review-sort-title'); title.querySelector('span').textContent = info.title;
+        title.title = info.title; title.setAttribute('aria-label',`Ouvrir la slide ${index+1} : ${info.title}`);
+        card.querySelector('.review-sort-grip').setAttribute('aria-label',`Déplacer la slide ${index+1} : ${info.title}`);
+        card.querySelector('.review-sort-badges').textContent = [info.added?'Nouvelle slide':'',info.changed?'Texte modifié':'',info.layout?'Layout demandé':''].filter(Boolean).join(' · ');
+      });
+      if (!drag) commitDOMOrder();
+      reset.disabled = !callbacks.orderChanged();
+      dialog.querySelector('#review-overview-title').textContent = `Organiser les ${infos.length} slide${infos.length>1?'s':''}`;
+    }
+    function open(invoker) {
+      if (dialog.open) return;
+      returnFocus = invoker || document.activeElement; cards.clear(); grid.replaceChildren(); resize.disconnect();
+      dialog.showModal(); sync();
+      status.textContent = 'L’ordre est sauvegardé au fur et à mesure. Cliquez sur un titre pour revenir à la slide.';
+      dialog.querySelector('#review-overview-close').focus();
+    }
+    function close() {
+      if (drag) finish();
+      dialog.close(); resize.disconnect(); cards.clear(); grid.replaceChildren();
+      returnFocus?.focus({preventScroll:true});
+    }
+    function announce(id) {
+      const infos = callbacks.slides(), index = infos.findIndex(info=>info.id===id);
+      status.textContent = `Slide « ${infos[index].title} » placée en position ${index+1} sur ${infos.length}.`;
+    }
+    function finish(cancel=false) {
+      if (!drag) return;
+      const previous = drag; drag = null; cancelAnimationFrame(animation); ghost?.remove(); ghost=null;
+      if (cancel && previous.active) callbacks.restoreOrder(previous.order);
+      if (previous.pointerId!==undefined && dialog.hasPointerCapture(previous.pointerId)) dialog.releasePointerCapture(previous.pointerId);
+      cards.forEach(card => {card.classList.remove('is-dragging','is-keyboard-dragging');card.querySelector('.review-sort-grip').setAttribute('aria-pressed','false');});
+      sync();
+      if (cancel) status.textContent = 'Déplacement annulé. L’ordre précédent est conservé.';
+      else if(previous.active) announce(previous.id);
+      if (previous.keyboard) cards.get(previous.id)?.querySelector('.review-sort-grip').focus({preventScroll:true});
+    }
+    function moveToPoint(x,y) {
+      if (!drag?.active || drag.keyboard) return;
+      const area = scroll.getBoundingClientRect(), rows = [];
+      callbacks.slides().forEach((info,index) => {
+        const rect = cards.get(info.id).getBoundingClientRect();
+        if (rect.bottom<area.top || rect.top>area.bottom) return;
+        let row = rows.find(row=>Math.abs(row.top-rect.top)<5);
+        if (!row) {row={top:rect.top,center:rect.top+rect.height/2,cards:[]};rows.push(row);}
+        row.cards.push({index,center:rect.left+rect.width/2});
+      });
+      // Pick the row first, then its column: the last row may be incomplete.
+      const row = rows.reduce((best,row)=>!best || Math.abs(y-row.center)<Math.abs(y-best.center) ? row : best,null);
+      const nearest = row?.cards.reduce((best,card)=>!best || Math.abs(x-card.center)<Math.abs(x-best.center) ? card : best,null)?.index ?? null;
+      if (nearest!==null && callbacks.slides()[nearest].id!==drag.id) {callbacks.move(drag.id,nearest);sync();}
+    }
+    function autoScroll() {
+      if (!drag?.active || drag.keyboard) return;
+      const area = scroll.getBoundingClientRect(), edge = Math.min(80,area.height/4);
+      const speed = drag.y<area.top+edge ? -14*Math.min(1,(area.top+edge-drag.y)/edge)
+        : drag.y>area.bottom-edge ? 14*Math.min(1,(drag.y-area.bottom+edge)/edge) : 0;
+      const before = scroll.scrollTop; scroll.scrollTop += speed;
+      if (before!==scroll.scrollTop) moveToPoint(drag.x,drag.y);
+      animation = requestAnimationFrame(autoScroll);
+    }
+    dialog.addEventListener('pointerdown',event => {
+      if (event.button!==0 || drag) return;
+      const card = event.target.closest('[data-sort-slide]');
+      if (!card || !grid.contains(card) || event.target.closest('.review-sort-title')) return;
+      if (event.pointerType!=='mouse' && !event.target.closest('.review-sort-grip')) return;
+      event.preventDefault(); card.querySelector('.review-sort-grip').focus({preventScroll:true});
+      drag = {id:card.dataset.sortSlide,pointerId:event.pointerId,startX:event.clientX,startY:event.clientY,x:event.clientX,y:event.clientY,order:callbacks.slides().map(info=>info.id),active:false};
+      dialog.setPointerCapture(event.pointerId);
+    });
+    dialog.addEventListener('pointermove',event => {
+      if (!drag || drag.keyboard || event.pointerId!==drag.pointerId) return;
+      event.preventDefault(); drag.x=event.clientX;drag.y=event.clientY;
+      if (!drag.active && Math.hypot(drag.x-drag.startX,drag.y-drag.startY)>6) {
+        drag.active=true;
+        const card=cards.get(drag.id),rect=card.getBoundingClientRect();
+        ghost=card.cloneNode(true);ghost.removeAttribute('data-sort-slide');ghost.classList.add('review-sort-ghost');ghost.inert=true;ghost.setAttribute('aria-hidden','true');
+        ghost.style.width=`${rect.width}px`;ghost.style.height=`${rect.height}px`;ghost.style.order='';dialog.append(ghost);
+        drag.offsetX=drag.startX-rect.left;drag.offsetY=drag.startY-rect.top;
+        card.classList.add('is-dragging');card.querySelector('.review-sort-grip').setAttribute('aria-pressed','true');
+        animation=requestAnimationFrame(autoScroll);
+      }
+      if (!drag.active) return;
+      ghost.style.transform=`translate(${drag.x-drag.offsetX}px,${drag.y-drag.offsetY}px)`;
+      moveToPoint(drag.x,drag.y);
+    });
+    dialog.addEventListener('pointerup',event => {if(drag?.pointerId===event.pointerId)finish();});
+    dialog.addEventListener('pointercancel',event => {if(drag?.pointerId===event.pointerId)finish(true);});
+    dialog.addEventListener('lostpointercapture',event => {if(drag?.pointerId===event.pointerId)finish(true);});
+    function key(event) {
+      if (event.key==='Escape') {event.preventDefault();drag?finish(true):close();return;}
+      const grip=event.target.closest('.review-sort-grip');
+      if (!grip || !grid.contains(grip)) return;
+      const id=grip.closest('[data-sort-slide]').dataset.sortSlide;
+      if ([' ','Enter'].includes(event.key)) {
+        event.preventDefault();
+        if (drag?.keyboard) finish();
+        else if(!drag){drag={id,keyboard:true,active:true,order:callbacks.slides().map(info=>info.id)};cards.get(id).classList.add('is-keyboard-dragging');grip.setAttribute('aria-pressed','true');status.textContent='Slide saisie. Utilisez les flèches pour la déplacer, puis Espace pour la poser.';}
+        return;
+      }
+      if (!drag?.keyboard || drag.id!==id || !['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End'].includes(event.key)) return;
+      event.preventDefault();
+      const infos=callbacks.slides(),index=infos.findIndex(info=>info.id===id),rects=infos.map(info=>cards.get(info.id).getBoundingClientRect());
+      const top=Math.min(...rects.map(rect=>rect.top)),columns=rects.filter(rect=>Math.abs(rect.top-top)<5).length || 1;
+      const target=event.key==='Home'?0:event.key==='End'?infos.length-1:index+({ArrowLeft:-1,ArrowRight:1,ArrowUp:-columns,ArrowDown:columns}[event.key]);
+      callbacks.move(id,Math.max(0,Math.min(target,infos.length-1)));sync();cards.get(id).scrollIntoView({block:'nearest',inline:'nearest'});announce(id);
+    }
+    dialog.oncancel=event=>{event.preventDefault();drag?finish(true):close();};
+    dialog.querySelector('#review-overview-close').onclick=close;
+    reset.onclick=()=>{if(drag)finish(true);callbacks.reset();sync();status.textContent='L’ordre des slides conservées a été rétabli. Les nouvelles slides sont placées à la fin.';};
+    return {open,close,sync,key,get isOpen(){return dialog.open;}};
+  };
+})();
+
+/* Shared static deck review editor. Embedded by build.py; no network calls. */
+(() => {
+  'use strict';
+  let api;
+  function textOf(element) {
+    const clone = element.cloneNode(true);
+    clone.querySelectorAll('br').forEach(br => br.replaceWith('\n'));
+    clone.querySelectorAll('div').forEach(div => div.prepend('\n'));
+    return clone.textContent;
+  }
+  function restoreText(element, saved) {
+    if (!saved.afterHtml) { element.innerText = saved.afterText; return; }
+    const template = document.createElement('template'); template.innerHTML = saved.afterHtml;
+    // Keep inline formatting, but accept only attributes already present in the source.
+    const allowed = new Set();
+    element.querySelectorAll('*').forEach(node => [...node.attributes].forEach(attr => {
+      if (['class','style','title','dir','lang'].includes(attr.name)) allowed.add(`${attr.name}=${attr.value}`);
+    }));
+    [...template.content.querySelectorAll('*')].reverse().forEach(node => {
+      if (!['SPAN','STRONG','EM','B','I','CODE','BR','SUB','SUP','SMALL','DIV'].includes(node.tagName)) {
+        node.replaceWith(document.createTextNode(node.textContent)); return;
+      }
+      [...node.attributes].forEach(attr => { if (!allowed.has(`${attr.name}=${attr.value}`)) node.removeAttribute(attr.name); });
+    });
+    element.replaceChildren(template.content);
+  }
+  const field = target => target.closest?.('[contenteditable="true"],input,textarea,select');
+  // Capture before legacy presentation handlers: typing must never advance slides.
+  window.addEventListener('keydown', event => {
+    if (!api) return;
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
+      event.preventDefault(); event.stopImmediatePropagation(); api.export(); return;
+    }
+    if (api.overviewOpen) { api.overviewKey(event); event.stopImmediatePropagation(); return; }
+    if (event.key === 'Escape' && api.editingView) {
+      event.preventDefault(); event.stopImmediatePropagation(); api.edit(false); return;
+    }
+    if (!field(event.target) && !event.ctrlKey && !event.metaKey && event.key.toLowerCase() === 'e') {
+      event.preventDefault(); event.stopImmediatePropagation(); api.toggle(); return;
+    }
+    if (!api.editingView && !field(event.target) && !event.target.closest?.('#review-panel') && api.navigate(event.key)) {
+      event.preventDefault(); event.stopImmediatePropagation(); return;
+    }
+    if (field(event.target) || event.target.closest?.('#review-panel,#review-edit-toolbar') || api.editingView) event.stopImmediatePropagation();
+    if (event.key === 'Escape' && api.active) { api.toggle(false); event.stopImmediatePropagation(); }
+  }, true);
+  for (const type of ['wheel', 'touchstart', 'touchmove', 'touchend']) window.addEventListener(type, event => {
+    if (field(event.target) || event.target.closest?.('#review-panel,#review-toggle,#review-overview,#review-edit-toolbar') ||
+        (api?.editingView && event.target.closest?.('.deck-viewport'))) event.stopImmediatePropagation();
+  }, {capture:true, passive:true});
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const config = JSON.parse(document.getElementById('review-config').textContent);
+    const layoutCatalog = JSON.parse(document.getElementById('review-layouts')?.textContent || '[]');
+    const layouts = new Map(layoutCatalog.map(layout => [layout.id,layout]));
+    layouts.set('auto',{label:'Laisser l’agent proposer',description:'L’agent choisira une composition adaptée au contenu, en conservant le thème.'});
+    layouts.set('custom',{label:'Autre mise en page',description:'Décrivez la composition souhaitée : disposition, visuels, texte ou exemple à reprendre.'});
+    const slides = [...document.querySelectorAll('.slide')];
+    if (!slides.length) return;
+    // The courses and practicals use two controller APIs. Keep their navigation
+    // arrays in sync with the DOM, including after leaving review mode.
+    const presentation = [window.deckPresentation, window.deck, typeof deck !== 'undefined' ? deck : null]
+      .find(candidate => Array.isArray(candidate?.slides));
+    const originalOrder = slides.map(slide => slide.dataset.reviewSlide);
+    const stage = document.getElementById('deckStage') || slides[0].parentElement;
+    const slideElements = new Map(slides.map(slide => [slide.dataset.reviewSlide,slide]));
+    const key = `deck-review-v1:${config.deckId}:${config.sourceHash}`;
+    const startedAt = new Date().toISOString();
+    let active = false, storageError = false, draft = {comments:{}, changes:{}, instruction:'', startedAt};
+    let overview, editingView = false, editZoom = innerWidth<=760 ? 3 : 1.25;
+    try { const saved = JSON.parse(localStorage.getItem(key)); if (saved) draft = saved; }
+    catch { storageError = true; }
+    draft.comments ||= {}; draft.changes ||= {}; draft.instruction ||= '';
+    draft.addedSlides = Object.fromEntries(Object.entries(draft.addedSlides || {}).filter(([id,entry]) =>
+      /^new-[a-z0-9-]+$/.test(id) && !originalOrder.includes(id) && typeof entry?.description === 'string'));
+    draft.deletedSlides = Object.fromEntries(Object.entries(draft.deletedSlides || {}).filter(([id]) => originalOrder.includes(id)));
+    draft.layoutRequests = Object.fromEntries(Object.entries(draft.layoutRequests || {}).filter(([id,entry]) =>
+      (originalOrder.includes(id) || Object.hasOwn(draft.addedSlides,id)) && layouts.has(entry?.layout) &&
+      (entry.instruction === undefined || typeof entry.instruction === 'string'))
+      .map(([id,entry]) => [id,{layout:entry.layout,instruction:entry.instruction || ''}]));
+    if (Object.keys(draft.deletedSlides).length === slides.length && !Object.keys(draft.addedSlides).length) {
+      delete draft.deletedSlides[originalOrder[0]];
+    }
+    const defaultOrder = () => [...originalOrder.filter(id => !Object.hasOwn(draft.deletedSlides,id)),...Object.keys(draft.addedSlides)];
+    const expectedOrder = defaultOrder();
+    if (!Array.isArray(draft.slideOrder) || draft.slideOrder.length !== expectedOrder.length ||
+        new Set(draft.slideOrder).size !== expectedOrder.length || draft.slideOrder.some(id => !expectedOrder.includes(id))) {
+      draft.slideOrder = expectedOrder;
+    }
+    const blocks = [];
+    const selector = 'h1,h2,h3,h4,p,li,pre,td,th,span,strong,code,small,div';
+    slides.forEach(slide => {
+      const candidates = [...slide.querySelectorAll(selector)].filter(el =>
+        el.textContent.trim() && el.dataset.reviewNode &&
+        !el.closest('svg,button,a,script,style') &&
+        // Keep independent labels in a flex/grid layout editable separately.
+        // Editing the wrapper can merge labels and lose line breaks on export.
+        !(el.children.length && /^(inline-)?(flex|grid)$/.test(getComputedStyle(el).display)) &&
+        ![...el.children].some(child => !['SPAN','STRONG','EM','B','I','CODE','BR','SUB','SUP','SMALL'].includes(child.tagName)));
+      candidates.filter(el => !candidates.some(parent => parent !== el && parent.contains(el))).forEach(el => {
+        const block = {el, id:el.dataset.reviewNode, slideId:slide.dataset.reviewSlide,
+          beforeHtml:el.innerHTML, beforeText:textOf(el)};
+        blocks.push(block);
+        const saved = draft.changes[block.id];
+        // Restore text and source formatting without executing markup from storage.
+        if (saved) { restoreText(el, saved); el.classList.add('review-text-changed'); }
+        el.addEventListener('input', () => saveBlock(block));
+        el.addEventListener('focusin', () => {if(active && innerWidth<=760 && !editingView)setEditingView(true,el);});
+      });
+    });
+    const style = document.createElement('style');
+    style.textContent = `
+      .edit-toggle,.edit-hotzone{display:none!important}
+      #review-toggle,#review-panel{font:14px/1.5 system-ui,sans-serif;color:#17263b;z-index:100100;position:fixed;box-sizing:border-box}
+      #review-toggle{top:max(8px,env(safe-area-inset-top));right:max(12px,env(safe-area-inset-right));min-height:44px;background:#fff;border:1px solid #ccd5e1;border-radius:8px;padding:9px 14px;cursor:pointer;box-shadow:0 3px 16px #0002}
+      #review-panel{top:62px;right:12px;width:min(380px,calc(100vw - 24px));max-height:calc(var(--review-viewport-height,100dvh) - 74px);display:flex;flex-direction:column;background:#fff;border:1px solid #ccd5e1;border-radius:12px;box-shadow:0 8px 36px #0003;text-align:left;overflow:hidden}
+      #review-panel[hidden]{display:none} #review-panel *{box-sizing:border-box;letter-spacing:normal;text-transform:none}
+      #review-panel h2{font:600 19px system-ui;margin:0;color:#17263b}
+      #review-header,#review-actions{display:block;margin:0;padding:12px 16px;flex-shrink:0;background:#fff;font:inherit;color:inherit}
+      #review-header{border-bottom:1px solid #dce3ed} #review-actions{border-top:1px solid #dce3ed}
+      #review-heading,.review-row{display:flex;align-items:center;gap:8px}
+      #review-heading{justify-content:space-between} .review-row>*{flex:1;min-width:0}
+      #review-content{padding:0 16px 12px;overflow:auto;overscroll-behavior:contain;min-height:0;touch-action:pan-y}
+      #review-navigation{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:6px}
+      #review-navigation button{min-width:44px} #review-page{font-variant-numeric:tabular-nums}
+      #review-panel label{display:block;margin-top:14px;font-weight:600}
+      #review-panel textarea,#review-panel select{font:16px/1.5 system-ui;width:100%;min-height:44px;margin:6px 0;padding:8px;border:1px solid #bcc9d9;border-radius:6px;color:#17263b;background:white}
+      #review-panel textarea{min-height:90px;resize:vertical} #review-panel button{font:14px system-ui;min-height:44px;padding:9px;border:1px solid #bcc9d9;border-radius:6px;cursor:pointer;background:#edf3fa;color:#17263b;margin:0}
+      #review-panel button:disabled{opacity:.45;cursor:default}
+      #review-panel :focus-visible,#review-toggle:focus-visible{outline:3px solid #3478e5;outline-offset:2px}
+      #review-panel .primary{width:100%;background:#174ec0;color:white;border-color:#174ec0}
+      #review-panel .danger{color:#a52222;background:#fff2f2;border-color:#dca9a9;width:100%;margin-top:16px}
+      #review-deleted-list{list-style:none;padding:0;margin:8px 0}
+      #review-deleted-list li{font:13px/1.5 system-ui;padding:10px 0;border-top:1px solid #dce3ed}
+      #review-deleted-list button{margin-top:6px}
+      .slide.review-added-slide{background:#edf4ff!important;color:#17263b!important}
+      .slide.review-added-slide .review-added-content{position:absolute;inset:90px 120px;font-family:system-ui,sans-serif;display:flex;flex-direction:column;gap:34px}
+      .slide.review-added-slide .review-added-label{font:500 26px system-ui;color:#174ec0}
+      .slide.review-added-slide h2{font:600 76px/1.1 system-ui;margin:0;max-width:none;color:#17263b;letter-spacing:normal}
+      .slide.review-added-slide p{font:36px/1.45 system-ui;color:#344960;max-width:1600px;white-space:pre-wrap;overflow-wrap:anywhere;margin:0}
+      .slide.review-added-slide .review-added-description{max-height:550px;overflow:hidden}
+      .slide.review-added-slide .review-added-hint{font-size:26px;margin-top:auto}
+      #review-panel p,#review-panel summary{font:13px/1.5 system-ui;color:#526278;margin:10px 0}
+      #review-panel summary{cursor:pointer;min-height:44px;padding:10px 0}
+      #review-actions p{margin:6px 0 0;font-size:12px}
+      #review-panel .review-tools{display:grid;gap:8px;margin-top:10px}#review-panel .review-tools button{width:100%;text-align:left;font-weight:600}
+      #review-list{padding-left:20px;font:13px/1.5 system-ui} #review-list button{text-align:left}
+      #review-list del,#review-list ins{display:block;white-space:pre-wrap;overflow-wrap:anywhere;padding:5px 8px;margin-top:4px;border-radius:3px;text-decoration:none}
+      #review-list del{background:#fff0ed;color:#8e3830}#review-list ins{background:#e8f2ff;color:#174a87}
+      body.reviewing [contenteditable=true]{outline:2px dashed #3478e5;outline-offset:3px;cursor:text}
+      body.reviewing .review-text-changed[contenteditable=true]{outline-style:solid;background:#3478e515}
+      #review-edit-toolbar{position:fixed;inset:0 0 auto;height:56px;padding:6px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:white;border-bottom:1px solid #ccd5e1;color:#17263b;font:14px system-ui;z-index:100110}
+      #review-edit-toolbar[hidden]{display:none}#review-edit-toolbar button{min-width:44px;min-height:42px;font:14px system-ui;color:#17263b;background:#edf3fa;border:1px solid #bcc9d9;border-radius:6px;padding:8px 12px;cursor:pointer}
+      #review-edit-toolbar>div{display:flex;gap:6px;align-items:center}#review-edit-zoom{min-width:42px;text-align:center;font-variant-numeric:tabular-nums}
+      #review-canvas-size{display:none;pointer-events:none}
+      body.review-text-focus #review-panel,body.review-text-focus #review-toggle{display:none!important}
+      body.review-text-focus .deck-viewport{top:56px!important;left:0!important;width:100%!important;height:calc(var(--review-viewport-height,100dvh) - 56px)!important;overflow:auto!important;touch-action:pan-x pan-y;overscroll-behavior:contain}
+      body.reviewing.review-text-focus #deckStage{left:0!important;top:0!important;transform:scale(var(--review-edit-scale))!important;transform-origin:0 0}
+      body.review-text-focus #review-canvas-size{display:block}
+      @media screen and (max-width:760px){
+        body.reviewing .deck-viewport{top:56px;height:var(--review-preview-height);bottom:auto}
+        body.reviewing #deckStage{transform:var(--review-transform)!important}
+        body.reviewing .deck-controls,body.reviewing .hud,body.reviewing .hud-controls,body.reviewing .progress-track{visibility:hidden}
+        #review-panel{top:calc(56px + var(--review-preview-height));left:0;right:0;width:100%;height:calc(var(--review-viewport-height) - 56px - var(--review-preview-height));max-height:none;border-radius:14px 14px 0 0}
+        #review-actions{padding-bottom:max(10px,env(safe-area-inset-bottom))}
+        #review-actions p{display:none}
+        body.reviewing.review-compact #review-header{display:flex;align-items:center;gap:8px;padding:8px 16px}
+        body.reviewing.review-compact #review-heading{order:2}
+        body.reviewing.review-compact #review-heading h2{display:none}
+        body.reviewing.review-compact #review-navigation{flex:1;margin:0}
+      }
+      @media screen and (min-width:761px) and (max-height:500px) and (pointer:coarse){
+        body.reviewing .deck-viewport{top:56px;width:calc(100% - 404px);height:calc(var(--review-viewport-height) - 56px);bottom:auto}
+        body.reviewing #deckStage{transform:var(--review-transform)!important}
+        body.reviewing .deck-controls,body.reviewing .hud,body.reviewing .hud-controls,body.reviewing .progress-track{visibility:hidden}
+      }
+      @media print{#review-panel,#review-toggle,#review-edit-toolbar,#review-canvas-size{display:none!important}}
+    `;
+    document.head.append(style);
+    const toggle = document.createElement('button'); toggle.id = 'review-toggle'; toggle.textContent = 'Réviser · E';
+    toggle.setAttribute('aria-expanded','false'); toggle.setAttribute('aria-controls','review-panel'); document.body.append(toggle);
+    const panel = document.createElement('aside'); panel.id = 'review-panel'; panel.hidden = true;
+    panel.setAttribute('aria-label','Révision du deck');
+    panel.innerHTML = `<header id="review-header"><div id="review-heading"><h2>Révision du deck</h2><button id="review-close">Fermer</button></div>
+      <nav id="review-navigation" aria-label="Parcourir les slides"><button id="review-prev" aria-label="Slide précédente">←</button><span id="review-page" aria-live="polite"></span><button id="review-next" aria-label="Slide suivante">→</button></nav></header>
+      <div id="review-content"><label for="review-slide">Slide à réviser</label><select id="review-slide"></select>
+      <div class="review-tools"><button id="review-open-overview" type="button">Organiser les slides · miniatures</button><button id="review-focus-slide" type="button">Agrandir la slide pour modifier le texte</button></div>
+      <p>Corrigez les textes directement dans la slide. Le récapitulatif ci-dessous conserve les modifications avant / après.</p>
+      <details id="review-structure"><summary>Ajouter ou supprimer une slide</summary>
+        <form id="review-add-form">
+          <label for="review-new-position">Position de la nouvelle slide</label><select id="review-new-position"></select>
+          <label for="review-new-description">Contenu souhaité</label><textarea id="review-new-description" required placeholder="Décrivez les idées, exemples ou visuels à mettre dans la nouvelle slide…"></textarea>
+          <label for="review-new-layout">Layout de la nouvelle slide (facultatif)</label><select id="review-new-layout"></select>
+          <button id="review-add-slide" type="submit">Ajouter la slide</button>
+        </form>
+        <button id="review-delete-slide" class="danger">Supprimer cette slide</button>
+        <p id="review-delete-hint"></p>
+        <ul id="review-deleted-list" aria-label="Slides supprimées"></ul>
+      </details>
+      <details id="review-layout-editor"><summary>Changer le layout</summary>
+        <label for="review-layout">Layout demandé pour cette slide</label><select id="review-layout" aria-describedby="review-layout-description"></select>
+        <p id="review-layout-description"></p>
+        <label for="review-layout-instruction">Précisions de mise en page</label><textarea id="review-layout-instruction" placeholder="Ex. : photo à droite, trois idées à gauche ; conserver tous les textes corrigés."></textarea>
+        <button id="review-layout-reset">Annuler la demande de layout</button>
+        <p id="review-layout-status" role="status"></p>
+      </details>
+      <label for="review-comment">Commentaire pour cette slide</label><textarea id="review-comment" placeholder="Ex. : alléger cette slide, ajouter un exemple…"></textarea>
+      <label for="review-instruction">Consigne générale</label><textarea id="review-instruction" placeholder="Ex. : conserver le style et simplifier les explications."></textarea>
+      <p id="review-status" role="status"></p><details><summary id="review-summary"></summary><ul id="review-list"></ul></details>
+      </div><footer id="review-actions"><button class="primary" id="review-export">Exporter la révision JSON</button>
+      <p>Joignez ce fichier à votre conversation avec l’agent pour retravailler le deck.</p></footer>`;
+    document.body.append(panel);
+    const editToolbar = document.createElement('nav'); editToolbar.id='review-edit-toolbar'; editToolbar.hidden=true;
+    editToolbar.setAttribute('aria-label','Édition directe de la slide');
+    editToolbar.innerHTML='<button id="review-edit-back" type="button">← Révision</button><div><button id="review-edit-minus" type="button" aria-label="Réduire le zoom">−</button><span id="review-edit-zoom"></span><button id="review-edit-plus" type="button" aria-label="Agrandir le zoom">+</button></div>';
+    document.body.append(editToolbar);
+    const canvasSize = document.createElement('div'); canvasSize.id='review-canvas-size'; stage.before(canvasSize);
+    const $ = id => document.getElementById(id);
+    const select = $('review-slide'), comment = $('review-comment'), instruction = $('review-instruction');
+    const layoutSelect = $('review-layout'), layoutInstruction = $('review-layout-instruction');
+    layoutSelect.add(new Option('Conserver le layout actuel',''));
+    $('review-new-layout').add(new Option('Laisser l’agent choisir',''));
+    layoutCatalog.forEach(layout => {
+      layoutSelect.add(new Option(layout.label,layout.id));
+      $('review-new-layout').add(new Option(layout.label,layout.id));
+    });
+    for (const id of ['auto','custom']) layoutSelect.add(new Option(layouts.get(id).label,id));
+    const orderedSlides = () => draft.slideOrder.map(id => slideElements.get(id));
+    const orderChanged = () => draft.slideOrder.some((id,index) => id !== defaultOrder()[index]);
+    const hasStructureChanges = () => Object.keys(draft.addedSlides).length || Object.keys(draft.deletedSlides).length;
+    const layoutRequests = () => draft.slideOrder.filter(id => draft.layoutRequests[id])
+      .map(slideId => ({slideId,...draft.layoutRequests[slideId]}));
+    const titleOf = slide => draft.addedSlides[slide.dataset.reviewSlide]
+      ? `＋ Nouvelle slide — ${draft.addedSlides[slide.dataset.reviewSlide].description.slice(0,60)}`
+      : (slide.querySelector('h1,h2,h3') ? textOf(slide.querySelector('h1,h2,h3')) : 'Slide').replace(/\s+/g,' ').trim().slice(0,90);
+    function current() { return orderedSlides().find(slide => slide.classList.contains('active')) || orderedSlides()[0]; }
+    function createPlaceholder(id) {
+      const slide = document.createElement('section'); slide.className = 'slide review-added-slide'; slide.dataset.reviewSlide = id;
+      slide.innerHTML = '<div class="review-added-content"><div class="review-added-label">Révision · demande d’ajout</div><h2>Nouvelle slide à créer</h2><p class="review-added-description"></p><p class="review-added-hint">Le contenu et la mise en page seront réalisés par l’agent à partir de votre description.</p></div>';
+      slideElements.set(id,slide); updatePlaceholder(id);
+    }
+    function updatePlaceholder(id) {
+      const slide = slideElements.get(id), request = draft.layoutRequests[id];
+      slide.querySelector('.review-added-description').textContent = draft.addedSlides[id].description.slice(0,800);
+      slide.querySelector('.review-added-hint').textContent = `${request ? 'Layout demandé : '+layouts.get(request.layout).label+'. ' : ''}Le contenu et la mise en page seront réalisés par l’agent à partir de votre description.`;
+    }
+    Object.keys(draft.addedSlides).forEach(createPlaceholder);
+    function renderSlideOptions(id) {
+      select.replaceChildren();
+      orderedSlides().forEach((slide,index) => select.add(new Option(
+        `${index+1}. ${titleOf(slide)}`,slide.dataset.reviewSlide)));
+      select.value = id;
+    }
+    function syncLayoutEditor() {
+      const added = Boolean(draft.addedSlides[select.value]), request = draft.layoutRequests[select.value];
+      layoutSelect.options[0].textContent = added ? 'Laisser l’agent choisir' : 'Conserver le layout actuel';
+      layoutSelect.value = request?.layout || '';
+      const value = request?.instruction || '';
+      if (layoutInstruction.value !== value) layoutInstruction.value = value;
+      layoutInstruction.required = request?.layout === 'custom';
+      layoutInstruction.setCustomValidity('');
+      $('review-layout-description').textContent = request ? layouts.get(request.layout).description
+        : added ? 'Vous pouvez choisir une composition pour cette nouvelle slide ou laisser l’agent la proposer.'
+        : 'Choisissez une composition pour demander une autre mise en page tout en gardant le thème et le contenu.';
+      $('review-layout-reset').disabled = !request;
+      $('review-layout-status').textContent = request
+        ? 'Demande enregistrée pour cette slide. Le layout sera réalisé par l’agent après export du JSON.'
+        : 'Aucun changement de layout demandé.';
+    }
+    function saveLayoutRequest() {
+      const id = select.value;
+      layoutInstruction.setCustomValidity('');
+      if (!layoutSelect.value && layoutInstruction.value.trim()) layoutSelect.value = 'custom';
+      if (layoutSelect.value) draft.layoutRequests[id] = {layout:layoutSelect.value,instruction:layoutInstruction.value};
+      else delete draft.layoutRequests[id];
+      // Refresh hints without moving the caret in the instruction being typed.
+      syncLayoutEditor();
+      if (draft.addedSlides[id]) updatePlaceholder(id);
+      persist(); renderSummary();
+    }
+    function loadSlide() {
+      const added = draft.addedSlides[select.value];
+      comment.value = added ? added.description : draft.comments[select.value] || '';
+      panel.querySelector('label[for="review-comment"]').textContent = added ? 'Contenu souhaité pour cette nouvelle slide' : 'Commentaire pour cette slide';
+      $('review-focus-slide').disabled = Boolean(added);
+      syncLayoutEditor();
+      const index = draft.slideOrder.indexOf(select.value);
+      $('review-page').textContent = `${index+1} / ${draft.slideOrder.length}`;
+      $('review-prev').disabled = index === 0;
+      $('review-next').disabled = index === draft.slideOrder.length-1;
+      $('review-new-position').value = String(index+1);
+      $('review-delete-slide').textContent = added ? 'Annuler cette nouvelle slide' : 'Supprimer cette slide';
+      $('review-delete-slide').disabled = draft.slideOrder.length === 1;
+      $('review-delete-hint').textContent = draft.slideOrder.length === 1
+        ? 'Ajoutez une slide avant de supprimer la dernière.' : 'Suppression dans le brouillon. Une slide d’origine peut être restaurée ci-dessous.';
+    }
+    function showSlide(id) {
+      const index = draft.slideOrder.indexOf(id);
+      if (index < 0) return;
+      if (presentation?.showSlide) presentation.showSlide(index,true);
+      else if (presentation?.show) presentation.show(index);
+      else orderedSlides().forEach(slide => {
+        const visible = slide.dataset.reviewSlide === id;
+        slide.classList.toggle('active',visible); slide.classList.toggle('visible',visible);
+        slide.inert = !visible; slide.setAttribute('aria-hidden',String(!visible));
+      });
+      if (!presentation) {
+        const counter = document.getElementById('slideCounter') || document.getElementById('counter');
+        if (counter) counter.textContent = `${index+1} / ${draft.slideOrder.length}`;
+        history.replaceState(null,'',`#slide-${index+1}`);
+      }
+      select.value = id; loadSlide();
+    }
+    function applyOrder(id) {
+      const ordered = orderedSlides();
+      slideElements.forEach((slide,slideId) => {
+        if (!draft.slideOrder.includes(slideId)) {
+          slide.classList.remove('active','visible'); slide.remove();
+        }
+      });
+      ordered.forEach((slide,index) => {
+        stage.append(slide);
+        slide.querySelectorAll('.slide-number').forEach(el => { el.textContent = `${String(index+1).padStart(2,'0')} / ${ordered.length}`; });
+      });
+      if (presentation) presentation.slides = ordered;
+      renderPositions();
+      renderSlideOptions(id); showSlide(id);
+      renderDeleted();
+      overview?.sync();
+    }
+    function renderPositions() {
+      $('review-new-position').replaceChildren();
+      for (let index=0; index<=draft.slideOrder.length; index++) $('review-new-position').add(new Option(
+        `${index+1}${index === 0 ? ' · Au début' : index === draft.slideOrder.length ? ' · À la fin' : ''}`,String(index)));
+    }
+    function addSlide(event) {
+      event.preventDefault();
+      const description = $('review-new-description').value.trim();
+      if (!description) { $('review-new-description').reportValidity(); return; }
+      const position = Number($('review-new-position').value);
+      const id = `new-${crypto.randomUUID?.() || Date.now().toString(36)+'-'+Math.random().toString(36).slice(2)}`;
+      draft.addedSlides[id] = {description};
+      if ($('review-new-layout').value) draft.layoutRequests[id] = {layout:$('review-new-layout').value,instruction:''};
+      createPlaceholder(id);
+      draft.slideOrder.splice(position,0,id);
+      $('review-new-description').value = '';
+      $('review-new-layout').value = '';
+      applyOrder(id); persist(); renderSummary();
+      comment.focus();
+    }
+    function deleteSlide() {
+      if (draft.slideOrder.length === 1) return;
+      const id = select.value, index = draft.slideOrder.indexOf(id);
+      if (draft.addedSlides[id]) {
+        delete draft.addedSlides[id]; slideElements.get(id).remove(); slideElements.delete(id);
+        delete draft.layoutRequests[id];
+      } else {
+        draft.deletedSlides[id] = {index,beforeId:draft.slideOrder[index+1],afterId:draft.slideOrder[index-1]};
+      }
+      draft.slideOrder.splice(index,1);
+      applyOrder(draft.slideOrder[Math.min(index,draft.slideOrder.length-1)]); persist(); renderSummary();
+    }
+    function restoreSlide(id) {
+      if (!Object.hasOwn(draft.deletedSlides,id)) return;
+      const saved = draft.deletedSlides[id] || {};
+      let index = draft.slideOrder.indexOf(saved.beforeId);
+      if (index < 0 && draft.slideOrder.includes(saved.afterId)) index = draft.slideOrder.indexOf(saved.afterId)+1;
+      if (index < 0) index = Math.min(Number.isInteger(saved.index) ? saved.index : 0,draft.slideOrder.length);
+      delete draft.deletedSlides[id]; draft.slideOrder.splice(Math.max(0,index),0,id);
+      applyOrder(id); persist(); renderSummary();
+    }
+    function renderDeleted() {
+      $('review-deleted-list').replaceChildren();
+      slides.forEach((slide,index) => {
+        const id = slide.dataset.reviewSlide;
+        if (!Object.hasOwn(draft.deletedSlides,id)) return;
+        const item = document.createElement('li');
+        item.append(document.createTextNode(`Slide d’origine ${index+1} : ${titleOf(slide)} `));
+        const button = document.createElement('button'); button.textContent = 'Restaurer'; button.type = 'button';
+        button.onclick = () => restoreSlide(id); item.append(button); $('review-deleted-list').append(item);
+      });
+    }
+    function moveSlide(id,position) {
+      const from = draft.slideOrder.indexOf(id), selected = select.value;
+      if (position < 0 || position >= draft.slideOrder.length || position === from) return;
+      draft.slideOrder.splice(from,1); draft.slideOrder.splice(position,0,id);
+      applyOrder(selected); persist(); renderSummary();
+    }
+    function saveBlock(block) {
+      if (textOf(block.el) === block.beforeText) delete draft.changes[block.id];
+      else draft.changes[block.id] = {blockId:block.id, slideId:block.slideId,
+        beforeHtml:block.beforeHtml, beforeText:block.beforeText, afterText:textOf(block.el), afterHtml:block.el.innerHTML};
+      block.el.classList.toggle('review-text-changed',Boolean(draft.changes[block.id]));
+      persist(); renderSummary();
+    }
+    // A numeric URL hash denotes a position in the locally reordered deck.
+    const hashPosition = location.hash.match(/^#(?:slide-)?(\d+)$/);
+    const initialIndex = !presentation && hashPosition ? Math.max(0,Number(hashPosition[1])-1)
+      : Math.max(0,slides.findIndex(slide => slide.classList.contains('active')));
+    const initialId = draft.slideOrder[Math.min(initialIndex,draft.slideOrder.length-1)];
+    if (orderChanged() || hasStructureChanges()) applyOrder(initialId);
+    else { renderPositions(); renderSlideOptions(initialId); loadSlide(); renderDeleted(); }
+    instruction.value = draft.instruction;
+    function layoutReview() {
+      const height = window.visualViewport?.height || innerHeight;
+      const landscape = matchMedia('(min-width:761px) and (max-height:500px) and (pointer:coarse)').matches;
+      const compact = innerWidth <= 760 && height < 420;
+      document.body.classList.toggle('review-compact',compact);
+      const width = landscape ? innerWidth-404 : innerWidth;
+      const previewHeight = compact ? 0 : landscape ? height-56 : Math.min(width*9/16,height*.30);
+      const scale = Math.min(width/1920,previewHeight/1080);
+      document.documentElement.style.setProperty('--review-viewport-height',`${height}px`);
+      document.documentElement.style.setProperty('--review-preview-height',`${previewHeight}px`);
+      document.documentElement.style.setProperty('--review-transform',`translate(${(width-1920*scale)/2}px,${(previewHeight-1080*scale)/2}px) scale(${scale})`);
+      if (editingView) sizeEditingCanvas();
+    }
+    function sizeEditingCanvas() {
+      const scale = innerWidth/1920*editZoom;
+      document.documentElement.style.setProperty('--review-edit-scale',scale);
+      canvasSize.style.width=`${1920*scale}px`;canvasSize.style.height=`${1080*scale}px`;
+      $('review-edit-zoom').textContent=`${Math.round(editZoom*100)}%`;
+      $('review-edit-minus').disabled=editZoom<=1;$('review-edit-plus').disabled=editZoom>=6;
+    }
+    function setEditingView(value, element) {
+      editingView=Boolean(value && active); document.body.classList.toggle('review-text-focus',editingView);
+      editToolbar.hidden=!editingView;
+      if (editingView) {
+        sizeEditingCanvas();
+        if(element)requestAnimationFrame(()=>element.scrollIntoView({block:'center',inline:'center'}));
+      } else {
+        if(document.activeElement?.closest('[contenteditable=true]'))document.activeElement.blur();
+        const viewport=stage.parentElement;viewport.scrollLeft=0;viewport.scrollTop=0;
+        if(active)$('review-focus-slide').focus({preventScroll:true});
+      }
+    }
+    function changeZoom(delta) {
+      const viewport=stage.parentElement,old=editZoom;
+      editZoom=Math.max(1,Math.min(6,editZoom+delta));sizeEditingCanvas();
+      viewport.scrollLeft=(viewport.scrollLeft+viewport.clientWidth/2)*editZoom/old-viewport.clientWidth/2;
+      viewport.scrollTop=(viewport.scrollTop+viewport.clientHeight/2)*editZoom/old-viewport.clientHeight/2;
+    }
+    layoutReview(); addEventListener('resize',layoutReview);
+    window.visualViewport?.addEventListener('resize',layoutReview);
+    function persist() {
+      draft.updatedAt = new Date().toISOString();
+      try { localStorage.setItem(key, JSON.stringify(draft)); storageError = false; } catch { storageError = true; }
+      $('review-status').textContent = storageError ? 'Sauvegarde locale indisponible. Exportez votre révision avant de fermer.' : 'Brouillon sauvegardé dans ce navigateur. Le dépôt reste inchangé.';
+    }
+    function renderSummary() {
+      const changes = Object.values(draft.changes), comments = Object.keys(draft.comments);
+      $('review-summary').textContent = `${changes.length} correction(s) · ${comments.length} slide(s) commentée(s)${orderChanged() ? ' · ordre modifié' : ''}${hasStructureChanges() ? ` · ${Object.keys(draft.addedSlides).length} ajout(s) · ${Object.keys(draft.deletedSlides).length} suppression(s)` : ''}${layoutRequests().length ? ` · ${layoutRequests().length} layout(s) demandé(s)` : ''}`;
+      $('review-list').replaceChildren();
+      orderedSlides().forEach((slide,index) => {
+        const id = slide.dataset.reviewSlide, count = changes.filter(c => c.slideId === id).length;
+        if (!count && !draft.comments[id] && !draft.addedSlides[id] && !draft.layoutRequests[id]) return;
+        const item = document.createElement('li');
+        item.textContent = draft.addedSlides[id] ? `Nouvelle slide ${index+1} : ${draft.addedSlides[id].description}`
+          : `Slide ${index+1} : ${count} correction(s)${draft.comments[id] ? ' — '+draft.comments[id] : ''}`;
+        const edits = changes.filter(change => change.slideId === id);
+        edits.forEach(change => {
+          const detail = document.createElement('p');
+          const before=document.createElement('del'),after=document.createElement('ins');
+          before.textContent=change.beforeText;after.textContent=change.afterText;
+          before.setAttribute('aria-label','Avant');after.setAttribute('aria-label','Après');detail.append(before,after);
+          item.append(detail);
+        });
+        if (draft.layoutRequests[id]) {
+          const request = draft.layoutRequests[id], detail = document.createElement('p');
+          detail.textContent = `Layout demandé : ${layouts.get(request.layout).label}${request.instruction ? ' — '+request.instruction : ''}`;
+          item.append(detail);
+        }
+        $('review-list').append(item);
+      });
+    }
+    function setActive(value = !active) {
+      active = value; document.body.classList.toggle('reviewing', active); panel.hidden = !active;
+      if(!active){if(overview?.isOpen)overview.close();setEditingView(false);}
+      blocks.forEach(({el}) => active ? el.setAttribute('contenteditable','true') : el.removeAttribute('contenteditable'));
+      toggle.textContent = active ? 'Quitter la révision' : 'Réviser · E'; toggle.setAttribute('aria-expanded',String(active));
+      if (active) { layoutReview(); select.value = current().dataset.reviewSlide; loadSlide(); }
+      if (!active) { persist(); toggle.focus(); }
+    }
+    function exportReview() {
+      if(overview?.isOpen)overview.close();
+      if(editingView)setEditingView(false);
+      const empty = Object.keys(draft.addedSlides).find(id => !draft.addedSlides[id].description.trim());
+      if (empty) {
+        setActive(true); showSlide(empty); comment.focus();
+        comment.setCustomValidity('Décrivez le contenu souhaité pour cette nouvelle slide.'); comment.reportValidity(); return;
+      }
+      const requestedLayouts = layoutRequests();
+      const incomplete = requestedLayouts.find(request => request.layout === 'custom' && !request.instruction.trim());
+      if (incomplete) {
+        setActive(true); showSlide(incomplete.slideId); $('review-layout-editor').open = true;
+        layoutInstruction.focus(); layoutInstruction.setCustomValidity('Décrivez la mise en page souhaitée.');
+        layoutInstruction.reportValidity(); return;
+      }
+      persist();
+      const payload = {schemaVersion:requestedLayouts.length ? 3 : hasStructureChanges() ? 2 : 1, kind:'deck-review', exportedAt:new Date().toISOString(),
+        deck:{...config, title:document.title, url:location.href.split('#')[0]},
+        startedAt:draft.startedAt, instruction:draft.instruction,
+        slideOrder:[...draft.slideOrder],
+        ...(requestedLayouts.length ? {layoutRequests:requestedLayouts} : {}),
+        ...(hasStructureChanges() ? {
+          addedSlides:draft.slideOrder.filter(id => draft.addedSlides[id]).map(slideId => ({slideId,...draft.addedSlides[slideId]})),
+          deletedSlides:slides.filter(slide => Object.hasOwn(draft.deletedSlides,slide.dataset.reviewSlide)).map(slide => ({
+            slideId:slide.dataset.reviewSlide, slideNumber:originalOrder.indexOf(slide.dataset.reviewSlide)+1, title:titleOf(slide)})),
+        } : {}),
+        agentInstructions:'Comparer la source à sourceHash et aux textes avant modification. En v2 et v3, créer les slides de addedSlides à partir de description et supprimer uniquement celles de deletedSlides lorsque ces champs sont présents. Les identifiants new- désignent des créations. Appliquer slideOrder comme ordre final des slides conservées et créées ; slideNumber indique la position dans la source d’origine. En v3, appliquer chaque demande de layoutRequests à sa slideId : layout désigne la composition et instruction précise son traitement ; auto laisse le choix à l’agent, custom exige une description. Conserver le thème validé, le contenu, les identifiants des slides conservées et toutes les corrections directes lors du changement de layout. Les demandes des slides supprimées ne doivent pas être appliquées. Interpréter les commentaires, signaler les conflits sans écraser les changements plus récents. Refuser explicitement une version de schéma non comprise. Proposer les modifications dans les fichiers sources et résumer les demandes traitées et restantes.',
+        slides:slides.map((slide,index) => ({slideId:slide.dataset.reviewSlide, slideNumber:index+1,
+          title:(slide.querySelector('h1,h2,h3')?.textContent || '').trim(),
+          comment:draft.comments[slide.dataset.reviewSlide] || '',
+          changes:Object.values(draft.changes).filter(c => c.slideId === slide.dataset.reviewSlide).map(({afterHtml, ...change}) => change)}))};
+      const url = URL.createObjectURL(new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}));
+      const link = document.createElement('a'); link.href=url; link.download=`${config.deckId}-revision.json`; link.click();
+      setTimeout(() => URL.revokeObjectURL(url),1000);
+    }
+    toggle.onclick = () => setActive(); $('review-close').onclick = () => setActive(false); $('review-export').onclick = exportReview;
+    select.onchange = () => showSlide(select.value);
+    $('review-prev').onclick = () => showSlide(draft.slideOrder[draft.slideOrder.indexOf(select.value)-1]);
+    $('review-next').onclick = () => showSlide(draft.slideOrder[draft.slideOrder.indexOf(select.value)+1]);
+    overview=window.createDeckReviewOverview({
+      slides:()=>orderedSlides().map(slide=>({id:slide.dataset.reviewSlide,title:titleOf(slide),node:slide,
+        added:Boolean(draft.addedSlides[slide.dataset.reviewSlide]),changed:Object.values(draft.changes).some(change=>change.slideId===slide.dataset.reviewSlide),layout:Boolean(draft.layoutRequests[slide.dataset.reviewSlide])})),
+      current:()=>select.value,orderChanged,move:moveSlide,
+      select:id=>showSlide(id),
+      restoreOrder:order=>{const id=select.value;draft.slideOrder=[...order];applyOrder(id);persist();renderSummary();},
+      reset:()=>{const id=select.value;draft.slideOrder=defaultOrder();applyOrder(id);persist();renderSummary();}
+    });
+    $('review-open-overview').onclick=()=>overview.open($('review-open-overview'));
+    $('review-focus-slide').onclick=()=>setEditingView(true);
+    $('review-edit-back').onclick=()=>setEditingView(false);
+    $('review-edit-minus').onclick=()=>changeZoom(-.5);$('review-edit-plus').onclick=()=>changeZoom(.5);
+    $('review-add-form').onsubmit = addSlide;
+    $('review-delete-slide').onclick = deleteSlide;
+    layoutSelect.onchange = () => {
+      if (!layoutSelect.value) layoutInstruction.value = '';
+      saveLayoutRequest();
+    };
+    layoutInstruction.oninput = saveLayoutRequest;
+    $('review-layout-reset').onclick = () => {
+      layoutSelect.value = ''; layoutInstruction.value = ''; saveLayoutRequest();
+    };
+    comment.oninput = () => {
+      comment.setCustomValidity('');
+      if (draft.addedSlides[select.value]) {
+        draft.addedSlides[select.value].description = comment.value; updatePlaceholder(select.value);
+        select.selectedOptions[0].textContent = `${draft.slideOrder.indexOf(select.value)+1}. ${titleOf(slideElements.get(select.value))}`;
+      } else if(comment.value.trim()) draft.comments[select.value] = comment.value;
+      else delete draft.comments[select.value];
+      persist(); renderSummary();
+    };
+    instruction.oninput = () => { draft.instruction = instruction.value; persist(); };
+    // Follow presentation navigation without rebuilding the panel on every animation.
+    new MutationObserver(() => {
+      const id = current().dataset.reviewSlide;
+      if (select.value !== id) { select.value=id; loadSlide(); }
+    }).observe(stage,{subtree:true,attributes:true,attributeFilter:['class']});
+    document.addEventListener('paste', event => {
+      if (active && event.target.isContentEditable) { event.preventDefault(); document.execCommand('insertText',false,event.clipboardData.getData('text/plain')); }
+    });
+    api = {toggle:setActive, export:exportReview,edit:setEditingView,get editingView(){return editingView;},
+      get overviewOpen(){return overview?.isOpen;},overviewKey:event=>overview.key(event),get active(){return active;}, navigate(key) {
+      if (presentation) return false;
+      const index = draft.slideOrder.indexOf(current().dataset.reviewSlide);
+      const next = ['ArrowRight','ArrowDown',' ','PageDown'].includes(key) ? index+1
+        : ['ArrowLeft','ArrowUp','PageUp'].includes(key) ? index-1 : key === 'Home' ? 0 : key === 'End' ? draft.slideOrder.length-1 : null;
+      if (next === null) return false;
+      showSlide(draft.slideOrder[Math.max(0,Math.min(next,draft.slideOrder.length-1))]); return true;
+    }};
+    renderSummary();
+    $('review-status').textContent = storageError ? 'Brouillon local illisible ou indisponible : exportez avant de fermer.' : 'Brouillon local · aucune modification du dépôt.';
+  });
+})();
+</script>
+<!-- deck-review:end -->
+</head>
+<body>
+  <div class="deck-viewport">
+  <main class="deck-stage" id="deckStage" aria-label="Présentation sur le quantique">
+    <!-- SLIDE 01 : Le quantique -->
+    <section class="slide s-dark cover active" id="slide-1" aria-label="1. Le quantique" data-review-slide="s-76c4546b87b0" data-review-node="b-2d9f496af476">
+      <div class="slide-inner" data-review-node="b-76947c27773d">
+        <header class="chrome" data-review-node="b-dfd2c2dc90f9"><span data-review-node="b-be6de213ae7a">Université Paris Dauphine–PSL</span><span data-review-node="b-e2b35314d9e6">M2 MIAGE · TNSI 2027 · S7</span></header>
+
+        <div class="content" data-review-node="b-0ab3972a21d6">
+          <div class="cover-grid" data-review-node="b-96c71f4e7cc5">
+            <div class="cover-copy" data-review-node="b-14a4096c4fb5">
+              <p class="kicker" data-review-node="b-5992e41b553f">Ouverture · 15 minutes</p>
+              <h1 class="editable" data-review-node="b-abf373c63275">Le quantique</h1>
+              <p class="cover-sub editable" data-review-node="b-ea52f9336d5d">Comprendre le calcul.<br data-review-node="b-24e5d0fd56e1">Situer les usages.</p>
+              <p class="lead editable" data-review-node="b-d07c91e4265e">Comprendre le qubit, situer les acteurs,<br data-review-node="b-7cc98bcc9626">tester le cloud et anticiper Quantum Safe.</p>
+              <div class="cover-route" data-review-node="b-fbe04058fb6d"><span data-review-node="b-e10047233f75">01 · Les principes</span><span data-review-node="b-78b02d014f0b">02 · Roadmaps &amp; usages</span><span data-review-node="b-dd2ec5ff5aa4">03 · Cloud &amp; Quantum Safe</span></div>
+            </div>
+            <div class="cover-art" aria-hidden="true" data-review-node="b-7073989e086b">
+              <svg viewBox="0 0 640 560" fill="none" data-review-node="b-4c2b58a7b8c0">
+                <circle cx="320" cy="280" r="220" stroke="currentColor" stroke-opacity=".22"/>
+                <ellipse cx="320" cy="280" rx="220" ry="87" stroke="currentColor" stroke-opacity=".25" transform="rotate(-32 320 280)"/>
+                <ellipse cx="320" cy="280" rx="88" ry="220" stroke="currentColor" stroke-opacity=".25" transform="rotate(-32 320 280)"/>
+                <path d="M30 280 C105 60 180 500 255 280 S405 60 480 280 S570 500 625 280" stroke="var(--accent)" stroke-width="5"/>
+                <path d="M30 280 C105 500 180 60 255 280 S405 500 480 280 S570 60 625 280" stroke="var(--bg-cream)" stroke-width="3" stroke-opacity=".7"/>
+                <circle cx="320" cy="280" r="13" fill="var(--bg-cream)"/>
+                <text x="105" y="92" class="art-label" data-review-node="b-3b5eaae6818d">α</text><text x="495" y="490" class="art-label" data-review-node="b-aa7a2cd805f3">β</text>
+              </svg>
+              <p class="mono" data-review-node="b-d8e792e868a8">Amplitudes → interférences → mesure</p>
+            </div>
+          </div></div>
+        <footer class="slide-footer" data-review-node="b-4c8efec62d05"><span data-review-node="b-f4054fbe46b3">Quantique · théorie &amp; usages</span><a href="https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/single-systems/quantum-information" target="_blank" rel="noopener noreferrer" data-review-node="b-44ba9fbb5a73">IBM Quantum Learning · bases <svg class="external-mark" aria-hidden="true" viewBox="0 0 16 16" fill="none" data-review-node="b-326db6e82eca"><path d="M3 13L13 3M4 3h9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a><span data-review-node="b-047d9501ecdf">01 / 22</span></footer>
+      </div>
+    </section>
+
+    <!-- SLIDE 02 : Du transistor au qubit : deux façons de calculer -->
+    <section class="slide s-dark " id="slide-2" aria-label="2. Du transistor au qubit : deux façons de calculer" data-review-slide="s-3e31e467dbc9" data-review-node="b-a327c39bb77f">
+      <div class="slide-inner" data-review-node="b-1a72a8a6918d">
+        <header class="chrome" data-review-node="b-6748efc9a4eb"><span data-review-node="b-14985ddb5c8f">Université Paris Dauphine–PSL</span><span data-review-node="b-ca406eea19f6">M2 MIAGE · TNSI 2027 · S7</span></header>
+        <div class="heading" data-review-node="b-01bc0bc89136"><p class="kicker" data-review-node="b-213cefe821f0">01 · Comparer les niveaux physique et logique</p><h2 class="editable" data-review-node="b-c010fb7f6a63">Du transistor au qubit : deux façons de calculer</h2></div>
+        <div class="content" data-review-node="b-123c95d2dcc1">
+          <div class="computer-comparison" data-review-node="b-aca3af337f94">
+            <article data-review-node="b-746d6c523491">
+              <p class="eyebrow" data-review-node="b-63ba5596dfbc">Ordinateur classique · CPU / GPU</p>
+              <div class="digital-switch" aria-label="Commutation entre deux niveaux logiques" data-review-node="b-e2d7ff273f42"><span data-review-node="b-9d8e71a6f5b4">0</span><i aria-hidden="true" data-review-node="b-bb6016c759c7"></i><span data-review-node="b-487555cc6847">1</span></div>
+              <h3 class="editable" data-review-node="b-38ddfdafc93b">Des transistors organisent des bits</h3>
+              <p class="editable" data-review-node="b-fe7c6c4f33bf">Des interrupteurs électroniques forment des portes logiques. L’information est encodée par des niveaux distingués comme 0 et 1.</p>
+              <p class="small editable" data-review-node="b-3de22a586e49">Un bit peut être lu et recopié. Un processeur assemble de très nombreux transistors.</p>
+            </article>
+            <article class="paper" data-review-node="b-b5f333d7a609">
+              <p class="eyebrow" data-review-node="b-253f35c0b15a">Processeur quantique · QPU</p>
+              <div class="comparison-state" data-review-node="b-61ef49397d32">α|0⟩ + β|1⟩</div>
+              <h3 class="editable" data-review-node="b-cc4ab4cbdda4">Des systèmes physiques portent des qubits</h3>
+              <p class="editable" data-review-node="b-4dbcb97ef261">Ions, photons, atomes ou circuits : on contrôle des amplitudes et leurs phases avec des portes quantiques.</p>
+              <p class="small editable" data-review-node="b-727b061a0339">La mesure fournit un résultat classique. L’intérêt dépend de l’algorithme et de la fiabilité du système.</p>
+            </article>
+          </div>
+          <p class="takeaway editable" data-review-node="b-f52b6d5f0d9d">Le transistor est un composant. Bit et qubit décrivent l’information : on ne remplace pas simplement chaque transistor par un qubit.</p></div>
+        <footer class="slide-footer" data-review-node="b-ff7818fb286b"><span data-review-node="b-e222a166ff6b">Quantique · théorie &amp; usages</span><a href="https://www.intel.com/content/www/us/en/newsroom/tech101/the-transistor-explained.html" target="_blank" rel="noopener noreferrer" data-review-node="b-169c2c680d9b">Intel · transistor / IBM · qubit <svg class="external-mark" aria-hidden="true" viewBox="0 0 16 16" fill="none" data-review-node="b-36c84a21aa49"><path d="M3 13L13 3M4 3h9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a><span data-review-node="b-7253c8349f1d">02 / 22</span></footer>
+      </div>
+    </section>
+
+    <!-- SLIDE 03 : Les propriétés d’un qubit -->
+    <section class="slide s-dark qubit-properties" id="slide-3" aria-label="3. Les propriétés d’un qubit" data-review-slide="s-7fff979c9dc0" data-review-node="b-203839153248">
+      <div class="slide-inner" data-review-node="b-d18e7ffda0ab">
+        <header class="chrome" data-review-node="b-9ffdb0361a9c"><span data-review-node="b-68d45e80c7c1">Université Paris Dauphine–PSL</span><span data-review-node="b-6d26a2c29ce8">M2 MIAGE · TNSI 2027 · S7</span></header>
+        <div class="heading" data-review-node="b-8c66090857e3"><p class="kicker" data-review-node="b-05aae242cf5a">02 · Superposition, phase, mesure et cohérence</p><h2 class="editable" data-review-node="b-d98f5cce12c7">Les propriétés d’un qubit</h2></div>
+        <div class="content" data-review-node="b-f067a81d38cf">
+          <div class="two-columns qubit-grid" data-review-node="b-207ffa8d10e8">
+            <div data-review-node="b-d1b198861813">
+              <p class="eyebrow" data-review-node="b-d5ac0d87cddf">Superposition · état pur d’un qubit</p>
+              <div class="equation" data-review-node="b-7d1995b99973">|ψ⟩ = α|0⟩ + β|1⟩</div>
+              <p class="equation-note" data-review-node="b-1e3c8fe020e2">|α|² + |β|² = 1</p>
+              <p class="lead editable" data-review-node="b-012f78366402">α et β sont des amplitudes complexes.<br data-review-node="b-e48336e96ea0">Leur module fixe une probabilité ;<br data-review-node="b-575d9b8c5794">leur phase influence les interférences.</p>
+            </div>
+            <div class="paper" data-review-node="b-fb6d884af10b">
+              <p class="eyebrow" data-review-node="b-071c3b7aa6c5">Mesure dans la base 0 / 1</p>
+              <div class="measure-result" data-review-node="b-502d32b1de6d"><strong data-review-node="b-758b542dfaa9">0</strong><span data-review-node="b-5bf3f39ffac4">avec la probabilité <b data-review-node="b-48cd26cbade0">|α|²</b></span></div>
+              <div class="measure-result" data-review-node="b-7a404873f2c0"><strong data-review-node="b-327be4132d79">1</strong><span data-review-node="b-ad5a31a49d1c">avec la probabilité <b data-review-node="b-5b5ef7d67447">|β|²</b></span></div>
+              <hr data-review-node="b-da02573ae968">
+              <p class="editable" data-review-node="b-9f9e0b37b272">Exemple : (|0⟩ + |1⟩) / √2 donne 50 % de 0 et 50 % de 1 sur des préparations répétées.</p>
+            </div>
+          </div>
+          <div class="property-notes" data-review-node="b-1f2bbc52a03c"><p data-review-node="b-9d9ff1ae44fa"><strong data-review-node="b-1a4861a18cbd">Cohérence.</strong> <span class="editable" data-review-node="b-f1924e1a1427">Les phases doivent rester contrôlées ; l’environnement peut les dégrader.</span></p><p data-review-node="b-36e86258d00c"><strong data-review-node="b-d06b67187a33">Non-clonage.</strong> <span class="editable" data-review-node="b-dd825e3776fa">Un état quantique arbitraire inconnu ne peut pas être recopié parfaitement.</span></p></div>
+          <p class="takeaway editable" data-review-node="b-6e9fad1b80d4">Pour estimer une distribution, on répète la préparation et la mesure. Interférence et intrication complètent ces propriétés dans les slides suivantes.</p></div>
+        <footer class="slide-footer" data-review-node="b-7c6cd15e9b9b"><span data-review-node="b-8c88525d7a01">Quantique · théorie &amp; usages</span><a href="https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/single-systems/quantum-information" target="_blank" rel="noopener noreferrer" data-review-node="b-8984b75252ea">IBM Quantum Learning · bases <svg class="external-mark" aria-hidden="true" viewBox="0 0 16 16" fill="none" data-review-node="b-4d8d817288cd"><path d="M3 13L13 3M4 3h9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a><span data-review-node="b-c5f9f29b45c3">03 / 22</span></footer>
+      </div>
+    </section>
+
+    <!-- SLIDE 04 : La phase change le résultat du calcul -->
+    <section class="slide s-dark interference" id="slide-4" aria-label="4. La phase change le résultat du calcul" data-review-slide="s-0339ef34a3a9" data-review-node="b-c367d55166d6">
+      <div class="slide-inner" data-review-node="b-280ad9656a4e">
+        <header class="chrome" data-review-node="b-0f28fbe4523d"><span data-review-node="b-a4c096873337">Université Paris Dauphine–PSL</span><span data-review-node="b-5598f1a462b7">M2 MIAGE · TNSI 2027 · S7</span></header>
+        <div class="heading" data-review-node="b-152f53eade43"><p class="kicker" data-review-node="b-3edfdc286217">03 · Interférence · démonstration</p><h2 class="editable" data-review-node="b-6e7a89f2972d">La phase change le résultat du calcul</h2></div>
+        <div class="content" data-review-node="b-f24082505558">
+          <div class="circuit" aria-label="Circuit idéal : état zéro, Hadamard, porte de phase, Hadamard, mesure" data-review-node="b-076beec1e956">
+            <span class="ket" data-review-node="b-0c82a56e4da9">|0⟩</span><span class="wire" data-review-node="b-e291f4d74df2"></span><span class="gate" data-review-node="b-36cb5f2766a4">H</span><span class="wire" data-review-node="b-ad8bdf6f707e"></span><span class="gate phase-gate" data-review-node="b-05118e87bcd5">P(φ)</span><span class="wire" data-review-node="b-f11ca8cd07dd"></span><span class="gate" data-review-node="b-2540eaee548f">H</span><span class="wire" data-review-node="b-5d433f30a684"></span><span class="gate measure-gate" data-review-node="b-d688672a44bb">Mesure</span>
+          </div>
+          <div class="demo-layout" data-review-node="b-5de98e6ec154">
+            <div class="phase-controls" data-review-node="b-656148ed21c8">
+              <p class="lead editable" data-review-node="b-c5e7eeab9255">Changer la phase modifie la façon dont les amplitudes se renforcent ou s’annulent.</p>
+              <label for="phase" data-review-node="b-e9215d804d6d">Phase φ <output id="phaseValue" for="phase" data-review-node="b-216319420d77">0°</output></label>
+              <input id="phase" type="range" min="0" max="360" step="1" value="0" data-review-node="b-770ccce3f75b">
+              <div class="phase-presets" data-review-node="b-1888ddd5e655"><button type="button" data-phase="0" data-review-node="b-2158b7ed7ee5">0°</button><button type="button" data-phase="90" data-review-node="b-f85f1ec609eb">90°</button><button type="button" data-phase="180" data-review-node="b-e3ac31615304">180°</button></div>
+              <p class="small" data-review-node="b-cbb661db348b">Juste avant le dernier H :<br data-review-node="b-26234d11922c"><strong data-review-node="b-b5748e89027d">50 % de 0 / 50 % de 1</strong>, quelle que soit φ,<br data-review-node="b-ad1f2186ed0c">pour une mesure dans cette même base.</p>
+            </div>
+            <div class="paper probability-panel" data-review-node="b-7338f66c2109">
+              <p class="eyebrow" data-review-node="b-90b86ba09fa6">Après le dernier H · probabilités idéales</p>
+              <div class="probability" data-review-node="b-6f5a36aeeaba"><span data-review-node="b-c16127ce9b90">P(0)</span><div class="bar-track" data-review-node="b-8956798bfcb8"><div class="bar" id="barZero" style="width:100%" data-review-node="b-4bec70b34d28"></div></div><output id="probZero" data-review-node="b-23673eb5cd5a">100 %</output></div>
+              <div class="probability" data-review-node="b-c63e8dd8cde9"><span data-review-node="b-99cbaaa72cce">P(1)</span><div class="bar-track" data-review-node="b-7bea791cf4a7"><div class="bar" id="barOne" style="width:0%" data-review-node="b-e0af539ce80d"></div></div><output id="probOne" data-review-node="b-db3493fc599e">0 %</output></div>
+              <p class="small formula" data-review-node="b-c5ebc8b69869">P(0) = cos²(φ/2) · P(1) = sin²(φ/2)</p>
+              <button type="button" class="primary-button" id="sampleBtn" data-review-node="b-3865ec69937e">Mesurer 100 fois</button>
+              <p id="sampleResult" class="small sample-result" role="status" data-review-node="b-02b33b05fb6b">100 préparations indépendantes du circuit.</p>
+              <p class="simulation-label" data-review-node="b-56406c078257">Simulation pédagogique idéale · sans bruit matériel</p>
+            </div>
+          </div></div>
+        <footer class="slide-footer" data-review-node="b-03bc1a09d9e3"><span data-review-node="b-c83ded557205">Quantique · théorie &amp; usages</span><a href="https://quantum.cloud.ibm.com/learning/en/courses/utility-scale-quantum-computing/bits-gates-and-circuits" target="_blank" rel="noopener noreferrer" data-review-node="b-c2aabcfdb2d9">IBM Quantum Learning · circuits <svg class="external-mark" aria-hidden="true" viewBox="0 0 16 16" fill="none" data-review-node="b-08482ec0cfee"><path d="M3 13L13 3M4 3h9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a><span data-review-node="b-a881931e9231">04 / 22</span></footer>
+      </div>
+    </section>
+
+    <!-- SLIDE 05 : L’intrication décrit un état commun -->
+    <section class="slide s-dark " id="slide-5" aria-label="5. L’intrication décrit un état commun" data-review-slide="s-c8ae18be087d" data-review-node="b-08435ddb009b">
+      <div class="slide-inner" data-review-node="b-d1e3b6490633">
+        <header class="chrome" data-review-node="b-0cac80b1b71e"><span data-review-node="b-1448ac8e4269">Université Paris Dauphine–PSL</span><span data-review-node="b-d51e2cc35995">M2 MIAGE · TNSI 2027 · S7</span></header>
+        <div class="heading" data-review-node="b-c7d7fcedb8e4"><p class="kicker" data-review-node="b-48f4119fe615">04 · Un système de deux qubits</p><h2 class="editable" data-review-node="b-8a8388b8c844">L’intrication décrit un état commun</h2></div>
+        <div class="content" data-review-node="b-7bbb265986c8">
+          <div class="two-columns entangled-grid" data-review-node="b-c914b0652c53">
+            <div data-review-node="b-265f3fa6c642">
+              <p class="eyebrow" data-review-node="b-2c7e28906c14">Exemple · état de Bell</p>
+              <div class="equation bell-equation" data-review-node="b-8aa860438ab9">(|00⟩ + |11⟩) / √2</div>
+              <p class="lead editable" data-review-node="b-d263b0259d32">L’état global ne se décompose pas<br data-review-node="b-0e28c77bc917">en deux états individuels indépendants.</p>
+              <p class="small editable" data-review-node="b-7b3aa010494b">Préparation : une porte H sur le premier qubit,<br data-review-node="b-0232b65e1826">puis une porte CNOT entre les deux.</p>
+            </div>
+            <div class="bell-outcomes" data-review-node="b-cdca15822f16">
+              <div class="outcome" data-review-node="b-eff97b7979d6"><span data-review-node="b-e05eb5db7fa6">00</span><strong data-review-node="b-c542e7bab892">50 %</strong></div>
+              <div class="outcome" data-review-node="b-2289164b1d8c"><span data-review-node="b-de7569cfba36">11</span><strong data-review-node="b-9195dcfa577f">50 %</strong></div>
+              <p class="small editable" data-review-node="b-43f776ad9d9b">Mesures dans la base 0 / 1 :<br data-review-node="b-244b1da23336">chaque résultat local est aléatoire,<br data-review-node="b-662ae328746c">mais les deux résultats sont corrélés.</p>
+            </div>
+          </div>
+          <p class="takeaway editable" data-review-node="b-c245cc4ced99">Ces seules corrélations ne prouvent pas l’intrication. Elles ne permettent pas d’envoyer un message instantané.</p></div>
+        <footer class="slide-footer" data-review-node="b-44abc233b7c5"><span data-review-node="b-6156ef44e3f2">Quantique · théorie &amp; usages</span><a href="https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/entanglement-in-action/introduction" target="_blank" rel="noopener noreferrer" data-review-node="b-a76869436c88">IBM Quantum Learning · intrication <svg class="external-mark" aria-hidden="true" viewBox="0 0 16 16" fill="none" data-review-node="b-3fb517731ff8"><path d="M3 13L13 3M4 3h9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a><span data-review-node="b-62a246dde031">05 / 22</span></footer>
+      </div>
+    </section>
+
+    <!-- SLIDE 06 : Un calcul quantique reste hybride -->
+    <section class="slide s-light " id="slide-6" aria-label="6. Un calcul quantique reste hybride" data-review-slide="s-95659734229c" data-review-node="b-7305d5213101">
+      <div class="slide-inner" data-review-node="b-151f87bd2c65">
+        <header class="chrome" data-review-node="b-08bbdbf2d700"><span data-review-node="b-fbf3554db1e4">Université Paris Dauphine–PSL</span><span data-review-node="b-71c03137323c">M2 MIAGE · TNSI 2027 · S7</span></header>
+        <div class="heading" data-review-node="b-178889e5272f"><p class="kicker" data-review-node="b-ce2672fe0656">05 · Du problème au résultat</p><h2 class="editable" data-review-node="b-74ca2889e17a">Un calcul quantique reste hybride</h2></div>
+        <div class="content" data-review-node="b-d6aff6349f02">
+          <div class="workflow" data-review-node="b-50e0c9daeab2">
+            <article data-review-node="b-019dfbe391c3"><span class="eyebrow" data-review-node="b-7cec5d9b3f5c">01 · Classique</span><h3 class="editable" data-review-node="b-4b9545f494d8">Préparer</h3><p class="editable" data-review-node="b-66c5932f201f">Modéliser le problème et choisir l’encodage.</p></article><span class="flow-arrow" aria-hidden="true" data-review-node="b-699383dd408a">→</span>
+            <article class="quantum-step" data-review-node="b-07c5d35d9a3f"><span class="eyebrow" data-review-node="b-9e8e9679eb07">02 · Quantique</span><h3 class="editable" data-review-node="b-90fe91b3518e">Transformer</h3><p class="editable" data-review-node="b-533dbf1e0f11">Appliquer les portes et faire interférer les amplitudes.</p></article><span class="flow-arrow" aria-hidden="true" data-review-node="b-2b6b6732930a">→</span>
+            <article data-review-node="b-64af0f14bfb4"><span class="eyebrow" data-review-node="b-4081a61a1a16">03 · Mesures</span><h3 class="editable" data-review-node="b-bbae360de7bf">Répéter</h3><p class="editable" data-review-node="b-0084471a897e">Échantillonner pour estimer une quantité utile.</p></article><span class="flow-arrow" aria-hidden="true" data-review-node="b-1925b815e079">→</span>
+            <article data-review-node="b-876d7757f156"><span class="eyebrow" data-review-node="b-b75908d34599">04 · Classique</span><h3 class="editable" data-review-node="b-eee12146bbbc">Exploiter</h3><p class="editable" data-review-node="b-9012da49bc07">Vérifier, agréger et parfois ajuster le circuit.</p></article>
+          </div>
+          <div class="exponential" data-review-node="b-2a41eab3bc82"><strong data-review-node="b-bf4267ea003a">2<sup data-review-node="b-171d0cfaeb6d">n</sup></strong><p class="editable" data-review-node="b-6cc8dcbd7970">Un état pur de n qubits se décrit par 2ⁿ amplitudes.<br data-review-node="b-fe101860f841">Une mesure dans la base de calcul fournit une chaîne de n bits.<br data-review-node="b-2b94ba39a8c2">Le gain dépend de l’algorithme et du coût de tout le workflow.</p></div></div>
+        <footer class="slide-footer" data-review-node="b-50ae4c49b9ae"><span data-review-node="b-68a1bc718d6f">Quantique · théorie &amp; usages</span><a href="https://quantum.cloud.ibm.com/learning/en/courses/utility-scale-quantum-computing/bits-gates-and-circuits" target="_blank" rel="noopener noreferrer" data-review-node="b-eaff30cc4928">IBM Quantum Learning · circuits <svg class="external-mark" aria-hidden="true" viewBox="0 0 16 16" fill="none" data-review-node="b-5cd9c283874d"><path d="M3 13L13 3M4 3h9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a><span data-review-node="b-5a3f6b02832a">06 / 22</span></footer>
+      </div>
+    </section>
+
+    <!-- SLIDE 07 : Le bruit limite la profondeur du calcul -->
+    <section class="slide s-dark " id="slide-7" aria-label="7. Le bruit limite la profondeur du calcul" data-review-slide="s-22b8f787511e" data-review-node="b-6ed7ef4d7963">
+      <div class="slide-inner" data-review-node="b-824e580f0bb8">
+        <header class="chrome" data-review-node="b-91aa89a018b7"><span data-review-node="b-9fd6857a5af4">Université Paris Dauphine–PSL</span><span data-review-node="b-783e704531e3">M2 MIAGE · TNSI 2027 · S7</span></header>
+        <div class="heading" data-review-node="b-1df48d66945f"><p class="kicker" data-review-node="b-796edd1b6c5e">06 · Le défi matériel</p><h2 class="editable" data-review-node="b-819e9d9e725e">Le bruit limite la profondeur du calcul</h2></div>
+        <div class="content" data-review-node="b-91c59be44364">
+          <div class="two-columns noise-grid" data-review-node="b-33b30dda073a">
+            <div data-review-node="b-8e6f29484aeb">
+              <h3 class="editable" data-review-node="b-7dbb3798c774">L’information est fragile</h3>
+              <ul class="dash-list" data-review-node="b-9812785e05dd"><li class="editable" data-review-node="b-745c6176e293">Décohérence : l’environnement perturbe l’état.</li><li class="editable" data-review-node="b-bc13fed9e82f">Portes et mesures : des opérations imparfaites.</li><li class="editable" data-review-node="b-3212c6a96795">Plus le circuit est long, plus la protection compte.</li></ul>
+              <p class="small editable" data-review-node="b-6215709c02e4">L’atténuation d’erreurs corrige des estimations.<br data-review-node="b-99dba5c82057">La correction d’erreurs encode et protège l’information.</p>
+            </div>
+            <div class="paper logical-qubit" data-review-node="b-ff06222a577c">
+              <p class="eyebrow" data-review-node="b-123cdbb66076">De qubits physiques à un qubit logique</p>
+              <div class="qubit-code" aria-hidden="true" data-review-node="b-01fa656e0abf"><i data-review-node="b-754426799e0c"></i><i data-review-node="b-6ef8b5b51aaf"></i><i data-review-node="b-4a763558a0b9"></i><i data-review-node="b-452bf6e5b254"></i><i data-review-node="b-6aafd860e28c"></i><i data-review-node="b-c17340c7a47a"></i><i data-review-node="b-44a43e0eff66"></i><i data-review-node="b-63a9e4578210"></i><i data-review-node="b-3360f6ba646c"></i><span data-review-node="b-706eaf9d2f2d">→</span><b data-review-node="b-559898adbbda">|ψ<sub data-review-node="b-e06f371bf393">L</sub>⟩</b></div>
+              <p class="editable" data-review-node="b-a0d07fe6c108">Plusieurs qubits, des mesures de contrôle et un décodage protègent une information logique.</p>
+              <div class="evidence" data-review-node="b-a00cd22fb341"><strong data-review-node="b-e50d51891299">Repère · Willow, 2024 / 2025</strong><p class="small editable" data-review-node="b-e7540fc15ac7">Mémoire quantique sous le seuil de correction : davantage de protection réduit l’erreur logique dans l’expérience.</p></div>
+            </div>
+          </div>
+          <p class="takeaway editable" data-review-node="b-93bc1d816fa0">Le nombre de qubits seul ne mesure pas la capacité utile. La fidélité, la connectivité et la profondeur comptent aussi.</p></div>
+        <footer class="slide-footer" data-review-node="b-d25b1e957f3a"><span data-review-node="b-aadecf9d316f">Quantique · théorie &amp; usages</span><a href="https://doi.org/10.1038/s41586-024-08449-y" target="_blank" rel="noopener noreferrer" data-review-node="b-f9c1dc671b32">Google Quantum AI · Nature, 2024/2025 <svg class="external-mark" aria-hidden="true" viewBox="0 0 16 16" fill="none" data-review-node="b-0f7f21e90dce"><path d="M3 13L13 3M4 3h9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a><span data-review-node="b-223c5e080edd">07 / 22</span></footer>
+      </div>
+    </section>
+
+    <!-- SLIDE 08 : Du concept aux expériences accessibles -->
+    <section class="slide s-dark " id="slide-8" aria-label="8. Du concept aux expériences accessibles" data-review-slide="s-9eda7c92cb21" data-review-node="b-91f2dea84c27">
+      <div class="slide-inner" data-review-node="b-ec9df580d9fd">
+        <header class="chrome" data-review-node="b-2ca16d480edb"><span data-review-node="b-18b31e0a1c2a">Université Paris Dauphine–PSL</span><span data-review-node="b-de743bb0d57f">M2 MIAGE · TNSI 2027 · S7</span></header>
+        <div class="heading" data-review-node="b-b5c588318091"><p class="kicker" data-review-node="b-fa1bfe408774">07 · Passé · repères documentés</p><h2 class="editable" data-review-node="b-96bb2ad0eb81">Du concept aux expériences accessibles</h2></div>
+        <div class="content" data-review-node="b-04e2dd1c168b">
+          <div class="history-timeline" data-review-node="b-a6064b2b7e43">
+            <article data-review-node="b-8a03939da608"><strong data-review-node="b-49093e8ba828">1982</strong><span class="eyebrow" data-review-node="b-c16ea88999f4">L’idée</span><h3 class="editable" data-review-node="b-29a725fb5f4a">Simuler la physique</h3><p class="editable" data-review-node="b-50ec1d02cb99">Feynman propose d’utiliser des systèmes quantiques pour simuler la physique quantique.</p></article>
+            <article data-review-node="b-b24638251edb"><strong data-review-node="b-83814c43db55">1994</strong><span class="eyebrow" data-review-node="b-debbb9d1ea50">L’algorithme</span><h3 class="editable" data-review-node="b-91b9da721b92">La rupture de Shor</h3><p class="editable" data-review-node="b-43d8d453e6c8">Factorisation et logarithme discret deviennent accessibles en temps polynomial sur un modèle quantique.</p></article>
+            <article data-review-node="b-b13961e3c14f"><strong data-review-node="b-aef45c89f3e8">2016</strong><span class="eyebrow" data-review-node="b-9bb529fbd40e">L’accès</span><h3 class="editable" data-review-node="b-c2e285820465">Le cloud s’ouvre</h3><p class="editable" data-review-node="b-40589f1dcabb">IBM ouvre un processeur quantique au public via le cloud, le 4 mai.</p></article>
+            <article data-review-node="b-d8028a9271e3"><strong data-review-node="b-1d176020139a">2024/25</strong><span class="eyebrow" data-review-node="b-5fb308b93f6f">L’expérience</span><h3 class="editable" data-review-node="b-4a30f92ce964">Protéger un qubit</h3><p class="editable" data-review-node="b-0af2d7cf4b27">Willow démontre une mémoire logique sous le seuil de correction d’erreurs.</p></article>
+            <article data-review-node="b-64b4168bbd32"><strong data-review-node="b-dcc201fc49c4">2026</strong><span class="eyebrow" data-review-node="b-af88afc4a624">L’ingénierie</span><h3 class="editable" data-review-node="b-867641bdce43">Relier les modules</h3><p class="editable" data-review-node="b-f73212c142d1">IBM annonce l’interconnexion et le refroidissement de deux modules cryogéniques.</p></article>
+          </div>
+          <p class="takeaway" data-review-node="b-dbd43104a00a">Chaque jalon répond à un verrou différent : théorie, algorithmes, accès, fiabilité, intégration. <a href="sources.md#repères-historiques--slide-8" data-review-node="b-5de6160d2b46">Références détaillées <svg class="external-mark" aria-hidden="true" viewBox="0 0 16 16" fill="none" data-review-node="b-f333cf9d1138"><path d="M3 13L13 3M4 3h9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a></p></div>
+        <footer class="slide-footer" data-review-node="b-5f6258c4053a"><span data-review-node="b-66ac6f56bec5">Quantique · théorie &amp; usages</span><a href="https://authors.library.caltech.edu/records/a1kgk-xyk45" target="_blank" rel="noopener noreferrer" data-review-node="b-064be01ef189">Publications et annonces · 1982–2026 <svg class="external-mark" aria-hidden="true" viewBox="0 0 16 16" fill="none" data-review-node="b-0a4eebe53640"><path d="M3 13L13 3M4 3h9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a><span data-review-node="b-246dc9b67c84">08 / 22</span></footer>
+      </div>
+    </section>
+
+    <!-- SLIDE 09 : Les roadmaps fixent des objectifs à vérifier -->
+    <section class="slide s-dark " id="slide-9" aria-label="9. Les roadmaps fixent des objectifs à vérifier" data-review-slide="s-9b0b1cabdf9a" data-review-node="b-4bd3edbffbc4">
+      <div class="slide-inner" data-review-node="b-e9544cf3904b">
+        <header class="chrome" data-review-node="b-ac8dedf51c39"><span data-review-node="b-080a4015488f">Université Paris Dauphine–PSL</span><span data-review-node="b-fc6cf9020d0a">M2 MIAGE · TNSI 2027 · S7</span></header>
+        <div class="heading" data-review-node="b-7b3d653e5f01"><p class="kicker" data-review-node="b-c81f142ad7ca">08 · Futur · annonces consultées le 12.11.2026</p><h2 class="editable" data-review-node="b-f872bd19ad5e">Les roadmaps fixent des objectifs à vérifier</h2></div>
+        <div class="content" data-review-node="b-b8e48ef65ec5">
+          <div class="future-roadmap" data-review-node="b-2880fba16a52">
+            <article data-review-node="b-202c2b0d9601"><strong data-review-node="b-f3a289ebe408">2027</strong><div data-review-node="b-99622b3974da"><h3 class="editable" data-review-node="b-a85482f36c76">France · Kity, Alice &amp; Bob</h3><p class="editable" data-review-node="b-ae7c30537375">Installation annoncée au TGCC : explorer la technologie de qubits de chat.</p></div><span data-review-node="b-d46375c09220">Installation prévue<br data-review-node="b-824cadf13e49"><a href="https://www.entreprises.gouv.fr/la-dge/actualites/france-2030-la-france-accelere-sa-strategie-quantique-pour-renforcer-sa" target="_blank" rel="noopener noreferrer" data-review-node="b-8ae262430314">DGE · mai 2026 <svg class="external-mark" aria-hidden="true" viewBox="0 0 16 16" fill="none" data-review-node="b-673ba3beb30c"><path d="M3 13L13 3M4 3h9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a></span></article>
+            <article data-review-node="b-9b03510fd539"><strong data-review-node="b-86125e8a3edb">2029</strong><div data-review-node="b-0d5b28e4d829"><h3 class="editable" data-review-node="b-eeea9971f4db">IBM · Starling</h3><p class="editable" data-review-node="b-63e26de9962a">Objectif annoncé : 200 qubits logiques et 100 millions d’opérations.</p></div><span data-review-node="b-c2eb6867f80d">Roadmap constructeur<br data-review-node="b-ae1f832e22b5"><a href="https://www.ibm.com/quantum/blog/path-to-ibm-quantum-starling" target="_blank" rel="noopener noreferrer" data-review-node="b-7e7fb1fa39c6">IBM · novembre 2026 <svg class="external-mark" aria-hidden="true" viewBox="0 0 16 16" fill="none" data-review-node="b-537e19266bd4"><path d="M3 13L13 3M4 3h9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a></span></article>
+            <article data-review-node="b-4eaffc9bffb8"><strong data-review-node="b-60935a8b5cfb">2032</strong><div data-review-node="b-dbffc3463a1c"><h3 class="editable" data-review-node="b-12c8dba323e5">France · PROQCIMA</h3><p class="editable" data-review-node="b-7f48d7dcbe2c">Objectif relevé en 2026 à 1 024 qubits logiques pour les prototypes.</p></div><span data-review-node="b-2d1968f55d98">Objectif de programme<br data-review-node="b-c07ad5352566"><a href="https://www.entreprises.gouv.fr/la-dge/actualites/france-2030-la-france-accelere-sa-strategie-quantique-pour-renforcer-sa" target="_blank" rel="noopener noreferrer" data-review-node="b-c4fcc9c528db">DGE · mai 2026 <svg class="external-mark" aria-hidden="true" viewBox="0 0 16 16" fill="none" data-review-node="b-8bb3ba9a585b"><path d="M3 13L13 3M4 3h9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a></span></article>
+            <article data-review-node="b-20cb9b391fdd"><strong data-review-node="b-b8eae9ccc60f">2033</strong><div data-review-node="b-f7e20dc812b8"><h3 class="editable" data-review-node="b-0d2e6d79468d">DARPA · Quantum Benchmarking Initiative</h3><p class="editable" data-review-node="b-3edb6c6a072a">Évaluer la possibilité d’un calcul dont la valeur dépasse le coût.</p></div><span data-review-node="b-c1443bbbca0a">Horizon d’évaluation<br data-review-node="b-8bacf5fe1efa"><a href="https://www.darpa.mil/research/programs/quantum-benchmarking-initiative" target="_blank" rel="noopener noreferrer" data-review-node="b-02f04569dfc9">DARPA <svg class="external-mark" aria-hidden="true" viewBox="0 0 16 16" fill="none" data-review-node="b-bc6a9c8e85b3"><path d="M3 13L13 3M4 3h9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a></span></article>
+          </div>
+          <p class="takeaway editable" data-review-node="b-64e72ffdbe3a">Ce sont des objectifs annoncés, avec des périmètres différents. Ils ne garantissent ni la livraison ni une date de rupture cryptographique.</p></div>
+        <footer class="slide-footer" data-review-node="b-3f4d71ff7461"><span data-review-node="b-27dc4026464e">Quantique · théorie &amp; usages</span><a href="https://www.ibm.com/quantum/blog/path-to-ibm-quantum-starling" target="_blank" rel="noopener noreferrer" data-review-node="b-2d7c7eb38fdc">IBM · DGE · DARPA / objectifs attribués <svg class="external-mark" aria-hidden="true" viewBox="0 0 16 16" fill="none" data-review-node="b-08ad07e0035c"><path d="M3 13L13 3M4 3h9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a><span data-review-node="b-37d10c725096">09 / 22</span></footer>
+      </div>
+    </section>
+
+    <!-- SLIDE 10 : Des usages émergent à des rythmes différents -->
+    <section class="slide s-dark " id="slide-10" aria-label="10. Des usages émergent à des rythmes différents" data-review-slide="s-ca96cf98dc37" data-review-node="b-a2a42150fe75">
+      <div class="slide-inner" data-review-node="b-14f4553fc243">
+        <header class="chrome" data-review-node="b-5d797d237f3e"><span data-review-node="b-f6f0b41c3fa8">Université Paris Dauphine–PSL</span><span data-review-node="b-b8158b8d118c">M2 MIAGE · TNSI 2027 · S7</span></header>
+        <div class="heading" data-review-node="b-ad0d1a9cff84"><p class="kicker" data-review-node="b-94e377e97c7b">09 · Les preuves avant les promesses</p><h2 class="editable" data-review-node="b-1dc87a4e79c6">Des usages émergent à des rythmes différents</h2></div>
+        <div class="content" data-review-node="b-de29dc09c7c5">
+          <div class="three-columns usecase-overview" data-review-node="b-3d8b6361c680">
+            <article data-review-node="b-ca2952ea1871"><span class="eyebrow" data-review-node="b-662750afee69">Calcul · expérience</span><h3 class="editable" data-review-node="b-d07ce555b623">Chimie<br data-review-node="b-7d84bebb416f">et matériaux</h3><p class="editable" data-review-node="b-389f45d5ed5f">Simuler des molécules et des agrégats fer-soufre dans un workflow hybride.</p><a href="https://arxiv.org/abs/2405.05068" target="_blank" rel="noopener noreferrer" data-review-node="b-95fd6bad65eb">Heron + Fugaku · 2025 <svg class="external-mark" aria-hidden="true" viewBox="0 0 16 16" fill="none" data-review-node="b-433e324bb479"><path d="M3 13L13 3M4 3h9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a><p class="small editable" data-review-node="b-e746505f04d9">Jusqu’à 77 qubits ; le gain industriel doit être évalué face aux meilleures méthodes classiques.</p></article>
+            <article data-review-node="b-3d3c3647ed26"><span class="eyebrow" data-review-node="b-18738b8a2df8">Calcul · pilote</span><h3 class="editable" data-review-node="b-e735edb305be">Optimisation<br data-review-node="b-ffdc57e9b201">industrielle</h3><p class="editable" data-review-node="b-f562b7111bbb">Explorer la logistique, les coûts et les émissions sur des cas concrets.</p><a href="https://www.airbus.com/en/newsroom/press-releases/2024-12-quantum-leaps-winners-of-airbus-and-bmw-groups-quantum-computing" target="_blank" rel="noopener noreferrer" data-review-node="b-3e232d0dd667">Airbus × BMW · 2024 <svg class="external-mark" aria-hidden="true" viewBox="0 0 16 16" fill="none" data-review-node="b-d0f54c95f1b5"><path d="M3 13L13 3M4 3h9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a><p class="small editable" data-review-node="b-e12a6e2b17cd">Un challenge et des prototypes ; le communiqué ne suffit pas à démontrer un avantage économique.</p></article>
+            <article data-review-node="b-3d30d28ad5df"><span class="eyebrow" data-review-node="b-9daf69dd5524">Mesure · terrain</span><h3 class="editable" data-review-node="b-1ba86e47be07">Capteurs<br data-review-node="b-277cfba99f22">quantiques</h3><p class="editable" data-review-node="b-2eaf5e0e1c38">Détecter un tunnel en mesurant les variations du champ gravitationnel.</p><a href="https://research.birmingham.ac.uk/en/publications/quantum-sensing-for-gravity-cartography/" target="_blank" rel="noopener noreferrer" data-review-node="b-8f67e7ebddeb">Birmingham · Nature, 2022 <svg class="external-mark" aria-hidden="true" viewBox="0 0 16 16" fill="none" data-review-node="b-3be16fee1526"><path d="M3 13L13 3M4 3h9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a><p class="small editable" data-review-node="b-ae62314f6dd3">Un résultat de terrain ; un capteur fonctionne sans ordinateur quantique universel.</p></article>
+          </div>
+          <p class="takeaway editable" data-review-node="b-de6d15ac0c67">Même question pour chaque usage : quelle qualité, quel temps et quel coût total face à la référence actuelle ?</p></div>
+        <footer class="slide-footer" data-review-node="b-242e30164c7c"><span data-review-node="b-8e28924e5533">Quantique · théorie &amp; usages</span><a href="https://arxiv.org/abs/2405.05068" target="_blank" rel="noopener noreferrer" data-review-node="b-f7b47f1e6b54">Études et limites des trois exemples <svg class="external-mark" aria-hidden="true" viewBox="0 0 16 16" fill="none" data-review-node="b-ee324f33124c"><path d="M3 13L13 3M4 3h9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a><span data-review-node="b-e27c69a98d88">10 / 22</span></footer>
+      </div>
+    </section>
+
+    <!-- SLIDE 11 : Les acteurs majeurs explorent plusieurs voies -->
+    <section class="slide s-dark " id="slide-11" aria-label="11. Les acteurs majeurs explorent plusieurs voies" data-review-slide="s-2ebef12b62e4" data-review-node="b-6301098f4c77">
+      <div class="slide-inner" data-review-node="b-c31d9fbf199f">
+        <header class="chrome" data-review-node="b-4f0c140b8934"><span data-review-node="b-236f2fdceb34">Université Paris Dauphine–PSL</span><span data-review-node="b-0dd2d3bf0604">M2 MIAGE · TNSI 2027 · S7</span></header>
+        <div class="heading" data-review-node="b-1d599786e47e"><p class="kicker" data-review-node="b-8244597dfc65">10 · Panorama sélectif · novembre 2026</p><h2 class="editable" data-review-node="b-e888c7e023f3">Les acteurs majeurs explorent plusieurs voies</h2></div>
+        <div class="content" data-review-node="b-50b5053ca5a8">
+          <div class="actors-layout" data-review-node="b-586122e11d4c">
+            <div class="world-actors" data-review-node="b-28611d2c7215">
+              <div data-review-node="b-10d0d3ac2620"><h3 data-review-node="b-2d3bef0dfb0f">Supraconducteurs</h3><p data-review-node="b-3ea48e52008a">IBM · Google · IQM · Rigetti</p></div>
+              <div data-review-node="b-0d80dabc2247"><h3 data-review-node="b-2d935999a1d8">Ions piégés</h3><p data-review-node="b-ced382077a4f">IonQ · Quantinuum</p></div>
+              <div data-review-node="b-0c50e74bd004"><h3 data-review-node="b-22ca920274ab">Atomes neutres</h3><p data-review-node="b-38ff3f4b2c29">QuEra · Atom Computing</p></div>
+              <div data-review-node="b-92880c26e2e7"><h3 data-review-node="b-46c0aee580ea">Photonique</h3><p data-review-node="b-9754ffe52bff">PsiQuantum · Xanadu</p></div>
+              <div data-review-node="b-b07854f229f0"><h3 data-review-node="b-197fcb2b79ad">Recuit quantique</h3><p data-review-node="b-91a59103c4f2">D-Wave <span data-review-node="b-9055dbfb982e">· modèle distinct du calcul par portes</span></p></div>
+            </div>
+            <aside class="paper france-panel" aria-label="Acteurs français du calcul quantique" data-review-node="b-f29a7d6d55ac">
+              <p class="eyebrow" data-review-node="b-8c7da1ee1faf">Focus France</p>
+              <h3 class="editable" data-review-node="b-3e847dede760">Cinq voies technologiques</h3>
+              <dl data-review-node="b-29a3ba5ce131"><div data-review-node="b-41866b8c856d"><dt data-review-node="b-8169a7bedcb6">Pasqal</dt><dd data-review-node="b-b008634a5aa1">Atomes neutres</dd></div><div data-review-node="b-5b0864adb7a5"><dt data-review-node="b-c5d7a4cf7f11">Quandela</dt><dd data-review-node="b-39291ca36600">Photonique</dd></div><div data-review-node="b-e3c0b6ce351f"><dt data-review-node="b-e1bdcf118b8c">Alice &amp; Bob</dt><dd data-review-node="b-eebfa0f700b7">Qubits de chat</dd></div><div data-review-node="b-faf1fa581c7d"><dt data-review-node="b-1d4638d28b53">C12</dt><dd data-review-node="b-d7c7b1c134d3">Nanotubes de carbone</dd></div><div data-review-node="b-9115922c0647"><dt data-review-node="b-8f8bc9f4d171">Quobly</dt><dd data-review-node="b-be77c461384a">Spins dans le silicium</dd></div></dl>
+              <p class="france-infrastructure" data-review-node="b-cebcddf84e0b"><strong data-review-node="b-b13c4053a7de">HQI : GENCI · CEA · Inria</strong><br data-review-node="b-2fe505a9b55d">Ruby (Pasqal) et Lucy (Quandela) au TGCC.</p>
+            </aside>
+          </div>
+          <p class="takeaway editable" data-review-node="b-0c7e9bf817dc">Accès cloud : IBM Quantum, Amazon Braket, Microsoft Azure Quantum et les plateformes des fabricants français donnent accès à ces technologies.</p></div>
+        <footer class="slide-footer" data-review-node="b-640fa461458a"><span data-review-node="b-54d3cacd6c3e">Quantique · théorie &amp; usages</span><a href="https://www.entreprises.gouv.fr/la-dge/actualites/france-2030-la-france-accelere-sa-strategie-quantique-pour-renforcer-sa" target="_blank" rel="noopener noreferrer" data-review-node="b-a7640ce19358">DARPA · AWS · DGE / références dans sources.md <svg class="external-mark" aria-hidden="true" viewBox="0 0 16 16" fill="none" data-review-node="b-84db7204e419"><path d="M3 13L13 3M4 3h9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a><span data-review-node="b-b8dba5dfad84">11 / 22</span></footer>
+      </div>
+    </section>
+
+    <!-- SLIDE 12 : À vous de tester un ordinateur quantique -->
+    <section class="slide s-dark " id="slide-12" aria-label="12. À vous de tester un ordinateur quantique" data-review-slide="s-de5bf19861a7" data-review-node="b-8edea516f423">
+      <div class="slide-inner" data-review-node="b-dfbd34c0ef0b">
+        <header class="chrome" data-review-node="b-07c495340b25"><span data-review-node="b-24d0f0f751fa">Université Paris Dauphine–PSL</span><span data-review-node="b-b26188cf9e98">M2 MIAGE · TNSI 2027 · S7</span></header>
+        <div class="heading" data-review-node="b-b04f248b5a6f"><p class="kicker" data-review-node="b-518c9a99bdfc">11 · Appel à l’action · après le cours</p><h2 class="editable" data-review-node="b-f4eba54346c6">À vous de tester un ordinateur quantique</h2></div>
+        <div class="content" data-review-node="b-2ab42693171c">
+          <div class="cloud-layout" data-review-node="b-fd5cde422af6">
+            <div class="cloud-start" data-review-node="b-d7fc43d60842">
+              <p class="eyebrow" data-review-node="b-fdb1d790fcbb">Premier circuit · deux qubits</p>
+              <h3 class="editable" data-review-node="b-f196585e00f0">Préparer un état de Bell</h3>
+              <ol data-review-node="b-da1eaed01d78"><li data-review-node="b-98dfb30af844"><b data-review-node="b-60f552de41a2">01</b><span class="editable" data-review-node="b-a20172b6c8b0">Créer |00⟩, appliquer H au premier qubit, puis CNOT et mesurer les deux.</span></li><li data-review-node="b-3a187774402c"><b data-review-node="b-ed3daba30e39">02</b><span class="editable" data-review-node="b-d8ce03cc7857">Observer l’idéal : environ 50 % de 00 et 50 % de 11 sur des préparations répétées.</span></li><li data-review-node="b-c0d8039d2ee4"><b data-review-node="b-718e4cd98956">03</b><span class="editable" data-review-node="b-ee7b1addacc9">Choisir un vrai QPU, lancer par exemple 1 024 mesures et comparer les fréquences observées.</span></li></ol>
+              <a class="cloud-cta" href="https://quantum.cloud.ibm.com/composer" target="_blank" rel="noopener noreferrer" data-review-node="b-9432a7309e6e">Ouvrir IBM Quantum Composer <svg class="external-mark" aria-hidden="true" viewBox="0 0 16 16" fill="none" data-review-node="b-d6894b7d7f46"><path d="M3 13L13 3M4 3h9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+              <p class="small" data-review-node="b-f49e625398a0">Compte pour le matériel · Open Plan gratuit sous quota.<br data-review-node="b-f0d2b8e2a328">Documentation : jusqu’à 10 min de QPU / 28 jours glissants.</p>
+            </div>
+            <div class="cloud-alternatives" data-review-node="b-539ac57339a5">
+              <p class="eyebrow" data-review-node="b-6774d4ca81d4">D’autres portes d’entrée</p>
+              <a href="https://aws.amazon.com/braket/" target="_blank" rel="noopener noreferrer" data-review-node="b-0137ba16abfa"><strong data-review-node="b-7f832e34ac9d">Amazon Braket <svg class="external-mark" aria-hidden="true" viewBox="0 0 16 16" fill="none" data-review-node="b-3b5d3c7c4ba4"><path d="M3 13L13 3M4 3h9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></strong><span data-review-node="b-e386f1f47bf9">IonQ, IQM, Rigetti, QuEra…<br data-review-node="b-e7c5e14f5ba1">Compte AWS · facturation selon usage.</span></a>
+              <a href="https://learn.microsoft.com/en-us/azure/quantum/qc-target-list" target="_blank" rel="noopener noreferrer" data-review-node="b-1e268ce3fb43"><strong data-review-node="b-e38f09d0b7cc">Microsoft Azure Quantum <svg class="external-mark" aria-hidden="true" viewBox="0 0 16 16" fill="none" data-review-node="b-f070d161105d"><path d="M3 13L13 3M4 3h9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></strong><span data-review-node="b-5bd9a7643a63">IonQ, Quantinuum, Pasqal…<br data-review-node="b-88f370e45a87">Workspace et offre du fournisseur.</span></a>
+              <a href="https://cloud.quandela.com/" target="_blank" rel="noopener noreferrer" data-review-node="b-1cdaccef5452"><strong data-review-node="b-aa2409b8de25">Quandela Cloud <svg class="external-mark" aria-hidden="true" viewBox="0 0 16 16" fill="none" data-review-node="b-f3d8ce8fa5a9"><path d="M3 13L13 3M4 3h9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></strong><span data-review-node="b-393e21cd644b">QPU photoniques et simulateurs.<br data-review-node="b-eef20f57916d">Perceval · compte et accès selon offre.</span></a>
+              <a href="https://docs.pasqal.com/cloud/" target="_blank" rel="noopener noreferrer" data-review-node="b-6814147d6fff"><strong data-review-node="b-7ee17f23081a">Pasqal Cloud <svg class="external-mark" aria-hidden="true" viewBox="0 0 16 16" fill="none" data-review-node="b-fc176ce524f6"><path d="M3 13L13 3M4 3h9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></strong><span data-review-node="b-973aa6abd723">Atomes neutres et émulateurs.<br data-review-node="b-48d82ba26f09">Compte et accès selon offre.</span></a>
+            </div>
+          </div>
+          <p class="takeaway editable" data-review-node="b-6afcb3b657ef">Relever la machine, la date, le nombre de mesures et l’écart à l’idéal. Un simulateur classique et un vrai QPU sont deux expériences distinctes.</p></div>
+        <footer class="slide-footer" data-review-node="b-d82bcc1a5e3d"><span data-review-node="b-dbefb5953798">Quantique · théorie &amp; usages</span><a href="https://quantum.cloud.ibm.com/docs/en/ibm-quantum-platform/plans-overview" target="_blank" rel="noopener noreferrer" data-review-node="b-0af14dcb4d4d">IBM · accès et quotas vérifiés le 12.11.2026 <svg class="external-mark" aria-hidden="true" viewBox="0 0 16 16" fill="none" data-review-node="b-e62ff830e575"><path d="M3 13L13 3M4 3h9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a><span data-review-node="b-cda0d583bb1b">12 / 22</span></footer>
+      </div>
+    </section>
+
+    <!-- SLIDE 13 : Quantum Safe : protéger les usages du SI -->
+    <section class="slide s-dark " id="slide-13" aria-label="13. Quantum Safe : protéger les usages du SI" data-review-slide="s-0be6509e3ff3" data-review-node="b-b32f9df1bb03">
+      <div class="slide-inner" data-review-node="b-bf8e7b8fbfd5">
+        <header class="chrome" data-review-node="b-b98bb69800d4"><span data-review-node="b-6bb6028032f6">Université Paris Dauphine–PSL</span><span data-review-node="b-ac85ec4470dc">M2 MIAGE · TNSI 2027 · S7</span></header>
+        <div class="heading" data-review-node="b-0e1cc7159d50"><p class="kicker" data-review-node="b-8ea0192f5b83">12 · Ouverture · confidentialité et authenticité</p><h2 class="editable" data-review-node="b-adbb997898b0">Quantum Safe : protéger les usages du SI</h2></div>
+        <div class="content" data-review-node="b-42690f63dabd">
+          <div class="two-columns crypto-grid" data-review-node="b-b0e11293b008">
+            <div data-review-node="b-5947a5b145df">
+              <h3 class="editable" data-review-node="b-8f62c66b8593">Chiffrement, signatures et identité</h3>
+              <p class="lead editable" data-review-node="b-bc8d5dc398a0">Shor menace RSA et les courbes elliptiques avec une machine assez grande et fiable : échanges de clés, certificats et signatures sont concernés.</p>
+              <div class="harvest" data-review-node="b-b020af695268"><span data-review-node="b-013b85cc6a36">Collecter aujourd’hui</span><b aria-hidden="true" data-review-node="b-9afdea1ea8f8">→</b><span data-review-node="b-4d43ded7c0f3">Déchiffrer plus tard</span></div>
+              <p class="small editable" data-review-node="b-b6a2fb4c4295">Enjeux : secrets de longue durée, certificats, signatures de logiciels et confiance dans les équipements. La migration prend du temps.</p>
+            </div>
+            <div class="paper standards" data-review-node="b-225a52924e91">
+              <p class="eyebrow" data-review-node="b-6a8e1a2a06b6">Premiers standards NIST · août 2024</p>
+              <div data-review-node="b-27073e819937"><strong data-review-node="b-fae0b0d97b94">ML-KEM</strong><span data-review-node="b-3267023650c9">Établissement de clé</span></div>
+              <div data-review-node="b-9f1be967db03"><strong data-review-node="b-a47d2139aacd">ML-DSA</strong><span data-review-node="b-806818bd9c80">Signature numérique</span></div>
+              <div data-review-node="b-534f6c130802"><strong data-review-node="b-e3e5f3536c66">SLH-DSA</strong><span data-review-node="b-b2cc7c438bb9">Signature numérique</span></div>
+              <p class="small editable" data-review-node="b-3335b656957f">Des algorithmes sur ordinateurs classiques, conçus pour résister aux attaques quantiques connues.</p>
+            </div>
+          </div>
+          <p class="takeaway editable" data-review-node="b-666b09fbca6d">Quantum Safe vise la résistance du système complet aux attaques quantiques connues : algorithmes, protocoles, produits et capacité à les faire évoluer.</p></div>
+        <footer class="slide-footer" data-review-node="b-265a8c41d146"><span data-review-node="b-e00c33f57be9">Quantique · théorie &amp; usages</span><a href="https://www.nist.gov/news-events/news/2024/08/nist-releases-first-3-finalized-post-quantum-encryption-standards" target="_blank" rel="noopener noreferrer" data-review-node="b-f9bdad19742a">NIST · premiers standards PQC, 13.08.2024 <svg class="external-mark" aria-hidden="true" viewBox="0 0 16 16" fill="none" data-review-node="b-b1798847b437"><path d="M3 13L13 3M4 3h9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a><span data-review-node="b-adbc952506ca">13 / 22</span></footer>
+      </div>
+    </section>
+
+    <!-- SLIDE 14 : Quantum Safe : un plan à commencer maintenant -->
+    <section class="slide s-light quantum-safe-actions" id="slide-14" aria-label="14. Quantum Safe : un plan à commencer maintenant" data-review-slide="s-4c061bca02a7" data-review-node="b-f9b1bdc1f00e">
+      <div class="slide-inner" data-review-node="b-0dfb93cee486">
+        <header class="chrome" data-review-node="b-cbea80404214"><span data-review-node="b-dad0e18ea2a5">Université Paris Dauphine–PSL</span><span data-review-node="b-d0eb2b741cba">M2 MIAGE · TNSI 2027 · S7</span></header>
+        <div class="heading" data-review-node="b-16fad278f6ff"><p class="kicker" data-review-node="b-ca124436a557">13 · Une action technique et une action SI</p><h2 class="editable" data-review-node="b-ade1cf58f633">Quantum Safe : un plan à commencer maintenant</h2></div>
+        <div class="content" data-review-node="b-0119e6fadd3a">
+          <div class="safe-actions" data-review-node="b-4c3182d01d4c">
+            <article data-review-node="b-25e5e1c58eea"><strong data-review-node="b-1d2b91040368">01</strong><div data-review-node="b-93a4490473f5"><h3 class="editable" data-review-node="b-fd6aead24a6d">Inventorier</h3><p class="editable" data-review-node="b-19fbe8a565d5">TLS, VPN, PKI, signatures, bibliothèques et équipements : retrouver les algorithmes et leurs propriétaires.</p></div></article>
+            <article data-review-node="b-16851a73f048"><strong data-review-node="b-7e49f144c45f">02</strong><div data-review-node="b-cf77d069dc2c"><h3 class="editable" data-review-node="b-1e43b6d72c19">Prioriser</h3><p class="editable" data-review-node="b-5473690aa14e">Durée de confidentialité, confiance dans les signatures, criticité et dépendances aux fournisseurs.</p></div></article>
+            <article data-review-node="b-5a2935093a73"><strong data-review-node="b-ece91b13ce79">03</strong><div data-review-node="b-5ffcc4613118"><h3 class="editable" data-review-node="b-186d63435de8">Tester et migrer</h3><p class="editable" data-review-node="b-bc5b0cb6cfa7">Évaluer les solutions standardisées et les combinaisons recommandées ; conserver la capacité à changer d’algorithme.</p></div></article>
+          </div>
+          <div class="safe-eu" data-review-node="b-478d7476b095"><span data-review-node="b-4ed84aa748c8"><strong data-review-node="b-c74a3711fa15">Fin 2026</strong> Démarrage recommandé</span><span aria-hidden="true" data-review-node="b-ff13af15cfc4">→</span><span data-review-node="b-5a85c0fe4e4d"><strong data-review-node="b-9429a34a8a7a">Fin 2030</strong> Cas à haut risque</span><p data-review-node="b-ff9a8a39cd96">Repères de la feuille de route UE pour les États membres ; ce ne sont pas des dates de rupture de RSA.</p></div>
+          <p class="closing-thought editable" data-review-node="b-08c24fb5f1ac">Tester un circuit dans le cloud. Cartographier un usage cryptographique.</p></div>
+        <footer class="slide-footer" data-review-node="b-2154078c5c38"><span data-review-node="b-78a3d80968f6">Quantique · théorie &amp; usages</span><a href="https://cyber.gouv.fr/enjeux-technologiques/cryptographie-post-quantique/faq-pqc/" target="_blank" rel="noopener noreferrer" data-review-node="b-b15dd31e5fdb">ANSSI · préparation PQC / Commission européenne <svg class="external-mark" aria-hidden="true" viewBox="0 0 16 16" fill="none" data-review-node="b-893399592d6b"><path d="M3 13L13 3M4 3h9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a><span data-review-node="b-22c413d3586b">14 / 22</span></footer>
+      </div>
+    </section>
+
+    <!-- SLIDE 15 : Le quantique recouvre trois domaines -->
+    <section class="slide s-dark " id="slide-15" data-kind="annex" aria-label="15. Le quantique recouvre trois domaines" data-review-slide="s-e0b373ead8c1" data-review-node="b-7d01bf625b72">
+      <div class="slide-inner" data-review-node="b-a32185db1910">
+        <header class="chrome" data-review-node="b-ba35977233a2"><span data-review-node="b-ef8b990e0e2f">Université Paris Dauphine–PSL</span><span data-review-node="b-3d6a46effb35">Annexes · pour approfondir</span></header>
+        <div class="heading" data-review-node="b-501041134bde"><p class="kicker" data-review-node="b-c7836a8a8bb5">Annexe A · trois domaines</p><h2 class="editable" data-review-node="b-c13c6aed5c3c">Le quantique recouvre trois domaines</h2></div>
+        <div class="content" data-review-node="b-2f4809617dfc">
+          <div class="three-columns domains" data-review-node="b-9dd3d1e33031">
+            <article data-review-node="b-58fdc513b11b"><span class="large-index" data-review-node="b-3843959da8f0">01</span><h3 class="editable" data-review-node="b-a95433301e00">Calculer</h3><p class="editable" data-review-node="b-4ab185f0d574">Manipuler des états quantiques pour résoudre certains problèmes.</p><p class="example editable" data-review-node="b-d4ed7f405f1c">Molécules, matériaux,<br data-review-node="b-83f715ccce46">optimisation.</p></article>
+            <article data-review-node="b-68f66025af73"><span class="large-index" data-review-node="b-e390b0dac6ea">02</span><h3 class="editable" data-review-node="b-20f751a07cf8">Mesurer</h3><p class="editable" data-review-node="b-b4e3e711da54">Utiliser la sensibilité des systèmes quantiques pour sonder le monde.</p><p class="example editable" data-review-node="b-98e80bba7058">Gravité, champs magnétiques,<br data-review-node="b-d613ab4b13ab">temps et navigation.</p></article>
+            <article data-review-node="b-dffd6fdac045"><span class="large-index" data-review-node="b-8af466dc15cb">03</span><h3 class="editable" data-review-node="b-52ddb2b6ac9c">Communiquer</h3><p class="editable" data-review-node="b-8e56c9d8c269">Transmettre ou distribuer de l’information quantique.</p><p class="example editable" data-review-node="b-e58f8594042d">Distribution de clés,<br data-review-node="b-a42b28698865">réseaux quantiques.</p></article>
+          </div>
+          <p class="takeaway editable" data-review-node="b-d0131ee3f889">La cryptographie « post-quantique » utilise, elle, des algorithmes sur des ordinateurs classiques.</p></div>
+        <footer class="slide-footer" data-review-node="b-34ef47713a1d"><span data-review-node="b-5d66a611736b">Quantique · théorie &amp; usages</span><a href="https://quantum.cloud.ibm.com/learning/en/courses/utility-scale-quantum-computing/bits-gates-and-circuits" target="_blank" rel="noopener noreferrer" data-review-node="b-519bbee3ad31">IBM Quantum Learning · circuits <svg class="external-mark" aria-hidden="true" viewBox="0 0 16 16" fill="none" data-review-node="b-1e958cf128c2"><path d="M3 13L13 3M4 3h9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a><span data-review-node="b-471625b4cf5e">15 / 22</span></footer>
+      </div>
+    </section>
+
+    <!-- SLIDE 16 : Chimie : simuler des systèmes quantiques -->
+    <section class="slide s-dark " id="slide-16" data-kind="annex" aria-label="16. Chimie : simuler des systèmes quantiques" data-review-slide="s-e88868431d98" data-review-node="b-f79dbba23bd9">
+      <div class="slide-inner" data-review-node="b-5db999946840">
+        <header class="chrome" data-review-node="b-f068d3b6759a"><span data-review-node="b-41eeb717be64">Université Paris Dauphine–PSL</span><span data-review-node="b-75b0b3c9df55">Annexes · pour approfondir</span></header>
+        <div class="heading" data-review-node="b-3fa19e800e5c"><p class="kicker" data-review-node="b-95650d330a9a">Annexe B · chimie et matériaux</p><h2 class="editable" data-review-node="b-569626cc3c7d">Chimie : simuler des systèmes quantiques</h2></div>
+        <div class="content" data-review-node="b-2590724f3391">
+          <div class="two-columns chemistry-grid" data-review-node="b-e671a543732c">
+            <div class="chemistry-stat" data-review-node="b-f0067929def8"><strong data-review-node="b-57a6f524042a">77</strong><span data-review-node="b-ab887c3ef41c">qubits au maximum<br data-review-node="b-1633c89db86a">dans les circuits étudiés</span><p class="small" data-review-node="b-f7aa769a8725">Heron + supercalculateur Fugaku<br data-review-node="b-f92e0d0eda6b">Robledo-Moreno et al. · 2025</p></div>
+            <div data-review-node="b-841572fe5f6b">
+              <div class="case-row" data-review-node="b-b67a66cd07d0"><span class="eyebrow" data-review-node="b-d04cd904684a">Le problème</span><p class="editable" data-review-node="b-dddf3cd55997">Estimer l’énergie électronique de molécules et d’agrégats complexes : N₂, [2Fe–2S], [4Fe–4S].</p></div>
+              <div class="case-row" data-review-node="b-3f8fddee0513"><span class="eyebrow" data-review-node="b-c78618085f6e">Le résultat observé</span><p class="editable" data-review-node="b-ea0ff177bd1e">Un workflow hybride traite des tailles au-delà de la diagonalisation exacte retenue comme référence.</p></div>
+              <div class="case-row" data-review-node="b-c33f967db1f3"><span class="eyebrow" data-review-node="b-71452f18f7f8">La portée</span><p class="editable" data-review-node="b-b8554c33aaf4">Une piste pour la chimie et les matériaux. L’avantage face aux meilleures approximations classiques reste à établir pour chaque application.</p></div>
+            </div>
+          </div>
+          <p class="takeaway editable" data-review-node="b-9634c2fea0a9">Le quantique fournit une partie du calcul ; le supercalculateur classique joue un rôle essentiel.</p></div>
+        <footer class="slide-footer" data-review-node="b-a16a0923281c"><span data-review-node="b-8db8ce330e77">Quantique · théorie &amp; usages</span><a href="https://arxiv.org/abs/2405.05068" target="_blank" rel="noopener noreferrer" data-review-node="b-20390edd7b3b">Robledo-Moreno et al. · Science Advances, 2025 <svg class="external-mark" aria-hidden="true" viewBox="0 0 16 16" fill="none" data-review-node="b-d7a219471f6b"><path d="M3 13L13 3M4 3h9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a><span data-review-node="b-16ebfb224b81">16 / 22</span></footer>
+      </div>
+    </section>
+
+    <!-- SLIDE 17 : Optimisation : mesurer le gain du pilote -->
+    <section class="slide s-dark " id="slide-17" data-kind="annex" aria-label="17. Optimisation : mesurer le gain du pilote" data-review-slide="s-77776742bd8a" data-review-node="b-6a7f851e8130">
+      <div class="slide-inner" data-review-node="b-ea0de38cb148">
+        <header class="chrome" data-review-node="b-2684e93a4730"><span data-review-node="b-4c4970fc07ca">Université Paris Dauphine–PSL</span><span data-review-node="b-5c4e2e9046a9">Annexes · pour approfondir</span></header>
+        <div class="heading" data-review-node="b-da1072324798"><p class="kicker" data-review-node="b-03cec1980824">Annexe C · optimisation industrielle</p><h2 class="editable" data-review-node="b-5cbd6419727a">Optimisation : mesurer le gain du pilote</h2></div>
+        <div class="content" data-review-node="b-76fa7f6733e0">
+          <div class="two-columns optimization-grid" data-review-node="b-18eae07fbe0f">
+            <div data-review-node="b-7fee6d39f90a">
+              <p class="eyebrow" data-review-node="b-799b6c9f9eb9">Airbus × BMW Group · challenge 2024</p>
+              <h3 class="case-headline editable" data-review-node="b-5214bb177fe8">Logistique,<br data-review-node="b-2e4bbf01a609">coûts et émissions</h3>
+              <p class="lead editable" data-review-node="b-dfbec7adbe26">4colors Research explore l’optimisation de la chaîne logistique. Le challenge couvre aussi simulation, équations et apprentissage automatique.</p>
+              <p class="small editable" data-review-node="b-4658d769a9b4">Le communiqué décrit des pistes et des prototypes.<br data-review-node="b-098b8f525cce">Il ne suffit pas à établir un gain économique généralisable.</p>
+            </div>
+            <div class="benchmark" data-review-node="b-11832d9c60ed">
+              <p class="eyebrow" data-review-node="b-4e5aa73a11b3">Comparer sur un même problème</p>
+              <div data-review-node="b-4c73bc96f80a"><strong data-review-node="b-8bf4ffe8cad0">Qualité</strong><span class="editable" data-review-node="b-4f77b10addc1">Même précision, mêmes contraintes métier.</span></div>
+              <div data-review-node="b-5f1de24daf38"><strong data-review-node="b-4153334aa8b8">Temps</strong><span class="editable" data-review-node="b-b404816ae92e">Inclure préparation, attente, répétitions et post-traitement.</span></div>
+              <div data-review-node="b-3bf45efe91f9"><strong data-review-node="b-0f4361512fac">Coût</strong><span class="editable" data-review-node="b-60139b7dae04">Comparer au meilleur solveur classique disponible.</span></div>
+            </div>
+          </div>
+          <p class="takeaway editable" data-review-node="b-3f25dc8cfd7a">Un algorithme « inspiré du quantique » peut fonctionner entièrement sur du matériel classique.</p></div>
+        <footer class="slide-footer" data-review-node="b-740e4e435b8e"><span data-review-node="b-98cdfb1f0030">Quantique · théorie &amp; usages</span><a href="https://www.airbus.com/en/newsroom/press-releases/2024-12-quantum-leaps-winners-of-airbus-and-bmw-groups-quantum-computing" target="_blank" rel="noopener noreferrer" data-review-node="b-a73e85d125e3">Airbus / BMW Group · communiqué du 10.12.2024 <svg class="external-mark" aria-hidden="true" viewBox="0 0 16 16" fill="none" data-review-node="b-a3750193f32d"><path d="M3 13L13 3M4 3h9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a><span data-review-node="b-9d700756fe50">17 / 22</span></footer>
+      </div>
+    </section>
+
+    <!-- SLIDE 18 : Capteurs : voir autrement le sous-sol -->
+    <section class="slide s-dark " id="slide-18" data-kind="annex" aria-label="18. Capteurs : voir autrement le sous-sol" data-review-slide="s-47efb377b8bb" data-review-node="b-1b55c0e86301">
+      <div class="slide-inner" data-review-node="b-e92fb992c25d">
+        <header class="chrome" data-review-node="b-0c595986bfcd"><span data-review-node="b-b61de0210357">Université Paris Dauphine–PSL</span><span data-review-node="b-733c172dae0f">Annexes · pour approfondir</span></header>
+        <div class="heading" data-review-node="b-28a5ad24cc9c"><p class="kicker" data-review-node="b-6cf23143fbb5">Annexe D · capteurs</p><h2 class="editable" data-review-node="b-e96e231bb549">Capteurs : voir autrement le sous-sol</h2></div>
+        <div class="content" data-review-node="b-935f8a6c35e3">
+          <div class="two-columns sensing-grid" data-review-node="b-c09642810bf0">
+            <div data-review-node="b-c490a0320898">
+              <p class="eyebrow" data-review-node="b-8234e6c1b559">Birmingham · Nature, 2022</p>
+              <h3 class="case-headline editable" data-review-node="b-f5dd5fa3eeb0">Détecter un tunnel<br data-review-node="b-66c2910415e2">par la gravité</h3>
+              <p class="lead editable" data-review-node="b-7426acb40b8d">Un gradiomètre à atomes froids mesure les variations du champ gravitationnel et permet de repérer un tunnel en extérieur.</p>
+              <p class="small editable" data-review-node="b-5d2deeddd1e4">Perspectives : cartographie du sous-sol, infrastructures, eau.<br data-review-node="b-15e99c5aef44">La performance doit être évaluée pour chaque terrain.</p>
+            </div>
+            <figure class="ground-diagram" data-review-node="b-71b29535e837">
+              <svg viewBox="0 0 720 500" role="img" aria-labelledby="groundTitle groundDesc" data-review-node="b-faea37ab17c4">
+                <title id="groundTitle" data-review-node="b-f325cf1d87e3">Schéma de principe d’une mesure gravitationnelle au-dessus d’un tunnel</title>
+                <desc id="groundDesc" data-review-node="b-3a88bf837b0b">Un capteur en surface mesure le champ gravitationnel. Une cavité souterraine modifie la répartition de masse. Le dessin est schématique et sans échelle.</desc>
+                <defs data-review-node="b-4df3a376d892"><pattern id="soil" width="24" height="24" patternUnits="userSpaceOnUse" data-review-node="b-aa0ef898cc27"><path d="M0 24L24 0" stroke="currentColor" stroke-opacity=".12"/></pattern></defs>
+                <path d="M20 220H700V470H20Z" fill="url(#soil)"/>
+                <path d="M20 220H700" stroke="currentColor" stroke-width="3"/>
+                <rect x="320" y="75" width="80" height="110" rx="12" fill="var(--bg-cream)"/>
+                <path d="M335 185L295 220M385 185L425 220" stroke="var(--bg-cream)" stroke-width="4"/>
+                <path d="M360 245V290M260 245L285 290M460 245L435 290" stroke="var(--accent)" stroke-width="3" stroke-dasharray="6 7"/>
+                <path d="M230 430V360A130 80 0 0 1 490 360V430Z" fill="var(--bg-dark-alt)" stroke="var(--accent)" stroke-width="3"/>
+                <text x="442" y="126" data-review-node="b-aef96c6a08d3">Capteur</text><text x="315" y="388" data-review-node="b-f85920a417e7">Cavité</text>
+              </svg>
+              <figcaption data-review-node="b-f90c7f5a1229">Schéma de principe · sans échelle</figcaption>
+            </figure>
+          </div>
+          <p class="takeaway editable" data-review-node="b-cced19f2804b">Un capteur quantique exploite la physique de la mesure. Il n’a pas besoin d’un ordinateur quantique universel.</p></div>
+        <footer class="slide-footer" data-review-node="b-f16c35e18967"><span data-review-node="b-4a744bf97b05">Quantique · théorie &amp; usages</span><a href="https://research.birmingham.ac.uk/en/publications/quantum-sensing-for-gravity-cartography/" target="_blank" rel="noopener noreferrer" data-review-node="b-f1e564e7f110">Stray et al. · Nature, 2022 / Birmingham <svg class="external-mark" aria-hidden="true" viewBox="0 0 16 16" fill="none" data-review-node="b-9d8f4f631a03"><path d="M3 13L13 3M4 3h9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a><span data-review-node="b-cad0551d2237">18 / 22</span></footer>
+      </div>
+    </section>
+
+    <!-- SLIDE 19 : Trois familles d’algorithmes à situer -->
+    <section class="slide s-dark " id="slide-19" data-kind="annex" aria-label="19. Trois familles d’algorithmes à situer" data-review-slide="s-7b5576174228" data-review-node="b-a7e1887d6777">
+      <div class="slide-inner" data-review-node="b-bb4c5c0385dc">
+        <header class="chrome" data-review-node="b-6ce3e14ade4a"><span data-review-node="b-a4c5a99d9446">Université Paris Dauphine–PSL</span><span data-review-node="b-63078860c842">Annexes · pour approfondir</span></header>
+        <div class="heading" data-review-node="b-38a40bf0db97"><p class="kicker" data-review-node="b-f2503971557f">Annexe E · algorithmes</p><h2 class="editable" data-review-node="b-e02f5a6cd607">Trois familles d’algorithmes à situer</h2></div>
+        <div class="content" data-review-node="b-29db0f548731">
+          <table class="comparison algorithm-table" data-review-node="b-728dbaa03a1c">
+            <thead data-review-node="b-87dd964e8a6b"><tr data-review-node="b-576f7cefc985"><th data-review-node="b-d4bd1072ffcc">Famille</th><th data-review-node="b-6b8b7bdfe8d9">Ce qu’elle vise</th><th data-review-node="b-79496f22e817">Ce qu’il faut garder en tête</th></tr></thead>
+            <tbody data-review-node="b-61ee0d1427a5">
+              <tr data-review-node="b-7be86335b6a6"><th data-review-node="b-1fab9c183d60">Shor</th><td data-review-node="b-b87bed0d507b">Factorisation et logarithme discret en temps polynomial.</td><td data-review-node="b-e73ef5eb27e4">Demande des circuits fiables à grande échelle. Conséquence pour RSA et ECC.</td></tr>
+              <tr data-review-node="b-bb59cdaa9a07"><th data-review-node="b-c41fd27357b8">Grover</th><td data-review-node="b-ce778cde2a0e">Recherche non structurée : environ √N requêtes plutôt que N.</td><td data-review-node="b-017173029eaa">Gain quadratique dans un modèle d’oracle. Construire l’oracle a un coût.</td></tr>
+              <tr data-review-node="b-7702f3ade7a3"><th data-review-node="b-a5334a80c1d3">Simulation /<br data-review-node="b-79b984a0eb98">variationnel</th><td data-review-node="b-01d6d9268fd6">Estimer une énergie, préparer un état ou optimiser des paramètres.</td><td data-review-node="b-c9e335b4dd42">Les garanties et ressources dépendent de la méthode ; une heuristique hybride ne garantit pas un avantage.</td></tr>
+            </tbody>
+          </table>
+          <p class="takeaway editable" data-review-node="b-3703256356dc">Un gain théorique se formule pour un problème et un modèle de coût précis.</p></div>
+        <footer class="slide-footer" data-review-node="b-673a16625c1f"><span data-review-node="b-d3e751be251e">Quantique · théorie &amp; usages</span><a href="https://quantum.cloud.ibm.com/learning/en/courses/fundamentals-of-quantum-algorithms/grover-algorithm/introduction" target="_blank" rel="noopener noreferrer" data-review-node="b-d815feced7ef">IBM Quantum Learning · Grover <svg class="external-mark" aria-hidden="true" viewBox="0 0 16 16" fill="none" data-review-node="b-8bd2dd6d4106"><path d="M3 13L13 3M4 3h9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a><span data-review-node="b-6ee0cc42c68d">19 / 22</span></footer>
+      </div>
+    </section>
+
+    <!-- SLIDE 20 : Plusieurs façons de fabriquer un qubit -->
+    <section class="slide s-dark " id="slide-20" data-kind="annex" aria-label="20. Plusieurs façons de fabriquer un qubit" data-review-slide="s-e4e51a6fc1de" data-review-node="b-e5c2298244b0">
+      <div class="slide-inner" data-review-node="b-f96d0d1d3e6a">
+        <header class="chrome" data-review-node="b-bce2f2c16f0d"><span data-review-node="b-fd71c2aa0c80">Université Paris Dauphine–PSL</span><span data-review-node="b-51b02a1b437e">Annexes · pour approfondir</span></header>
+        <div class="heading" data-review-node="b-7666e165c203"><p class="kicker" data-review-node="b-62e1aa67c2ff">Annexe F · architectures matérielles</p><h2 class="editable" data-review-node="b-2c58e87a5731">Plusieurs façons de fabriquer un qubit</h2></div>
+        <div class="content" data-review-node="b-e5f789f9c76b">
+          <table class="comparison hardware-table" data-review-node="b-c7b044ccdb84">
+            <thead data-review-node="b-91178c28ad60"><tr data-review-node="b-e66d1b472bf5"><th data-review-node="b-038a9998694b">Support physique</th><th data-review-node="b-5353d9a86f1e">Principe</th><th data-review-node="b-9f1188e6119d">Questions de passage à l’échelle</th></tr></thead>
+            <tbody data-review-node="b-26fd9baff150">
+              <tr data-review-node="b-6e7e3b5fc139"><th data-review-node="b-9b52940704c7">Supraconducteurs</th><td data-review-node="b-25e6ce6a0ce6">Circuits électriques à très basse température.</td><td data-review-node="b-c2862618e89c">Contrôle, erreurs, câblage et interconnexions.</td></tr>
+              <tr data-review-node="b-9012741490fb"><th data-review-node="b-31fba6bb0462">Ions piégés</th><td data-review-node="b-857d99ea3fd4">Ions manipulés par des champs et des lasers.</td><td data-review-node="b-c37059f9b981">Vitesse des opérations, transport, systèmes de contrôle.</td></tr>
+              <tr data-review-node="b-f6b31d1b03a9"><th data-review-node="b-779de32dcefc">Atomes neutres</th><td data-review-node="b-df6e76965b18">Atomes disposés et contrôlés avec de la lumière.</td><td data-review-node="b-e2a15e075199">Fidélité des portes, pertes et correction d’erreurs.</td></tr>
+              <tr data-review-node="b-0c8d03881beb"><th data-review-node="b-f0f531937401">Photonique</th><td data-review-node="b-ea140bb32671">Information portée et transformée par des photons.</td><td data-review-node="b-352c960c7e76">Pertes, sources, détection et ressources nécessaires.</td></tr>
+            </tbody>
+          </table>
+          <p class="takeaway editable" data-review-node="b-3b56e92ab440">Chaque approche a ses compromis. Comparer les performances utiles demande davantage qu’un nombre de qubits.</p></div>
+        <footer class="slide-footer" data-review-node="b-25c1fd8bdad7"><span data-review-node="b-ecda4b616e42">Quantique · théorie &amp; usages</span><a href="https://www.darpa.mil/research/programs/quantum-benchmarking-initiative" target="_blank" rel="noopener noreferrer" data-review-node="b-f9e4d99f5cd3">DARPA · Quantum Benchmarking Initiative <svg class="external-mark" aria-hidden="true" viewBox="0 0 16 16" fill="none" data-review-node="b-ec19456dec6c"><path d="M3 13L13 3M4 3h9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a><span data-review-node="b-917f489c8e7c">20 / 22</span></footer>
+      </div>
+    </section>
+
+    <!-- SLIDE 21 : PQC et QKD répondent à des besoins différents -->
+    <section class="slide s-dark " id="slide-21" data-kind="annex" aria-label="21. PQC et QKD répondent à des besoins différents" data-review-slide="s-dd67bd98a21c" data-review-node="b-e7cdeb57bba2">
+      <div class="slide-inner" data-review-node="b-4730d4dd821c">
+        <header class="chrome" data-review-node="b-d2f54ec25bea"><span data-review-node="b-cf66083fc166">Université Paris Dauphine–PSL</span><span data-review-node="b-66ff59ff916c">Annexes · pour approfondir</span></header>
+        <div class="heading" data-review-node="b-7d44a9d4c876"><p class="kicker" data-review-node="b-c382ab4ba7d3">Annexe G · PQC et QKD</p><h2 class="editable" data-review-node="b-d07bb979446f">PQC et QKD répondent à des besoins différents</h2></div>
+        <div class="content" data-review-node="b-1fa327d3047a">
+          <div class="two-columns security-comparison" data-review-node="b-851ce4d6323b">
+            <article data-review-node="b-02869469f00a"><p class="eyebrow" data-review-node="b-aec2aa5687df">PQC · Post-Quantum Cryptography</p><h3 class="editable" data-review-node="b-17562cb5f562">Des algorithmes</h3><p class="lead editable" data-review-node="b-7b8a417aff14">De nouveaux mécanismes d’établissement de clé et de signature, exécutés sur des machines classiques.</p><ul class="dash-list" data-review-node="b-55d1e5bcacc5"><li class="editable" data-review-node="b-c87ddf8e3f3f">Intégration dans les logiciels et les protocoles.</li><li class="editable" data-review-node="b-96edb196f2fc">Résistance fondée sur des problèmes mathématiques étudiés.</li></ul></article>
+            <article class="paper" data-review-node="b-033eeaa21612"><p class="eyebrow" data-review-node="b-83ffb53593dc">QKD · Quantum Key Distribution</p><h3 class="editable" data-review-node="b-ed8b35211bfb">Une liaison physique</h3><p class="lead editable" data-review-node="b-4cab544c62cb">Distribution de clés avec des signaux quantiques et des équipements spécialisés.</p><ul class="dash-list" data-review-node="b-554005998233"><li class="editable" data-review-node="b-6c6176374daf">Canal classique authentifié toujours nécessaire.</li><li class="editable" data-review-node="b-d52027eb5f1b">Contraintes de distance, de matériel et d’exploitation.</li></ul></article>
+          </div>
+          <p class="takeaway editable" data-review-node="b-0ecab7fdb0e4">Pour la transition générale des SI, l’ANSSI et ses partenaires donnent la priorité à la cryptographie post-quantique.</p></div>
+        <footer class="slide-footer" data-review-node="b-0ba03e801f97"><span data-review-node="b-018b5df1c8c5">Quantique · théorie &amp; usages</span><a href="https://cyber.gouv.fr/nous-connaitre/publications/publications-internationales/position-paper-on-quantum-key-distribution/" target="_blank" rel="noopener noreferrer" data-review-node="b-08d751cbb308">ANSSI et partenaires · position sur la QKD <svg class="external-mark" aria-hidden="true" viewBox="0 0 16 16" fill="none" data-review-node="b-610b6e7e824d"><path d="M3 13L13 3M4 3h9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a><span data-review-node="b-27ab46a45b8f">21 / 22</span></footer>
+      </div>
+    </section>
+
+    <!-- SLIDE 22 : Explorer les références -->
+    <section class="slide s-dark " id="slide-22" data-kind="annex" aria-label="22. Explorer les références" data-review-slide="s-71d331c3ee95" data-review-node="b-4dc86d45a46d">
+      <div class="slide-inner" data-review-node="b-7749d5c26d1c">
+        <header class="chrome" data-review-node="b-29b15fdcc4a5"><span data-review-node="b-9154785f9761">Université Paris Dauphine–PSL</span><span data-review-node="b-0ad84f3da790">Annexes · pour approfondir</span></header>
+        <div class="heading" data-review-node="b-98e2e140cbd8"><p class="kicker" data-review-node="b-21439e687834">Annexe H · références</p><h2 class="editable" data-review-node="b-c5ae43dd011a">Explorer les références</h2></div>
+        <div class="content" data-review-node="b-27db31ce1e12"><div class="source-grid extended-sources" data-review-node="b-15bfea1e9914"><a href="https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/single-systems/quantum-information" target="_blank" rel="noopener noreferrer" data-review-node="b-d6fb56518d57"><span data-review-node="b-ded226c1d69b">01</span><div data-review-node="b-2377364af001"><h3 data-review-node="b-302cc41a49ba">Principes</h3><p data-review-node="b-a4e796d989fd">Intel · IBM Quantum Learning <svg class="external-mark" aria-hidden="true" viewBox="0 0 16 16" fill="none" data-review-node="b-dbdb4a0ddd8f"><path d="M3 13L13 3M4 3h9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></p></div></a><a href="https://authors.library.caltech.edu/records/a1kgk-xyk45" target="_blank" rel="noopener noreferrer" data-review-node="b-74f29803082b"><span data-review-node="b-b9c120458c49">02</span><div data-review-node="b-0f49e0ef091e"><h3 data-review-node="b-7b8864f7e62d">Jalons historiques</h3><p data-review-node="b-dabff1930a97">Feynman · Shor · IBM · Google Quantum AI <svg class="external-mark" aria-hidden="true" viewBox="0 0 16 16" fill="none" data-review-node="b-95aff83bf0ef"><path d="M3 13L13 3M4 3h9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></p></div></a><a href="https://www.ibm.com/quantum/blog/path-to-ibm-quantum-starling" target="_blank" rel="noopener noreferrer" data-review-node="b-0f52f9014c6d"><span data-review-node="b-d981ac95048c">03</span><div data-review-node="b-79fad3162d1b"><h3 data-review-node="b-d6471447ee66">Roadmaps</h3><p data-review-node="b-2bb2954f26b2">IBM · DGE / PROQCIMA · DARPA <svg class="external-mark" aria-hidden="true" viewBox="0 0 16 16" fill="none" data-review-node="b-c693e8f200f9"><path d="M3 13L13 3M4 3h9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></p></div></a><a href="https://www.entreprises.gouv.fr/la-dge/actualites/france-2030-la-france-accelere-sa-strategie-quantique-pour-renforcer-sa" target="_blank" rel="noopener noreferrer" data-review-node="b-7c6f000f591d"><span data-review-node="b-0bbbe9a86bea">04</span><div data-review-node="b-fbab33b096ba"><h3 data-review-node="b-8b2b321d164d">Acteurs français</h3><p data-review-node="b-48ca487abd25">DGE · constructeurs · HQI <svg class="external-mark" aria-hidden="true" viewBox="0 0 16 16" fill="none" data-review-node="b-3b0a90807015"><path d="M3 13L13 3M4 3h9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></p></div></a><a href="https://quantum.cloud.ibm.com/docs/en/guides/composer" target="_blank" rel="noopener noreferrer" data-review-node="b-c10d9ae4795a"><span data-review-node="b-b00f439724d4">05</span><div data-review-node="b-3bd25aedf1d2"><h3 data-review-node="b-a199e6b922fa">Accès cloud</h3><p data-review-node="b-10b3107a38e4">IBM · AWS · Azure · Quandela · Pasqal <svg class="external-mark" aria-hidden="true" viewBox="0 0 16 16" fill="none" data-review-node="b-a1944cbd7064"><path d="M3 13L13 3M4 3h9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></p></div></a><a href="https://arxiv.org/abs/2405.05068" target="_blank" rel="noopener noreferrer" data-review-node="b-95a41503fa13"><span data-review-node="b-fb1b6aadf93a">06</span><div data-review-node="b-1ea49edeef7f"><h3 data-review-node="b-1a0f7b2bdefc">Usages et expériences</h3><p data-review-node="b-08434d286b10">Chimie · optimisation · capteurs <svg class="external-mark" aria-hidden="true" viewBox="0 0 16 16" fill="none" data-review-node="b-df4fdadf8b43"><path d="M3 13L13 3M4 3h9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></p></div></a><a href="https://digital-strategy.ec.europa.eu/en/policies/post-quantum-cryptography" target="_blank" rel="noopener noreferrer" data-review-node="b-c45a01f7bd9b"><span data-review-node="b-e73ba2a23be1">07</span><div data-review-node="b-0b28164ebe69"><h3 data-review-node="b-d8c9a49f31aa">Quantum Safe</h3><p data-review-node="b-52b6cac42c6a">NIST · ANSSI · feuille de route UE <svg class="external-mark" aria-hidden="true" viewBox="0 0 16 16" fill="none" data-review-node="b-25d19052c2bf"><path d="M3 13L13 3M4 3h9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></p></div></a><a href="sources.md" target="_blank" rel="noopener noreferrer" data-review-node="b-e7e6e2189720"><span data-review-node="b-4c6e33ce0634">08</span><div data-review-node="b-367b499a8487"><h3 data-review-node="b-12484212c9cb">Références et limites</h3><p data-review-node="b-976f3da83aa9">Bibliographie complète, datée et commentée <svg class="external-mark" aria-hidden="true" viewBox="0 0 16 16" fill="none" data-review-node="b-c104a5a3088f"><path d="M3 13L13 3M4 3h9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></p></div></a></div><p class="takeaway" data-review-node="b-58e3feb79916">Sources et offres consultées le 12 novembre 2026. Une roadmap est une annonce ; une expérience documente un résultat précis.</p></div>
+        <footer class="slide-footer" data-review-node="b-b159ea1c5746"><span data-review-node="b-3164ac5ed744">Quantique · théorie &amp; usages</span><a href="sources.md" target="_blank" rel="noopener noreferrer" data-review-node="b-998191e16ecf">Bibliographie détaillée <svg class="external-mark" aria-hidden="true" viewBox="0 0 16 16" fill="none" data-review-node="b-f5025d1af4f4"><path d="M3 13L13 3M4 3h9v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a><span data-review-node="b-8ecc09ff23ec">22 / 22</span></footer>
+      </div>
+    </section>
+  </main>
+  </div>
+  <nav class="deck-hud" aria-label="Navigation du diaporama">
+    <div class="progress-track" aria-hidden="true"><div id="progressBar"></div></div>
+    <div class="hud-group">
+      <button type="button" id="prevBtn" aria-label="Slide précédente">←</button>
+      <span id="slideCounter" aria-live="polite" aria-atomic="true">1 / 22</span>
+      <button type="button" id="nextBtn" aria-label="Slide suivante">→</button>
+      <span class="key-hint">← → naviguer · F plein écran · E éditer</span>
+    </div>
+    <div class="hud-group">
+      <button type="button" id="saveBtn">Enregistrer HTML</button>
+      <button type="button" id="printBtn">Imprimer</button>
+      <button type="button" id="fsBtn" aria-label="Activer ou quitter le plein écran">⛶ Plein écran</button>
+    </div>
+  </nav>
+  <div class="edit-hotzone" aria-hidden="true"></div>
+  <button type="button" class="edit-toggle" id="editToggle" aria-pressed="false">Éditer · E</button>
+  <div id="notice" role="status"></div>
+  <script>
+
+/* === NAVIGATION SUR CANEVAS FIXE === */
+class SlidePresentation {
+  constructor() {
+    this.stage = document.getElementById('deckStage');
+    this.slides = [...document.querySelectorAll('.slide')];
+    this.current = 0;
+    this.editing = false;
+    this.lastWheel = 0;
+    this.touchStart = null;
+    this.noticeTimer = null;
+    this.storageKey = 'tnsi-quantique-v2:' + location.pathname;
+    this.editables = [...document.querySelectorAll('.editable')];
+    this.editables.forEach(element => element.querySelectorAll('br').forEach(br => br.replaceWith(document.createTextNode('\n'))));
+    this.restoreEdits();
+    this.bindNavigation();
+    this.bindEditor();
+    this.scale();
+    this.show(this.hashIndex());
+  }
+
+  hashIndex() {
+    const value = /^#(\d+)$/.exec(location.hash);
+    return value ? Number(value[1]) - 1 : 0;
+  }
+
+  scale() {
+    const availableHeight = Math.max(1, innerHeight - 56);
+    const factor = Math.min(innerWidth / 1920, availableHeight / 1080);
+    const x = (innerWidth - 1920 * factor) / 2;
+    const y = (availableHeight - 1080 * factor) / 2;
+    this.stage.style.transform = `translate(${x}px, ${y}px) scale(${factor})`;
+  }
+
+  show(index) {
+    this.current = Math.max(0, Math.min(index, this.slides.length - 1));
+    this.slides.forEach((slide, i) => {
+      const active = i === this.current;
+      slide.classList.toggle('active', active);
+      slide.setAttribute('aria-hidden', String(!active));
+      slide.inert = !active;
+    });
+    document.getElementById('slideCounter').textContent = `${this.current + 1} / ${this.slides.length}${this.slides[this.current].dataset.kind === 'annex' ? ' · Annexe' : ''}`;
+    document.getElementById('progressBar').style.width = `${(this.current + 1) / this.slides.length * 100}%`;
+    document.getElementById('prevBtn').disabled = this.current === 0;
+    document.getElementById('nextBtn').disabled = this.current === this.slides.length - 1;
+    try { history.replaceState(null, '', `#${this.current + 1}`); } catch (_) { /* Les fichiers locaux restent navigables. */ }
+  }
+
+  interactive(target) {
+    return target instanceof Element && (target.closest('input, textarea, select, button, a') || target.isContentEditable);
+  }
+
+  bindNavigation() {
+    addEventListener('resize', () => this.scale());
+    addEventListener('hashchange', () => this.show(this.hashIndex()));
+    document.getElementById('prevBtn').addEventListener('click', () => this.show(this.current - 1));
+    document.getElementById('nextBtn').addEventListener('click', () => this.show(this.current + 1));
+    document.getElementById('fsBtn').addEventListener('click', () => this.fullscreen());
+    document.getElementById('printBtn').addEventListener('click', () => print());
+    addEventListener('keydown', event => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
+        event.preventDefault(); this.exportHTML(); return;
+      }
+      if (event.key === 'Escape' && this.editing) { this.toggleEditor(); return; }
+      const typing = event.target instanceof Element && (event.target.closest('input, textarea, select') || event.target.isContentEditable);
+      if (typing || event.ctrlKey || event.metaKey || event.altKey) return;
+      if (event.key === ' ' && event.target instanceof Element && event.target.closest('button, a')) return;
+      if (['ArrowRight', 'ArrowDown', ' ', 'PageDown'].includes(event.key)) { event.preventDefault(); this.show(this.current + 1); }
+      else if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(event.key)) { event.preventDefault(); this.show(this.current - 1); }
+      else if (event.key === 'Home') { event.preventDefault(); this.show(0); }
+      else if (event.key === 'End') { event.preventDefault(); this.show(this.slides.length - 1); }
+      else if (event.key.toLowerCase() === 'f') this.fullscreen();
+      else if (event.key.toLowerCase() === 'e') this.toggleEditor();
+    });
+    this.stage.addEventListener('wheel', event => {
+      if (this.editing || this.interactive(event.target) || Math.abs(event.deltaY) < 30 || event.ctrlKey) return;
+      event.preventDefault();
+      if (Date.now() - this.lastWheel > 700) {
+        this.lastWheel = Date.now(); this.show(this.current + (event.deltaY > 0 ? 1 : -1));
+      }
+    }, { passive: false });
+    this.stage.addEventListener('touchstart', event => {
+      this.touchStart = this.editing || this.interactive(event.target) || event.touches.length !== 1 ? null : {x: event.touches[0].clientX, y: event.touches[0].clientY};
+    }, { passive: true });
+    this.stage.addEventListener('touchend', event => {
+      if (!this.touchStart) return;
+      const dx = event.changedTouches[0].clientX - this.touchStart.x;
+      const dy = event.changedTouches[0].clientY - this.touchStart.y;
+      if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy)) this.show(this.current + (dx < 0 ? 1 : -1));
+      this.touchStart = null;
+    }, { passive: true });
+    this.stage.addEventListener('touchcancel', () => { this.touchStart = null; }, { passive: true });
+  }
+
+  async fullscreen() {
+    try {
+      if (document.fullscreenElement) await document.exitFullscreen();
+      else await document.documentElement.requestFullscreen();
+    } catch (_) { this.notice('Le plein écran n’est pas disponible dans cet aperçu.'); }
+  }
+
+  /* === ÉDITION DES TEXTES · STOCKAGE LOCAL ET EXPORT === */
+  restoreEdits() {
+    if (document.getElementById('review-config')) return;
+    try {
+      const saved = JSON.parse(localStorage.getItem(this.storageKey) || '{}');
+      this.editables.forEach((element, i) => { if (typeof saved[i] === 'string') element.textContent = saved[i]; });
+    } catch (_) { /* Le deck fonctionne aussi si le stockage local est indisponible. */ }
+  }
+
+  saveEdits() {
+    try {
+      localStorage.setItem(this.storageKey, JSON.stringify(Object.fromEntries(this.editables.map((element, i) => [i, element.textContent]))));
+    } catch (_) { this.notice('Stockage local indisponible : utilisez « Enregistrer HTML ».'); }
+  }
+
+  toggleEditor() {
+    this.editing = !this.editing;
+    document.body.classList.toggle('editing', this.editing);
+    const button = document.getElementById('editToggle');
+    button.classList.toggle('active', this.editing);
+    button.setAttribute('aria-pressed', String(this.editing));
+    button.textContent = this.editing ? 'Terminer l’édition' : 'Éditer · E';
+    this.editables.forEach(element => {
+      if (this.editing) { element.setAttribute('contenteditable', 'plaintext-only'); element.spellcheck = true; }
+      else element.removeAttribute('contenteditable');
+    });
+    if (!this.editing) this.saveEdits();
+    this.notice(this.editing ? 'Cliquez sur un texte pour le modifier. Ctrl/Cmd + S enregistre une copie HTML.' : 'Édition terminée.');
+  }
+
+  bindEditor() {
+    const hotzone = document.querySelector('.edit-hotzone');
+    const button = document.getElementById('editToggle');
+    let hideTimer;
+    const show = () => { clearTimeout(hideTimer); button.classList.add('show'); };
+    const hide = () => { hideTimer = setTimeout(() => { if (!this.editing) button.classList.remove('show'); }, 400); };
+    hotzone.addEventListener('mouseenter', show);
+    hotzone.addEventListener('mouseleave', hide);
+    hotzone.addEventListener('click', () => this.toggleEditor());
+    button.addEventListener('mouseenter', show);
+    button.addEventListener('mouseleave', hide);
+    button.addEventListener('click', () => this.toggleEditor());
+    this.editables.forEach(element => element.addEventListener('input', () => this.saveEdits()));
+    document.getElementById('saveBtn').addEventListener('click', () => this.exportHTML());
+  }
+
+  exportHTML() {
+    this.saveEdits();
+    const clone = document.documentElement.cloneNode(true);
+    clone.querySelector('body').classList.remove('editing', 'reviewing', 'review-compact', 'review-text-focus');
+    clone.querySelectorAll('#review-toggle,#review-panel,#review-overview,#review-edit-toolbar,#review-canvas-size').forEach(element => element.remove());
+    clone.querySelectorAll('style').forEach(element => { if (element.textContent.includes('#review-toggle,#review-panel') || element.textContent.includes('#review-overview{')) element.remove(); });
+    clone.querySelectorAll('[contenteditable]').forEach(element => element.removeAttribute('contenteditable'));
+    clone.querySelectorAll('.slide').forEach((slide, i) => {
+      slide.classList.toggle('active', i === 0);
+      slide.removeAttribute('aria-hidden'); slide.removeAttribute('inert');
+    });
+    clone.querySelector('#editToggle').classList.remove('active', 'show');
+    clone.querySelector('#editToggle').textContent = 'Éditer · E';
+    clone.querySelector('#editToggle').setAttribute('aria-pressed', 'false');
+    clone.querySelector('#notice').textContent = '';
+    clone.querySelector('#phase').setAttribute('value', document.getElementById('phase').value);
+    const url = URL.createObjectURL(new Blob(['<!DOCTYPE html>\n' + clone.outerHTML], {type: 'text/html;charset=utf-8'}));
+    const link = document.createElement('a');
+    link.href = url; link.download = 'tnsi-quantique.html'; link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    this.notice('Copie HTML téléchargée.');
+  }
+
+  notice(message) {
+    clearTimeout(this.noticeTimer);
+    document.getElementById('notice').textContent = message;
+    this.noticeTimer = setTimeout(() => { document.getElementById('notice').textContent = ''; }, 4500);
+  }
+}
+
+/* === CIRCUIT IDÉAL H · P(φ) · H · ÉCHANTILLONNAGE CLASSIQUE === */
+function setupInterference() {
+  const phase = document.getElementById('phase');
+  const result = document.getElementById('sampleResult');
+  let pZero = 1;
+  function update() {
+    const radians = Number(phase.value) * Math.PI / 180;
+    pZero = Math.cos(radians / 2) ** 2;
+    if (pZero < 1e-12) pZero = 0;
+    if (1 - pZero < 1e-12) pZero = 1;
+    const zeroPercent = Math.round(pZero * 100);
+    document.getElementById('phaseValue').textContent = `${phase.value}°`;
+    document.getElementById('barZero').style.width = `${pZero * 100}%`;
+    document.getElementById('barOne').style.width = `${(1 - pZero) * 100}%`;
+    document.getElementById('probZero').textContent = `${zeroPercent} %`;
+    document.getElementById('probOne').textContent = `${100 - zeroPercent} %`;
+    result.textContent = '100 préparations indépendantes du circuit.';
+  }
+  phase.addEventListener('input', update);
+  document.querySelectorAll('[data-phase]').forEach(button => button.addEventListener('click', () => {
+    phase.value = button.dataset.phase; update();
+  }));
+  document.getElementById('sampleBtn').addEventListener('click', () => {
+    let zeros = 0;
+    for (let i = 0; i < 100; i++) if (Math.random() < pZero) zeros++;
+    result.textContent = `Fréquences simulées : 0 → ${zeros} / 100 ; 1 → ${100 - zeros} / 100.`;
+  });
+  update();
+}
+
+window.deckPresentation = new SlidePresentation();
+setupInterference();
+
+  </script>
+</body>
+</html>

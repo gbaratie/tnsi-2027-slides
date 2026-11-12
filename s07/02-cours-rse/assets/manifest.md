@@ -1,0 +1,19 @@
+# Assets du deck RSE
+
+Préparation : 12 novembre 2026. Tous les fichiers nécessaires au rendu sont locaux ; seules les références et approfondissements ouvrent un lien externe.
+
+| Asset | Rôle | Source, crédit et droits | Traitement |
+|---|---|---|---|
+| `photos/wind-farm.jpg` | Ouverture : infrastructures matérielles d’une transition énergétique | Jason Song, [Unsplash fpoyFPKB7y4](https://unsplash.com/photos/white-wind-turbines-on-green-grass-field-during-daytime-fpoyFPKB7y4), [licence Unsplash](https://unsplash.com/license). Métadonnées et crédit vérifiés dans le résultat de recherche Unsplash ; la page directe renvoie une restriction d’accès dans cet environnement. | Photo enregistrée depuis le CDN Unsplash, cadrage panoramique par CSS, voile marine ; pas de transformation du fichier. |
+| `photos/maintenance-technician.jpg` | Travail et responsabilités humaines | Sten Rademaker, [Unsplash UZUzvJEvKnI](https://unsplash.com/photos/UZUzvJEvKnI), licence Unsplash ; copie de l’asset déjà documenté dans le manifeste IoT du dépôt. | Recadrage par CSS ; illustration contextuelle, sans témoignage attribué à la personne. |
+| `photos/circuit-board.jpg` | Équipements, durée de vie et arbitrages Green IT | Harrison Broadbent, [Unsplash 1mu9gF8OhNk](https://unsplash.com/photos/1mu9gF8OhNk), licence Unsplash ; asset IoT déjà documenté. | Recadrage photo + explication. |
+| `fonts/*.woff2` | Police locale du texte et du code | IBM Plex Sans Regular/SemiBold et IBM Plex Mono Regular, fichiers complets de [IBM Plex](https://github.com/IBM/plex/tree/master/packages), sous `plex-sans/fonts/complete/woff2/` et `plex-mono/fonts/complete/woff2/`, récupérés le 12 novembre 2026. SIL Open Font License, texte dans `fonts/OFL.txt` et dans le HTML autonome. | Versions complètes pour les flèches, indices et symboles scientifiques ; aucun téléchargement à l’exécution. |
+| `icons/*.svg` | Concepts et relations | [Lucide](https://github.com/lucide-icons/lucide), récupéré le 12 novembre 2026 ; licence ISC dans `icons/LICENSE`. | Seuls les pictogrammes utilisés sont intégrés, même famille et épaisseur. |
+| `figures/ipcc-cost-declines.svg` et `.png` | Trois baisses de coûts historiques | Données GIEC AR6, références S03 dans `sources.md`. Tracé original Matplotlib ; reproducteur dans le dossier pédagogique interne. | Pas de courbe interpolée ni de nouvelles mesures ; échelle en baisse des coûts unitaires (%), 2010–2019. |
+| `figures/ai-model-energy.svg` et `.png` | Comparaison dans le benchmark | AI Energy Score, références S06 et CSV conservé dans `data/`. | Tracé original Matplotlib, valeurs en Wh GPU pour 1 000 requêtes, même cohorte. Qualité non garantie par ce graphique. |
+| `data/ai-energy-score-text-generation.csv` et `selected-models.json` | Traçabilité des valeurs | Données publiques du leaderboard AI Energy Score, récupérées le 12 novembre 2026 ; les références et conditions sont dans `sources.md`. | Copie du CSV et extraction de trois lignes ; conversion des unités vérifiée dans le code du leaderboard. |
+| `infographics/rse-summary.png` | Carte des concepts de fin de cours | Illustration pédagogique originale générée avec `image_gen.imagegen`, puis retouchée avec le même outil. Modèle et prompts dans le dossier interne. Aucun logo, mesure scientifique ou déploiement réel. | 1672 × 941 px, textes français et relations relus ; consultation de l’original au clic. Le statut d’illustration générée est indiqué dans le deck. |
+
+Les captures de l’auteur guident les thèmes et l’actualisation, mais leurs pixels et anciens calendriers ne sont pas redistribués. Les fontes, photos et diagrammes de référence Cloud/IoT ont été consultés depuis `main` sans importer sa réorganisation dans cette branche.
+
+Empreinte de la copie CSV AI Energy Score (SHA-256) : `a4775d7ea9bfce16e580b10c2b050daf512f5ea80332b3e6fc3c57ac1deabf93`.

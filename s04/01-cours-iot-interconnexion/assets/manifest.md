@@ -17,6 +17,8 @@ La licence Unsplash autorise l'utilisation gratuite des photos, y compris commer
 
 Les marques restent la propriété de leurs détenteurs. Les logos sont utilisés uniquement pour identifier les acteurs dans une cartographie pédagogique, sans modification de proportions ni de couleurs.
 
+Révision du 11 novembre 2026 : la carte regroupe plusieurs entreprises dans six familles (capteurs, radios/modules, passerelles, réseaux, plateformes, solutions industrielles), toutes visibles simultanément. Les logos existants sont réutilisés sans nouvel artwork ; chaque nom renvoie à la page officielle de l’entreprise. La carte décrit des capacités et des rôles pouvant se recouvrir, sans classement ni parts de marché.
+
 | Fichier | Source | Notes |
 |---|---|---|
 | `logos/stmicroelectronics.svg` | [Simple Icons](https://simpleicons.org/?q=STMicroelectronics) | Marque STMicroelectronics |
@@ -30,6 +32,8 @@ Les marques restent la propriété de leurs détenteurs. Les logos sont utilisé
 Les SVG du dossier `icons/` proviennent de [Lucide](https://lucide.dev/), récupérés le 8 novembre 2026. Licence ISC. Seuls les pictogrammes utilisés ou prévus dans le deck sont conservés localement.
 
 ## Ressource live
+
+Les fontes partagées [IBM Plex](../../../assets/fonts/plex/manifest.md) remplacent Google Fonts depuis la révision du 11 novembre 2026. Le schéma du parcours d’une mesure est un SVG natif intégré au HTML : capteurs/actionneurs, réseau local, bridge/passerelle, edge, Internet, réception des données et applications ; aucun moteur de rendu externe n’est requis.
 
 `https://satellitemap.space/` reste une démonstration volontairement externe. La diapositive satellite possède une photo locale et un schéma simplifié comme solution de secours.
 

@@ -4,13 +4,14 @@ Préparation : 9 novembre 2026. Images produites avec `image_gen.imagegen`, **16
 
 | Fichier | Sujet et utilisation | Référence graphique |
 |---|---|---|
-| [`data-value-chain.png`](data-value-chain.png) | Intro 13 et Data 5, 7, 12, 21, 28 : sources, intégration, stockage et connaissance, partage, usages ; gouvernance et exploitation transverses ; fil rouge S5 | Infographie IoT du même cours : planche claire, pictogrammes au trait, panneaux numérotés, mini-schémas et légende |
+| [`data-value-chain.png`](data-value-chain.png) | Carte historique conservée pour l’Intro : sources, intégration, stockage et connaissance, partage, usages ; gouvernance et exploitation transverses ; exemple S5 | Infographie IoT du même cours : planche claire, pictogrammes au trait, panneaux numérotés, mini-schémas et légende |
+| [`data-value-chain-curation.png`](data-value-chain-curation.png) | Data 2, 6, 8, 19, 24, 26 : même carte, sans bandeau « Fil rouge », curation explicite dans l’intégration et mise à disposition des données | Retouche de `data-value-chain.png` avec `image_gen.imagegen`, le 11 novembre 2026 ; 1672×941 px, géométrie et autres notions conservées, copie sans retouche locale des pixels |
 | [`blockchain-network.png`](blockchain-network.png) | Intro 15 : wallet, signature, diffusion, rôles des nœuds, consensus, registre et échanges entre réseaux | Même langage visuel, avec un réseau de nœuds central et un flux récapitulatif |
-| [`data-mesh-products.png`](data-mesh-products.png) | Intro 14 et Data 23 : équipes et produits des domaines Clients/Ventes/Logistique/Finance, deux consommations via contrats, fondation en libre-service et gouvernance fédérée | Planche technique claire générée puis corrigée avec `image_gen.imagegen`, 1672×941 px ; original final copié sans retouche de pixels |
+| [`data-mesh-products.png`](data-mesh-products.png) | Intro 14 et Data 21 : équipes et produits des domaines Clients/Ventes/Logistique/Finance, deux consommations via contrats, fondation en libre-service et gouvernance fédérée | Planche technique claire générée puis corrigée avec `image_gen.imagegen`, 1672×941 px ; original final copié sans retouche de pixels |
 
 Ces images représentent des modèles conceptuels, sans système client réel ni mesure expérimentale. Elles ne constituent pas une preuve technique. Aucun logo de fournisseur n'a été ajouté.
 
-La carte Data présente des rôles et des représentations complémentaires : elle n'impose pas un pipeline séquentiel entre lake, warehouse, produit, table, document, graphe et vecteurs. Le fil rouge S5 est un exemple pédagogique à évaluer contre RAG seul. Les cinq vues du cours Data réutilisent exactement le même fichier ; les zones atténuées sont des masques HTML.
+La carte Data présente des rôles et des représentations complémentaires : elle n'impose pas un pipeline séquentiel entre lake, warehouse, produit, table, document, graphe et vecteurs. Les six vues du cours Data réutilisent exactement `data-value-chain-curation.png` ; les zones atténuées sont des masques HTML. Les retours intermédiaires isolent la seule zone qui vient d’être expliquée. L’original partagé avec l’Intro reste inchangé.
 
 La planche Blockchain distingue transaction, propagation et échange entre réseaux. Les rôles peuvent se cumuler ; les garanties, le consensus et les droits d'accès dépendent du protocole et de ses hypothèses. Les ponts ajoutent leurs propres risques.
 

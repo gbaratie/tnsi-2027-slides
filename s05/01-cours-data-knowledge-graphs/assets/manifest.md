@@ -1,6 +1,12 @@
 # Ressources — deck Data harmonisé au style Cloud
 
-Harmonisation du 9 novembre 2026. Les images, pictogrammes et fontes sont locaux ; le deck n'effectue aucun chargement de ressources distantes. Les références cliquables et Aura restent des destinations externes intentionnelles.
+Harmonisation du 9 novembre 2026, complétée le 12 novembre. Les images, pictogrammes et fontes sont locaux ; aucun chargement distant n’est effectué à l’ouverture. Le lecteur YouTube sur la qualité se charge uniquement au clic ; un lien direct permet aussi d’ouvrir la vidéo. Les références cliquables sont des destinations externes intentionnelles.
+
+## Ajouts du 12 novembre 2026
+
+- Photo + décisions de gouvernance : `../../assets/photos/team-annie-spratt.jpg`, Annie Spratt / Unsplash, photographie locale inchangée et [crédit partagé](../../../assets/photos/manifest.md). Cette scène illustre le travail d’équipe, pas une organisation réelle décrite par le cours.
+- Schémas Warehouse/Lake/Lakehouse, zones, accès et parcours IA : compositions pédagogiques natives HTML/SVG, sans données réelles ni service de rendu distant. Pictogrammes Lucide locaux existants ; même licence.
+- [Vidéo proposée sur la qualité](https://www.youtube.com/watch?v=l72lkGlBHCo), ressource auteur. Chargement au clic via `youtube-nocookie.com`, sans lecture automatique ; connexion nécessaire. Titre, durée et contenu non vérifiés. Les questions de discussion sont rédigées pour le cours ; elles ne sont pas une transcription.
 
 ## Illustration
 
