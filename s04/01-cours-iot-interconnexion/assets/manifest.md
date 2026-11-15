@@ -31,6 +31,20 @@ Révision du 11 novembre 2026 : la carte regroupe plusieurs entreprises dans six
 
 Les SVG du dossier `icons/` proviennent de [Lucide](https://lucide.dev/), récupérés le 8 novembre 2026. Licence ISC. Seuls les pictogrammes utilisés ou prévus dans le deck sont conservés localement.
 
+## Ajout du 15 novembre 2026 — standards et maisons connectées
+
+Deux diagrammes originaux intégrés au HTML : pile réseau/application et installation locale d’une lampe fictive. Les pictogrammes sont des repères fonctionnels ; les marques identifient les standards et plateformes sans constituer une recommandation d’achat. Traits et révélations expliquent les relations ; aucune image ne représente un déploiement client.
+
+| Fichier | Diapositive et rôle | Source et droits | Préparation |
+|---|---|---|---|
+| `logos/matter.svg` | 11 · identifier le standard applicatif | [CSA, page Matter](https://csa-iot.org/all-solutions/matter/) ; [artwork officiel](https://csa-iot.org/wp-content/uploads/2021/12/matter.svg), marque CSA | Fichier officiel inchangé, image embarquée dans le SVG ; proportions et couleurs conservées |
+| `logos/thread-built-on.svg` | 11 · identifier le réseau Thread | [Thread Group, présentation](https://threadgroup.org/what-is-thread/overview) ; [badge officiel](https://threadgroup.org/portals/0/svg/TG_BOT-logo_w-g_H.svg), marque Thread Group | Badge « Built on Thread » inchangé, sans affirmation de certification d’un objet réel |
+| `logos/apple-home.png` | 12 · identifier Apple Home / l’app Maison | [Apple, Home app](https://www.apple.com/home-app/) ; [icône officielle](https://www.apple.com/v/home-app/n/images/overview/home_icon__fqdsai7nyfma_large.png), marque Apple | Fichier inchangé, proportions et couleurs source ; ne pas reproduire l’interface de l’app |
+| `logos/google-home.svg` | 12 · identifier Google Home | [Google Home, Matter et Thread](https://home.google.com/get-inspired/matter-and-thread/) ; [sprite officiel, symbole `logo`](https://home.google.com/static/icons/google-icons.svg?cache=3b26556#logo), marque Google | Symbole extrait dans un SVG autonome ; tracés, couleurs et viewBox conservés |
+| `icons/lightbulb.svg`, `icons/router.svg`, `icons/cable.svg` | 11–12 · lampe, routeur et réseau filaire | [Lucide, fichiers source](https://github.com/lucide-icons/lucide/tree/main/icons), licence ISC ; récupération le 15 novembre 2026 | SVG locaux ; même famille et même traitement que les pictogrammes existants |
+
+Ces artworks sont utilisés pour l’identification pédagogique de leurs détenteurs ; aucune licence libre sur les marques n’est présumée. Aucun recadrage, filtre ou changement de couleur des logos. Pas de dépendance réseau à la lecture ; les liens documentaires restent volontairement externes.
+
 ## Ressource live
 
 Les fontes partagées [IBM Plex](../../../assets/fonts/plex/manifest.md) remplacent Google Fonts depuis la révision du 11 novembre 2026. Le schéma du parcours d’une mesure est un SVG natif intégré au HTML : capteurs/actionneurs, réseau local, bridge/passerelle, edge, Internet, réception des données et applications ; aucun moteur de rendu externe n’est requis.
