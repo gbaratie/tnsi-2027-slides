@@ -4,7 +4,15 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Supports du cours TNSI 2027 — M2 MIAGE, Université Paris Dauphine–PSL.">
-  <title>TNSI 2027 — Supports de cours</title>
+  <title>TNSI — Supports de cours · 2027</title>
+  <meta name="apple-mobile-web-app-title" content="TNSI">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#2e428a">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16.png">
+  <link rel="icon" href="icons/favicon.ico" sizes="any">
+  <link rel="manifest" href="manifest.webmanifest">
   <style>
     :root {
       color-scheme: dark;
@@ -38,6 +46,10 @@
       margin: 0 auto;
       padding: 72px 0 56px;
     }
+
+    .brand { display: flex; align-items: center; gap: 24px; }
+    .brand img { width: clamp(72px, 12vw, 112px); height: auto; border-radius: 22%; flex: none; }
+    .course-title { margin: 24px 0 0; font-size: clamp(1.2rem, 3vw, 2rem); line-height: 1.3; color: var(--ink); }
 
     .eyebrow {
       margin: 0 0 18px;
@@ -197,7 +209,8 @@
 <body>
   <main class="shell">
     <p class="eyebrow">Université Paris Dauphine–PSL · M2 MIAGE</p>
-    <h1>Transition Numérique des SI</h1>
+    <div class="brand"><img src="icons/icon-192.png" width="192" height="192" alt=""><h1>TNSI</h1></div>
+    <p class="course-title">Transition Numérique des SI · 2027</p>
     <p class="intro">Les supports projetables et les parcours guidés du cours TNSI 2027. Chaque deck s’ouvre directement dans le navigateur et reste navigable au clavier.</p>
 
     <div class="legend" aria-label="Types de supports">
